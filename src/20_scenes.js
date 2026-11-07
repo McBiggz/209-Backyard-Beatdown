@@ -60,6 +60,9 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  if(c0.id===c1.id){const alt=Object.assign({},c1,{trunks:c1.accent,accent:c1.trunks,name:c1.name+' II',short:c1.short+' II',id:c1.id+'_alt'});if(!SETS[alt.id])buildWrestler(alt);G.f[1].ch=alt;G.f[1].set=SETS[alt.id];}
  G.scene='intro';G.introT=0;sfx('roar');}
 function beginFight(){const[a,b]=G.f;
+ // every match gets a seed; a replay re-uses the recorded one
+ const seed=G.replay?G.replay.seed:G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
+ G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
  G.co={t:0,n:0};
@@ -94,8 +97,11 @@ function updFight(dt){
   else G.co={t:0,n:0};}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
  const sdt=dt*G.slow;G.rope.t+=sdt;
- let inp=[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
+ let inp=G.replay?[blank(),blank()]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
+ // record / replay: the step's inputs, packed. In a replay the tape overrides whatever the controls said.
+ if(G.replay){const r=G.replay.inp[G.fstep];if(r)inp=[unpackInp(r[0]),unpackInp(r[1])];}
+ G.rec.inp.push([packInp(inp[0]),packInp(inp[1])]);G.fstep++;
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
  updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);

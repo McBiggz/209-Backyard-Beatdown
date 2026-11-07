@@ -11,7 +11,7 @@ function tryHit(f,o,A){
  else{if(!HITTABLE.has(o.state))return;if(o.state!=='perch'&&Math.abs(o.y-f.y)>(A.air?40:22))return;}
  if(wide()&&f.out!==o.out)return;
  f.hitDone=true;const whipped=o.state==='whipped';
- const dmg=A.dmg*f.ch.pow*rnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);
+ const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);
  if(A.ground){o.t=Math.max(0,o.t-0.35);if(Math.random()<0.4)line('stomp',f,o);return;}
  o.combo++;o.comboT=1.1;
@@ -99,8 +99,8 @@ function updPin(dt,inp){
  if(P.ropes&&!P.d.cpu&&(di.left||di.right||di.up||di.down)&&P.t>0.3){ropeBreak();return;}
  if(!P.d.cpu&&P.presses>=P.need){kickout();return;}
  if(P.t>=P.nextAt){
-  if(P.ropes&&P.d.cpu&&P.count>=1&&Math.random()<0.8){ropeBreak();return;}
-  if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(Math.random()<(P.count===1?p*0.4:p)){kickout();return;}}
+  if(P.ropes&&P.d.cpu&&P.count>=1&&schance(0.8)){ropeBreak();return;}
+  if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(schance(P.count===1?p*0.4:p)){kickout();return;}}
   P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);G.hype=Math.min(1,G.hype+0.15);
   if(P.count===3)endMatch(P.a,P.d);}
 }

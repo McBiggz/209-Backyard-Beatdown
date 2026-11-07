@@ -9,6 +9,11 @@ const MAP=[
  {left:['ArrowLeft'],right:['ArrowRight'],up:['ArrowUp'],down:['ArrowDown'],jump:['KeyU','Numpad0'],punch:['KeyJ','Numpad1'],kick:['KeyK','Numpad2'],grab:['KeyL','Numpad3'],fin:['KeyI','NumpadDecimal']}];
 const held=a=>a.some(k=>keys[k]),hit=a=>a.some(k=>pressed[k]);
 const blank=()=>({left:false,right:false,up:false,down:false,jumpP:false,punchP:false,kickP:false,grabP:false,finP:false});
+// ---- One input format for everyone: keyboard, touch pad and CPU all become the same 9 buttons per step,
+// packed into one number. That number is what a replay stores and what online play will send over the wire.
+const IBITS=['left','right','up','down','jumpP','punchP','kickP','grabP','finP'];
+const packInp=o=>IBITS.reduce((n,k,i)=>o[k]?n|(1<<i):n,0);
+const unpackInp=n=>{const o={};IBITS.forEach((k,i)=>o[k]=!!(n&(1<<i)));return o;};
 function humanInput(i){const m=MAP[i];return{left:held(m.left),right:held(m.right),up:held(m.up),down:held(m.down),jumpP:hit(m.jump),punchP:hit(m.punch),kickP:hit(m.kick),grabP:hit(m.grab),finP:hit(m.fin)};}
 const confirmP=()=>hit(['Enter','Space','NumpadEnter','KeyF']);
 const tc=document.getElementById('tc');

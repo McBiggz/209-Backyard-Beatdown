@@ -16,6 +16,16 @@ const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;r
 const lerp=(a,b,k)=>a+(b-a)*k, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rnd=(a=1,b)=>b===undefined?Math.random()*a:a+Math.random()*(b-a);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+// ---- Simulation RNG: seeded, so the same seed + the same inputs = the same match on every device.
+// Use srnd/schance for ANYTHING that changes match state. rnd/pick are for cosmetics only (particles, crowd, shake).
+const SIM={seed:1};
+function srand(){let t=(SIM.seed+=0x6D2B79F5)|0;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+const srnd=(a=1,b)=>b===undefined?srand()*a:a+srand()*(b-a);
+const schance=p=>srand()<p;
+// CPU brains get their own stream, so a replay/online match driven only by recorded inputs stays in sync.
+const AIR={seed:1};
+function arand(){let t=(AIR.seed+=0x6D2B79F5)|0;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+const arnd=(a=1,b)=>b===undefined?arand()*a:a+arand()*(b-a);
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;
   if(f<0){r*=1+f;g*=1+f;b*=1+f}else{r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f}return `rgb(${r|0},${g|0},${b|0})`;}
 const LOGO_SRC={"T": "__ASSET(logo/logo_T.png)__", "B": "__ASSET(logo/logo_B.png)__", "A": "__ASSET(logo/logo_A.png)__", "M": "__ASSET(logo/logo_M.png)__"};
