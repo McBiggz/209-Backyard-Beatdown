@@ -36,7 +36,7 @@ function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
   const sx=G.shake?Math.round(rnd(-1,1)*G.shake):0,sy=G.shake?Math.round(rnd(-1,1)*G.shake):0;
   ctx.save();ctx.translate(sx,sy);
   if(G.scene==='loading')drawLoading();else if(G.scene==='title'||G.scene==='lobby')drawTitle();else if(G.scene==='select')drawSelect();else if(G.scene==='intro')drawIntro();else drawFight();
-  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawIRP();drawNetHUD();
+  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawIRP();drawTut();drawNetHUD();
  }catch(e){console.error(e);}
  fsUI();tc.classList.toggle('on',coarse&&G.scene==='fight'&&!G.paused&&!(G.over&&G.over.t>1.8));
  requestAnimationFrame(frame);}

@@ -17,10 +17,10 @@ function tryHit(f,o,A){
  if(wide()&&f.out!==o.out)return;
  if(!A.ground&&canBlock(o,f)){f.hitDone=true;const chip=A.dmg*f.ch.pow*CTR.block.chip;o.hp=Math.max(1,o.hp-chip);f.meter=Math.min(100,f.meter+chip);
   setState(o,'block');o.blockStun=CTR.block.stun+(A.knock?0.15:0);o.vx=f.dir*A.kb*CTR.block.push;o.vz=0;o.combo=0;
-  if(f.state==='runline')f.vx*=0.3;sfx('block');G.hitStop=0.03;part(PX(o.x,o.z)-f.dir*10,PY(o.z)-o.y-40*o.ch.size,-f.dir*30,-20,0.25,'#9fd4ff',2);
+  if(f.state==='runline')f.vx*=0.3;sfx('block');tutEv('block',o);G.hitStop=0.03;part(PX(o.x,o.z)-f.dir*10,PY(o.z)-o.y-40*o.ch.size,-f.dir*30,-20,0.25,'#9fd4ff',2);
   if(o.blockN=(o.blockN||0)+1,o.blockN%3===1)popOn(o,'BLOCK','#9fd4ff');return;}
  f.hitDone=true;const whipped=o.state==='whipped';
- const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);
+ const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);tutEv(A===ATK.punch?'punch':A===ATK.kick?'kick':'hit',f);
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);
  if(A.ground){o.t=Math.max(0,o.t-0.35);if(Math.random()<0.4)line('stomp',f,o);return;}
  o.combo++;o.comboT=1.1;
@@ -35,7 +35,7 @@ function startWhip(f,o,mx,canRev){setState(f,'whip');setState(o,'whipped');o.whi
 function tryGrab(f,o,mx){
  if(wide()&&f.out)mx=0;
  if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*f.ch.size&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){
-  if(mx){startWhip(f,o,mx,true);line('whip',f,o);return;}
+  if(mx){startWhip(f,o,mx,true);line('whip',f,o);tutEv('whip',f);return;}
   setState(f,'grapple');setState(o,'grappled');f.vx=f.vz=o.vx=o.vz=0;o.z=f.z+0.2;sfx('grab');}
  else setState(f,'whiff');
 }
@@ -50,7 +50,7 @@ function updGrapple(f,o){
 function tryFin(f,o){
  if(f.meter<100){popOn(f,'NO MOMENTUM','#bbb');return;}
  if(Math.abs(o.x-f.x)>44||Math.abs(o.z-f.z)>10||(wide()&&f.out!==o.out)||!GRABBABLE.has(o.state)||o.y>2){popOn(f,'GET CLOSER!','#fff');return;}
- irpMark('fin');f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
+ irpMark('fin');tutEv('fin',f);f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
  callout(f.ch.fin+'!!',f.ch.accent,1.7);G.slow=0.8;G.slowT=1.3;G.flash=0.3;sfx('whoosh');
  if(f.ch.finType==='kick')sfx('fire');if(f.ch.finType==='spin')sfx('glitter');crowdReact(f,true);
 }
@@ -82,7 +82,7 @@ function updFinisher(f,o,dt){
   else if(t-f.landT>0.45)setState(f,'idle');
  }
 }
-function startDive(f,o){irpMark('big');setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
+function startDive(f,o){irpMark('big');tutEv('dive',f);setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
 function landDive(f,o){
  f.y=0;f.vx=f.vz=0;if(wide())f.out=!insideRing(f.x,f.z);clampPos(f);
  const hitIt=Math.abs(bodyX(o)-f.x)<28&&Math.abs(o.z-f.z)<12&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');
@@ -99,7 +99,7 @@ function bodySpan(f,frame){const e=(f.set&&f.set[frame+'_ext'])||(frame==='pinni
 function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out);if(!live.length)return;const z=live[0][0].z,[a0,b0]=ringX(z),a=a0-6,b=b0+6;
  let lo=1e9,hi=-1e9;for(const[f,fr]of live){const[s0,s1]=bodySpan(f,fr);lo=Math.min(lo,s0);hi=Math.max(hi,s1);}
  let sh=0;if(hi-lo>b-a)sh=(a+b)/2-(lo+hi)/2;else if(lo<a)sh=a-lo;else if(hi>b)sh=b-hi;if(sh)for(const[f]of live)f.x+=sh;}
-function startPin(f,o){setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
+function startPin(f,o){tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6};G.ref.mode='pin';sfx('grab');line('pin',f,o);}
 function kickout(){const{a,d}=G.pin;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);

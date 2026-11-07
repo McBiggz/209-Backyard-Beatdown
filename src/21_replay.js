@@ -7,7 +7,7 @@ const IRP={every:20,keep:75,lead:40,tail:140,bigLead:80,bigTail:90,slow:2};
 function irpReset(){if(G.irp)G.replay=null;G.snaps=new Map();G.finAt=-1;G.bigAt=-1;G.irp=null;}
 function irpMark(kind){if(G.resim||G.irp)return;if(kind==='fin')G.finAt=G.fstep;else G.bigAt=G.fstep;}
 // called after every live fight step
-function irpAfterStep(){if(G.resim||G.irp||!G.snaps)return;
+function irpAfterStep(){if(G.resim||G.irp||!G.snaps||G.tut)return;
  if(G.fstep%IRP.every===0){G.snaps.set(G.fstep,getSnap());G.snaps.delete(G.fstep-IRP.every*IRP.keep);}
  // trigger: shortly after the bell, once per match
  if(G.over&&!G.over.irpDone&&G.over.t>=1.0){G.over.irpDone=true;irpStart();}}

@@ -35,15 +35,15 @@ function updFighter(f,o,inp,dt){
  case 'whipped':{
   if(f.ctrWin>0){f.vx=0;f.ctrWin-=dt;
    // REVERSAL: press GRAB during the wind-up and whip them instead
-   if(inp.grabP&&f.canRev&&o.state==='whip'){f.ctrWin=0;startWhip(f,o,-f.whipDir,false);callout('REVERSAL!','#ffd35a',0.9);line('rev',f,o);crowdReact(f,false);G.hype=Math.min(1,G.hype+0.12);break;}
+   if(inp.grabP&&f.canRev&&o.state==='whip'){f.ctrWin=0;startWhip(f,o,-f.whipDir,false);callout('REVERSAL!','#ffd35a',0.9);tutEv('reverse',f);line('rev',f,o);crowdReact(f,false);G.hype=Math.min(1,G.hype+0.12);break;}
    if(f.ctrWin<=0){f.vx=f.whipDir*CTR.whipSpeed;f.dir=f.whipDir;}
    break;}
   const nx=f.x+f.vx*dt;const[wb0,wb1]=wbounds(f);if((nx>wb1&&f.vx>0)||(nx<wb0&&f.vx<0)){f.vx=-f.vx;f.dir=f.vx>0?1:-1;G.rope={side:f.vx<0?1:-1,t:0};ropeSfx();shake(2);
    if(!f.bounced){f.bounced=true;f.runWin=CTR.ropeAttack;}}
   // off the ropes: PUNCH = flying clothesline, KICK/JUMP = running dropkick
   if(f.runWin>0){f.runWin-=dt;
-   if(inp.punchP){f.runWin=0;setState(f,'runline');sfx('whoosh');break;}
-   if(inp.kickP||inp.jumpP){f.runWin=0;setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');break;}}
+   if(inp.punchP){f.runWin=0;setState(f,'runline');sfx('whoosh');tutEv('ropeattack',f);break;}
+   if(inp.kickP||inp.jumpP){f.runWin=0;setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('ropeattack',f);break;}}
   f.walkPh+=dt*22;if(f.t>1.9+CTR.whipReverse){f.vx=0;setState(f,'idle');}break;}
  case 'runline':f.walkPh+=dt*22;if(!f.hitDone)tryHit(f,o,ATK.runline);else f.vx*=Math.pow(0.05,dt);
   if(f.t>0.55){f.vx=0;setState(f,'idle');}break;
