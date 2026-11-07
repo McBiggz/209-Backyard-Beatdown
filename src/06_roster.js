@@ -1,0 +1,37 @@
+// ================= ROSTER =================
+// Edit these to match the real roster: names, colors, finishers, stats.
+const ROSTER=[
+ {id:'viral',name:'THE VIRAL VOICE',short:'Viral Voice',align:'face',skin:'#e8b894',trunks:'#141418',boots:'#111111',accent:'#1fb5b0',hair:'long',hairC:'#b8925a',beard:true,size:1.03,pow:1.05,spd:1.08,fin:'GOING VIRAL',finType:'scream',tag:'Loudest in the 209',tights:{stripe:'#1fb5b0',line:'#e8e8e8'},tats:true,elbow:'#111111',wrist:'#111111',loud:true},
+ {id:'dragon',name:'THE ANGRY DRAGON',short:'Angry Dragon',align:'face',skin:'#e0ac86',trunks:'#c0161d',boots:'#141414',accent:'#ff9a1f',hair:'short',hairC:'#2a1a12',goatee:true,loud:true,size:1.0,pow:1.05,spd:1.0,fin:"DRAGON'S FURY",finType:'kick',tag:'Head trainer'},
+ {id:'papi',name:'THE PUNJABI PAPI',short:'Punjabi Papi',align:'face',skin:'#b07a52',trunks:'#121212',boots:'#121212',accent:'#d4a73a',hair:'short',hairC:'#121010',size:1.0,pow:1.0,spd:1.12,fin:'PAPI DRIVER',finType:'slam',tag:'The champ',belt:true,trunkText:true,openShirt:{c:'#2b2e36',trim:'#40444f',long:true,emb:'#d4a73a'}},
+ {id:'mainevent',name:'MICHAEL SEAN',short:'Michael Sean',align:'face',skin:'#e2ab88',trunks:'#111111',boots:'#111111',accent:'#ff4fb0',hair:'bandana',hairC:'#2a1e18',bandana:'#e0307e',beard:true,size:1.12,pow:1.2,spd:0.98,fin:'THE MAIN EVENT',finType:'slam',tag:'"Main Event"',tights:{stripe:'#ff4fb0',line:'#ff4fb0',flames:true},bigTape:true},
+ {id:'razzle',name:'DAZZLE',short:'Dazzle',align:'face',skin:'#d9a27c',trunks:'#2a1e3a',boots:'#f4f4f4',accent:'#f4f4f4',hair:'long',hairC:'#5a3a22',size:0.97,pow:0.9,spd:1.25,fin:'RAZZLE DAZZLER',finType:'spin',tag:'Razzle Dazzle duo',sparkle:true,elbow:'#5a5f66',tights:{stripe:'#2a1e3a',line:'#2a1e3a',zebra:true},openShirt:{c:'#f2c94c',trim:'#ff7ab8',vest:true,fringe:true,tie:true}},
+ {id:'bigmf',name:'BIG MF',short:'Big MF',align:'face',skin:'#e2a687',trunks:'#161616',boots:'#161616',accent:'#e8e8e8',hair:'bald',hairC:'#8a5c3e',size:1.22,pow:1.3,spd:0.8,fin:'BIG MF BOMB',finType:'slam',tag:'Owner / trainer',beard:true,stache:true,eye:'#4a7ac0',openShirt:{c:'#2338c8',trim:'#d9a650',spots:true}},
+ {id:'asesino',name:'ASESINO',short:'Asesino',align:'heel',skin:'#b98058',trunks:'#c0161d',boots:'#141414',accent:'#ff4a3a',hair:'mullet',hairC:'#141212',stache:true,size:0.98,pow:1.1,spd:1.12,fin:'EL ASESINATO',finType:'slam',tag:'Amateur w/ attitude',belly:true,tee:'#161616',teeArt:true,camo:true,waistBelt:true,openShirt:{c:'#121212',trim:'#2c2c2c',long:true}},
+ {id:'spektro',name:'SPEKTRO BLACK',short:'Spektro Black',align:'face',skin:'#c08a64',trunks:'#111111',boots:'#111111',accent:'#c9ccd2',hair:'mask',hairC:'#121212',size:0.98,pow:0.95,spd:1.22,fin:'BLACK HOLE',finType:'spin',tag:'Lucha libre trainer',tee:'#141414',openShirt:{c:'#3a3c42',trim:'#e8e8e8',long:true,star:true}},
+ {id:'jojo',name:'JOJO SAVAGE',short:'JoJo Savage',align:'face',skin:'#a8714c',trunks:'#141414',boots:'#ececec',accent:'#2fa6e0',hair:'fade',hairC:'#121010',size:1.2,pow:1.25,spd:0.86,fin:'BEAST BOMB',finType:'slam',tag:'Mexican Beast',tee:'#141414',singlet:true,longShorts:true,knee:'#141414',armSleeve:true,smile:true,belly:true},
+ {id:'cdiddy',name:'C.DIDDY',short:'C.Diddy',align:'heel',skin:'#5a3a26',trunks:'#ff7a1f',boots:'#141414',accent:'#ffb347',hair:'fade',hairC:'#121010',beard:true,size:1.1,pow:1.15,spd:1.0,fin:'LIFE SENTENCE',finType:'slam',tag:'"Chucky"',jeans:'#ff7a1f',tee:'#ff7a1f',jumpsuit:true,chain:true,openShirt:{c:'#ff7a1f',trim:'#e0661a',long:true}},
+ {id:'cjdirt',name:'CJ DIRT',short:'CJ Dirt',align:'heel',skin:'#c48a62',trunks:'#141414',boots:'#141414',accent:'#c9a66b',hair:'long',hairC:'#1e1612',beard:true,stache:true,loud:true,tongue:true,size:1.15,pow:1.2,spd:0.92,fin:'DIRT NAP',finType:'slam',tag:'BMF Entertainment',wrist:'#141414',gloves:true,belly:true},
+ {id:'necrosis',name:'NECROSIS BLACK',short:'Necrosis Black',align:'heel',skin:'#b98058',trunks:'#141414',boots:'#141414',accent:'#d6283a',hair:'skull',hairC:'#1a1310',size:1.0,pow:1.0,spd:1.18,fin:'LA NECROSIS',finType:'spin',tag:'Lucha libre',jeans:'#5c6a62',noRip:true,wrist:'#d6283a'},
+ {id:'firebelly',name:'FIREBELLY',short:'Firebelly',align:'face',skin:'#b07a52',trunks:'#2a4fc0',boots:'#141414',accent:'#ff7a1f',hair:'hood',hairC:'#121010',hood:'#2a5fd0',oni:true,size:1.2,pow:1.25,spd:0.88,fin:'VOLCANO BOMB',finType:'slam',tag:'Giga Herrera',belly:true,tee:'#c8202a',gigaTop:true,beads:true,armWrap:true,longShorts:true},
+ {id:'maverick',name:'THE MAVERICK',short:'Maverick',align:'face',skin:'#e8b894',trunks:'#9aa0aa',boots:'#141414',accent:'#c8ccd4',hair:'short',hairC:'#3a2416',size:1.0,pow:1.0,spd:1.15,fin:'DANGER ZONE',finType:'spin',tag:'J Cruise'},
+ {id:'matsunaga',name:'MATSUNAGA',short:'Matsunaga',align:'face',skin:'#c48a62',trunks:'#141414',boots:'#141414',accent:'#4ab0ff',hair:'short',hairC:'#141010',size:0.86,pow:0.85,spd:1.32,fin:'FIRESTARTER',finType:'spin',tag:'Fiery underdog'},
+ {id:'zeke',name:'THE SAMOAN REAPER',short:'Zeke Taylor',align:'heel',skin:'#a8714c',trunks:'#141414',boots:'#141414',accent:'#ff8a1f',hair:'long',hairC:'#141010',stache:true,size:1.32,pow:1.4,spd:0.74,fin:'REAPER DROP',finType:'slam',tag:'Zeke Taylor',belly:true},
+ {id:'kliq',name:'209 KLIQ ENFORCER',short:'Kliq Enforcer',align:'heel',skin:'#c6926a',trunks:'#1c8f3a',boots:'#0b0b0b',accent:'#9cff57',hair:'mohawk',hairC:'#9cff57',size:1.08,pow:1.12,spd:0.95,fin:'KLIQ KRUSHER',finType:'slam',tag:'Hometown heels'},
+];
+const REF={id:'ref',skin:'#e0b48e',trunks:'#1a1a1a',boots:'#0e0e0e',accent:'#ffffff',hair:'bald',hairC:'#3a2a1a',size:0.9,shirt:true,pants:true};
+
+
+const CARDNAME={zeke:'ZEKE TAYLOR',matsunaga:'MATSUNAGA',maverick:'MAVERICK',firebelly:'FIREBELLY',viral:'VIRAL VOICE',dragon:'ANGRY DRAGON',papi:'PUNJABI PAPI',mainevent:'MICHAEL SEAN',necrosis:'NECROSIS',kliq:'KLIQ ENFORCER',spektro:'SPEKTRO BLACK',jojo:'JOJO SAVAGE'};
+const cardName=ch=>(CARDNAME[ch.id]||ch.short||ch.name).toUpperCase();
+
+const ATK={
+ punch:{dur:0.3,act:[0.08,0.18],reach:26,dmg:5,kb:60,stun:0.3,sfx:'punch',hs:0.04},
+ kick:{dur:0.44,act:[0.14,0.26],reach:32,dmg:8,kb:110,stun:0.38,sfx:'kick',hs:0.06},
+ stomp:{dur:0.5,act:[0.2,0.3],reach:34,dmg:4,kb:0,stun:0,sfx:'kick',hs:0.05,ground:true},
+ dropkick:{reach:30,dmg:11,kb:120,sfx:'kick',hs:0.08,knock:true,air:true},
+};
+const HITTABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp','jump','dropkick','perch','whipped','whip']);
+const GRABBABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp']);
+function basePose(){return{lean:0.08,af:[0.55,1.9],ab:[0.3,2.0],lf:[0.3,-0.5],lb:[-0.22,0.12],rot:0,dy:0,plant:true,hipY:-52};}
+

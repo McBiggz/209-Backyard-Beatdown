@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="theme-color" content="#0a0506"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="icon-192.png">
+<title>209 Dragon's Den: BMF Ranch Tester</title>
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
+#tc{position:fixed;inset:0;display:none;pointer-events:none}
+#tc.on{display:block}
+#dpad{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));width:150px;height:150px;border-radius:50%;background:rgba(20,8,10,.35);border:2px solid rgba(255,211,90,.55);pointer-events:auto;touch-action:none}
+#dpad i{position:absolute;width:0;height:0;border:12px solid transparent;opacity:.75}
+#dpad .du{left:63px;top:8px;border-bottom-color:#ffd35a}#dpad .dd{left:63px;bottom:8px;border-top-color:#ffd35a}#dpad .dl{top:63px;left:8px;border-right-color:#ffd35a}#dpad .dr{top:63px;right:8px;border-left-color:#ffd35a}
+#knob{position:absolute;left:50px;top:50px;width:50px;height:50px;border-radius:50%;background:rgba(255,211,90,.35);border:2px solid rgba(255,211,90,.8)}
+#acts{position:absolute;right:calc(10px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));width:190px;height:170px;pointer-events:none}
+#acts button,#pausebtn{position:absolute;pointer-events:auto;touch-action:none;border-radius:50%;border:2px solid rgba(255,211,90,.8);background:rgba(20,8,10,.45);color:#ffd35a;font:bold 11px monospace;letter-spacing:1px}
+#acts button{width:64px;height:64px}
+#acts button.dn,#pausebtn.dn{background:rgba(200,30,30,.75);color:#fff}
+#acts .bp{left:0;top:62px}#acts .bk{left:64px;top:106px}#acts .bg{left:126px;top:62px}#acts .bj{left:64px;top:18px}
+#acts .bf{left:126px;top:-8px;width:56px;height:56px;border-color:#ff8a1f;color:#ff8a1f;font-size:10px}
+#pausebtn{left:50%;top:calc(6px + env(safe-area-inset-top));transform:translateX(-50%);width:44px;height:30px;border-radius:8px;font-size:13px}
+#fsbtn{position:fixed;right:calc(8px + env(safe-area-inset-right));top:calc(8px + env(safe-area-inset-top));z-index:8;display:none;padding:8px 12px;border-radius:8px;border:2px solid #ffd35a;background:rgba(20,8,10,.75);color:#ffd35a;font:bold 12px monospace}
+body.fs-ok #fsbtn{display:block}
+#rot{position:fixed;inset:0;display:none;z-index:9;background:#0a0506;color:#ffd35a;font:bold 18px monospace;text-align:center;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+#rot .ph{width:46px;height:80px;border:4px solid #ffd35a;border-radius:10px;animation:spin 1.6s ease-in-out infinite}
+@keyframes spin{0%,20%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
+@media (orientation:portrait){body.touch #rot{display:flex}}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="tc">
+ <div id="dpad"><i class="du"></i><i class="dd"></i><i class="dl"></i><i class="dr"></i><div id="knob"></div></div>
+ <div id="acts"><button class="bp" data-k="KeyF">PUNCH</button><button class="bk" data-k="KeyG">KICK</button><button class="bg" data-k="KeyH">GRAB</button><button class="bj" data-k="Space">JUMP</button><button class="bf" data-k="KeyR">FINISH</button></div>
+ <button id="pausebtn" data-k="Escape">II</button>
+</div>
+<button id="fsbtn">⛶ FULL SCREEN</button>
+<div id="rot"><div class="ph"></div><div>TURN YOUR PHONE SIDEWAYS</div><div style="font-size:12px;color:#bfae98">209 DRAGON'S DEN: BACKYARD BRAWL</div></div>

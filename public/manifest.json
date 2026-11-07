@@ -1,0 +1,21 @@
+{
+ "name": "209 Dragon's Den: Backyard Brawl",
+ "short_name": "Dragon's Den",
+ "display": "fullscreen",
+ "orientation": "landscape",
+ "background_color": "#0a0506",
+ "theme_color": "#0a0506",
+ "start_url": ".",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
