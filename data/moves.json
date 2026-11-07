@@ -1,0 +1,54 @@
+{
+ "_readme": "Strike tuning. dur/act are seconds (act = window where the hit lands). reach in pixels, dmg in HP, kb = knockback, stun seconds, hs = hit-stop seconds.",
+ "strikes": {
+  "punch": {
+   "dur": 0.3,
+   "act": [
+    0.08,
+    0.18
+   ],
+   "reach": 26,
+   "dmg": 5,
+   "kb": 60,
+   "stun": 0.3,
+   "sfx": "punch",
+   "hs": 0.04
+  },
+  "kick": {
+   "dur": 0.44,
+   "act": [
+    0.14,
+    0.26
+   ],
+   "reach": 32,
+   "dmg": 8,
+   "kb": 110,
+   "stun": 0.38,
+   "sfx": "kick",
+   "hs": 0.06
+  },
+  "stomp": {
+   "dur": 0.5,
+   "act": [
+    0.2,
+    0.3
+   ],
+   "reach": 34,
+   "dmg": 4,
+   "kb": 0,
+   "stun": 0,
+   "sfx": "kick",
+   "hs": 0.05,
+   "ground": true
+  },
+  "dropkick": {
+   "reach": 30,
+   "dmg": 11,
+   "kb": 120,
+   "sfx": "kick",
+   "hs": 0.08,
+   "knock": true,
+   "air": true
+  }
+ }
+}
