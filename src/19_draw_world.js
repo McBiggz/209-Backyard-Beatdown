@@ -13,7 +13,7 @@ function drawFighters(){
  const front=e=>wide()&&(e.z>=180||(!e.ref&&e.f.state==='perch'));let postsDone=!wide();
  const drawPosts=()=>{postsDone=true;for(const k in POSTS){const p=POSTS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(e===null){drawPosts();continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
-  const f=e.f,ds=depthS(f.z);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds,f.dir*(f.turn||1),ds);}
+  const f=e.f,ds=depthS(f.z);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds,f.dir*(f.turn||1),ds*(f.ch.drawScale||1));}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}

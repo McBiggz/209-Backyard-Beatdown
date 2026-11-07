@@ -1,5 +1,5 @@
 {
- "_readme": "One entry per wrestler. id must match the sprite file in assets/sprites/<id>.webp. pow/spd/size are multipliers (1.0 = average). fin = finisher name, finType = scream|kick|slam|...",
+ "_readme": "One entry per wrestler. id must match the sprite file in assets/sprites/<id>.webp. pow/spd/size are multipliers (1.0 = average). fin = finisher name, finType = scream|kick|slam|... drawScale (optional) makes a wrestler's art bigger or smaller on screen without changing their stats (1.0 = as drawn).",
  "wrestlers": [
   {
    "id": "viral",
@@ -26,7 +26,8 @@
    "tats": true,
    "elbow": "#111111",
    "wrist": "#111111",
-   "loud": true
+   "loud": true,
+   "drawScale": 1.045
   },
   {
    "id": "dragon",

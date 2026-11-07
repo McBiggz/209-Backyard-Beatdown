@@ -7,7 +7,7 @@ function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.me
  if(go){G.mode=G.menu;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
 function drawTitle(){drawArena();drawRingBack();
  if(!TITLE_F){TITLE_F=[makeFighter(ROSTER[0],-120,40,1,false,0),makeFighter(ROSTER.find(c=>c.id==='papi'),120,40,-1,false,1)];TITLE_F.forEach(f=>{f.set=SETS[f.ch.id];f.state='win';});}
- for(const f of TITLE_F){if(wide()){G.cam=0;f.x=f.idx?205:110;f.z=140;}else{f.x=f.idx?120:-120;f.z=40;}shadowOf(f,f.ch.size);drawSpr(f.set,'win'+(Math.floor(G.t*2.5+f.idx)%2),PX(f.x,f.z),PY(f.z),f.dir);}
+ for(const f of TITLE_F){if(wide()){G.cam=0;f.x=f.idx?205:110;f.z=140;}else{f.x=f.idx?120:-120;f.z=40;}shadowOf(f,f.ch.size);drawSpr(f.set,'win'+(Math.floor(G.t*2.5+f.idx)%2),PX(f.x,f.z),PY(f.z),f.dir,f.ch.drawScale||1);}
  drawRingFront();R(0,0,W,H,'rgba(6,2,3,0.6)');
  logo('T',192,78+(Math.floor(G.t*2)%2));
  R(122,140,140,16,'#8f0f14');R(122,140,140,1,'#ffd35a');R(122,155,140,1,'#ffd35a');T('BACKYARD BRAWL',192,143,2,'#ffd35a','center','#2a0405');
@@ -134,7 +134,7 @@ function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;}
 function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
- if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5);
+ if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
  if(E.t>0.4){R(0,170,W,30,'rgba(6,2,3,0.72)');T(f.ch.name,192,176,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,190,1,'#bfae98','center',null);}
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',W-4,206,1,'#7a6a5a','right',null);}
 function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance.phase!=='show'){R(0,207,W,9,'#0a0506');T('ENTRANCE • '+G.f[[1,0][Math.min(G.entrance.i,1)]].ch.name,192,209,1,'#ffd35a','center',null);}return;}drawHUD();
