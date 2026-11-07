@@ -3,13 +3,22 @@ const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'
 function damage(o,dmg,f){o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6);o.meter=Math.min(100,o.meter+dmg*0.7);G.hype=Math.min(1,G.hype+dmg/50);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
-function setState(f,s){f.state=s;f.t=0;f.hitDone=false;}
+function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
+// BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
+// an attack is coming at f from o, up close
+const incoming=(f,o)=>['punch','kick','runline','dropkick'].includes(o.state)&&Math.abs(o.x-f.x)<64*o.ch.size&&Math.abs(o.z-f.z)<14&&(!wide()||f.out===o.out);
+const holdsAway=(f,o,inp)=>o.x<f.x?inp.right:inp.left;
+const canBlock=(o,f)=>['idle','walk','block'].includes(o.state)&&o.y<2&&o.inp&&(f.x<o.x?o.inp.right:o.inp.left);
 function tryHit(f,o,A){
  const tx=A.ground?bodyX(o):o.x,dx=(tx-f.x)*f.dir,reach=A.reach*f.ch.size;
  if(dx<-8||dx>reach)return;if(Math.abs(o.z-f.z)>(A.ground?12:10))return;
  if(A.ground){if(o.state!=='down')return;}
  else{if(!HITTABLE.has(o.state))return;if(o.state!=='perch'&&Math.abs(o.y-f.y)>(A.air?40:22))return;}
  if(wide()&&f.out!==o.out)return;
+ if(!A.ground&&canBlock(o,f)){f.hitDone=true;const chip=A.dmg*f.ch.pow*CTR.block.chip;o.hp=Math.max(1,o.hp-chip);f.meter=Math.min(100,f.meter+chip);
+  setState(o,'block');o.blockStun=CTR.block.stun+(A.knock?0.15:0);o.vx=f.dir*A.kb*CTR.block.push;o.vz=0;o.combo=0;
+  if(f.state==='runline')f.vx*=0.3;sfx('block');G.hitStop=0.03;part(PX(o.x,o.z)-f.dir*10,PY(o.z)-o.y-40*o.ch.size,-f.dir*30,-20,0.25,'#9fd4ff',2);
+  if(o.blockN=(o.blockN||0)+1,o.blockN%3===1)popOn(o,'BLOCK','#9fd4ff');return;}
  f.hitDone=true;const whipped=o.state==='whipped';
  const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);

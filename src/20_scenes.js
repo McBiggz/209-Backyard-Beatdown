@@ -67,6 +67,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
 function beginFight(){const[a,b]=G.f;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
+ G.t=0;G.rope={side:0,t:9}; // the match clock starts at zero for everyone, so online players stay in step
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
@@ -106,7 +107,7 @@ function updFight(dt){
  // this step's inputs: from the network / replay tape if there is one, otherwise from the controls and CPU
  let inp=G.stepInp?[unpackInp(G.stepInp[0]),unpackInp(G.stepInp[1])]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
- G.curInp=[packInp(inp[0]),packInp(inp[1])];
+ G.curInp=[packInp(inp[0]),packInp(inp[1])];G.f[0].inp=inp[0];G.f[1].inp=inp[1];
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
  updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);
@@ -139,7 +140,7 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
  if(G.paused){R(0,0,W,H,'rgba(6,2,3,0.8)');T('PAUSED',192,50,4,'#ffd35a','center','#5a0608');
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
-  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('WHIPPED? HIT GRAB WHEN THE ICON FLASHES TO REVERSE IT',192,118,1,'#ffd35a','center',null);T('OFF THE ROPES: PUNCH = FLYING CLOTHESLINE · KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
+  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('HOLD AWAY FROM YOUR OPPONENT TO BLOCK • WHIPPED? GRAB ON THE ICON TO REVERSE',192,118,1,'#ffd35a','center',null);T('OFF THE ROPES: PUNCH = FLYING CLOTHESLINE · KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
   [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.flash>0){R(0,0,W,H,`rgba(255,250,235,${G.flash.toFixed(2)})`);}}
 

@@ -9,6 +9,7 @@ function updFighter(f,o,inp,dt){
  switch(S){
  case 'idle':case 'walk':{
   if(Math.abs(dx)>2)f.dir=dx>0?1:-1;
+  if(f.y<2&&holdsAway(f,o,inp)&&incoming(f,o)){setState(f,'block');f.blockStun=0.12;f.vx=f.vz=0;break;}
   const mx=(inp.right?1:0)-(inp.left?1:0),mz=(inp.down?1:0)-(inp.up?1:0);
   f.vx=mx*90*f.ch.spd;f.vz=mz*52*f.ch.spd;f.state=(mx||mz)?'walk':'idle';if(mx||mz)f.walkPh+=dt*11;
   const nearBody=Math.abs(bodyX(o)-f.x)<36&&Math.abs(o.z-f.z)<12;
@@ -29,6 +30,7 @@ function updFighter(f,o,inp,dt){
   if(f.y<=0){f.y=0;f.vx=f.vz=0;if(f.state==='dropkick'){setState(f,'down');f.downDur=0.5;sfx('slam');}else setState(f,'idle');dust(sx_(f),PY(f.z));}
   break;}
  case 'hit':f.vx*=Math.pow(0.02,dt);if(f.t>=f.stun)setState(f,'idle');break;
+ case 'block':f.vx*=Math.pow(0.02,dt);f.vz=0;if(holdsAway(f,o,inp)&&incoming(f,o))f.blockStun=Math.max(f.blockStun,f.t+0.12);if(f.t>=f.blockStun)setState(f,'idle');break;
  case 'whiff':case 'whip':f.vx=f.vz=0;if(f.t>(S==='whip'?0.4+CTR.whipReverse:0.35))setState(f,'idle');break;
  case 'whipped':{
   if(f.ctrWin>0){f.vx=0;f.ctrWin-=dt;

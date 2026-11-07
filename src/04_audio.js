@@ -24,6 +24,7 @@ function sfx(n){if(!AC||muted||G.resim)return;switch(n){
  case 'kick':noise(0.12,1300,1,0.7);tone(120,0.12,0.45,'triangle',45);break;
  case 'slam':noise(0.4,380,0.7,0.95);tone(75,0.45,0.8,'sine',32);break;
  case 'grab':noise(0.1,700,1,0.3,'bandpass');break;
+ case 'block':noise(0.05,3200,1.5,0.35,'bandpass');tone(220,0.05,0.2,'square',140);break;
  case 'whoosh':noise(0.3,900,2,0.35,'bandpass',0.08);break;
  case 'fire':noise(0.7,700,0.8,0.5,'lowpass',0.05);tone(90,0.6,0.25,'sawtooth',40);break;
  case 'count':noise(0.06,2600,2,0.7);tone(320,0.05,0.25,'square');break;

@@ -11,6 +11,8 @@ function aiInput(f,o,dt){
    if(coming&&ad<90&&a.runDo<0.55)inp[a.runDo<0.3?'punchP':'kickP']=true;}else if(f.bounced===false)a.runDo=undefined;
   return inp;}
  if(!['idle','walk'].includes(f.state))return inp;
+ if(['punch','kick','runline'].includes(o.state)&&ad<70&&az<12){if(a.blkSid!==o.sid){a.blkSid=o.sid;a.blkDo=arand()<0.4;}
+  if(a.blkDo){if(dx>0)inp.left=true;else inp.right=true;return inp;}}
  if(wide()){
   if(f.out&&(!o.out||G.co.n>=5)){a.goal=null;
    if(f.z<186){mv({x:0,z:1});return inp;}
