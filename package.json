@@ -1,18 +1,18 @@
 {
-  "name": "ddgame",
+  "name": "209-backyard-beatdown",
   "version": "1.0.0",
-  "description": "A 16-bit wrestling game starring the roster of the 209 Dragon's Den.",
-  "main": "index.js",
+  "description": "209 Dragon's Den: Backyard Brawl, a 16-bit wrestling game",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.mjs",
+    "test": "tests/serve_and.sh python3 tests/determinism.py http://127.0.0.1:8766/index.html"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "private": true,
+  "devDependencies": {
     "peer": "^1.0.2",
     "peerjs": "^1.5.5"
   }

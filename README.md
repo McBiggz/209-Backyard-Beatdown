@@ -23,3 +23,11 @@ Open `dist/index.html` in a browser to play.
 - **Inputs:** keyboard, touch and CPU all become 9 buttons per step, packed into one number (`packInp`). Every match records `G.rec` = {seed, wrestlers, cpu flags, inputs}.
 - **Replay / determinism test:** `python3 tests/determinism.py http://127.0.0.1:PORT/index.html` against `dist/` — plays seeded CPU matches twice, replays them from the tape only, and checks the state hashes match.
 - **Data:** wrestlers, referee and strike tuning live in `data/roster.json` and `data/moves.json`; the build bakes them in.
+
+## Hosting (Cloudflare Pages)
+Cloudflare builds the site from this repo on every push to `main`.
+- Build command: `node build.mjs`
+- Build output directory: `dist`
+- No packages need installing to build; `node_modules` is only for the local tests.
+
+Online play uses the free public PeerJS server for matchmaking. To test against a local server instead, open the game with `?peerhost=127.0.0.1&peerport=9000` and run `node tests/peer_server.cjs`.
