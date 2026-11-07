@@ -15,7 +15,9 @@ js = js.replace(/__ASSET\(([^)]+)\)__/g, (_, p) => {
   const ext = p.split('.').pop();
   return `data:${mime[ext]};base64,` + fs.readFileSync('assets/' + p).toString('base64');
 });
-const page = fs.readFileSync('src/page_head.html', 'utf8') + '<script>' + js + '</script>' + fs.readFileSync('src/page_tail.html', 'utf8');
+// third-party libraries (vendor/*.js) go in before the game, e.g. PeerJS for online play
+const vendor = fs.existsSync('vendor') ? fs.readdirSync('vendor').filter(f => f.endsWith('.js')).sort().map(f => '<script>' + fs.readFileSync('vendor/' + f, 'utf8') + '</script>').join('') : '';
+const page = fs.readFileSync('src/page_head.html', 'utf8') + vendor + '<script>' + js + '</script>' + fs.readFileSync('src/page_tail.html', 'utf8');
 fs.mkdirSync('dist', { recursive: true });
 fs.writeFileSync('dist/index.html', page);
 for (const f of ['manifest.json', 'icon-192.png', 'icon-512.png']) if (fs.existsSync('public/' + f)) fs.copyFileSync('public/' + f, 'dist/' + f);

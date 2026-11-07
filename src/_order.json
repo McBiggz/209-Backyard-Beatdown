@@ -21,5 +21,6 @@
  "src/19_draw_world.js",
  "src/20_scenes.js",
  "src/21_loading.js",
+ "src/21_net.js",
  "src/22_loop.js"
 ]

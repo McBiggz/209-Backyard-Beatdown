@@ -13,17 +13,18 @@ const STEP=1/60,MAX_STEPS=5;
 let last=performance.now(),acc=0;G.step=0;
 function simStep(){
  // online: wait until both players' inputs for this fight step have arrived (lockstep)
- if(G.net&&G.scene==='fight'&&!G.net.ready(G.fstep))return false;
+ if(G.net&&!G.resim&&G.scene==='fight'&&!G.net.ready(G.fstep))return false;
  G.t+=STEP;G.step++;
  const inFight=G.scene==='fight',rec=G.rec;
- if(inFight){G.curInp=null;G.stepInp=G.net?G.net.take(G.fstep):G.replay?G.replay.inp[G.fstep]||[0,0]:null;}
- switch(G.scene){case 'loading':updLoading();break;case 'title':updTitle();break;case 'select':updSelect();break;
+ if(inFight){G.curInp=null;G.stepInp=G.replay?G.replay.inp[G.fstep]||[0,0]:G.net?G.net.take(G.fstep):null;}
+ switch(G.scene){case 'loading':updLoading();break;case 'title':updTitle();break;case 'lobby':break;case 'select':updSelect();break;
   case 'intro':G.introT+=STEP;if(G.introT>2.8||(G.introT>0.4&&(confirmP()||clickQ)))beginFight();break;case 'fight':updFight(STEP);break;}
  // one input pair per fight step goes on the tape (steps where nobody could act record 0,0)
  if(inFight&&G.rec===rec&&rec){rec.inp.push(G.curInp||[0,0]);G.fstep++;if(G.net)G.net.afterStep(G.fstep);}
  G.stepInp=null;
  updFx(STEP);
  // a tap/press is consumed by the first step that sees it
+ if(NET.st==='lost')updNetLost();
  for(const k in pressed)delete pressed[k];clickQ=null;
 }
 function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
@@ -33,8 +34,8 @@ function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
   ctx=SCR;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=false;
   const sx=G.shake?Math.round(rnd(-1,1)*G.shake):0,sy=G.shake?Math.round(rnd(-1,1)*G.shake):0;
   ctx.save();ctx.translate(sx,sy);
-  if(G.scene==='loading')drawLoading();else if(G.scene==='title')drawTitle();else if(G.scene==='select')drawSelect();else if(G.scene==='intro')drawIntro();else drawFight();
-  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();
+  if(G.scene==='loading')drawLoading();else if(G.scene==='title'||G.scene==='lobby')drawTitle();else if(G.scene==='select')drawSelect();else if(G.scene==='intro')drawIntro();else drawFight();
+  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawNetHUD();
  }catch(e){console.error(e);}
  fsUI();tc.classList.toggle('on',coarse&&G.scene==='fight'&&!G.paused&&!(G.over&&G.over.t>1.8));
  requestAnimationFrame(frame);}

@@ -1,8 +1,9 @@
 // ================= SCENES =================
-const TITLE_BTNS=[[122,170,140,13],[122,186,140,13]];
+const TITLE_BTNS=[[122,164,140,12],[122,178,140,12],[122,192,140,12]];
 let TITLE_F=null;
-function updTitle(){if(hit(['KeyW','ArrowUp']))G.menu=0;if(hit(['KeyS','ArrowDown']))G.menu=1;let go=confirmP();
+function updTitle(){if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(2,G.menu+1);let go=confirmP();
  if(clickQ)TITLE_BTNS.forEach((r,i)=>{if(inRect(clickQ,r)){G.menu=i;go=true;}});
+ if(go&&G.menu===2){G.scene='lobby';netUI.show(true);sfx('punch');return;}
  if(go){G.mode=G.menu;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
 function drawTitle(){drawArena();drawRingBack();
  if(!TITLE_F){TITLE_F=[makeFighter(ROSTER[0],-120,40,1,false,0),makeFighter(ROSTER.find(c=>c.id==='papi'),120,40,-1,false,1)];TITLE_F.forEach(f=>{f.set=SETS[f.ch.id];f.state='win';});}
@@ -10,8 +11,8 @@ function drawTitle(){drawArena();drawRingBack();
  drawRingFront();R(0,0,W,H,'rgba(6,2,3,0.6)');
  logo('T',192,78+(Math.floor(G.t*2)%2));
  R(122,146,140,14,'#8f0f14');R(122,146,140,1,'#ffd35a');R(122,159,140,1,'#ffd35a');T('BACKYARD BRAWL',192,149,2,'#ffd35a','center','#2a0405');
- ['1 PLAYER VS CPU','2 PLAYERS'].forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,192,r[1]+4,1,on?'#fff':'#bfae98','center',null);});
- T(coarse?'TAP A MODE':'W/S CHOOSE  •  ENTER START',192,204,1,'#bfae98','center','#000');}
+ ['1 PLAYER VS CPU','2 PLAYERS (SAME SCREEN)','PLAY ONLINE'].forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,192,r[1]+4,1,on?'#fff':'#bfae98','center',null);});
+ T(coarse?'TAP A MODE':'W/S CHOOSE  •  ENTER START',192,208,1,'#bfae98','center','#000');}
 const CARD={x:4,y:24,w:52,h:78,gap:2,cols:7};
 const PER=14,pageOf=i=>Math.floor(i/PER),PAGES=()=>Math.ceil(ROSTER.length/PER);
 const PAGE_BTN=[226,3,66,11];
@@ -19,7 +20,8 @@ const cardRect=i=>(i=i%PER,[CARD.x+(i%CARD.cols)*(CARD.w+CARD.gap),CARD.y+Math.f
 const vmove=(c,d,n)=>{const v=c+d*CARD.cols;if(pageOf(v)!==pageOf(c))return c;return v>=0&&v<n?v:c;};
 const STAGE_BTN=[296,3,84,11];
 function updSelect(){const S=G.sel,n=ROSTER.length;
- if(hit(['KeyT','Tab'])||(clickQ&&inRect(clickQ,STAGE_BTN))){G.stage=(G.stage+1)%4;G.cam=0;sfx('punch');clickQ=null;}
+ if(G.mode===2&&hit(['Escape'])){NET.leave();G.scene='title';return;}
+ if((G.mode!==2||NET.role==='host')&&(hit(['KeyT','Tab'])||(clickQ&&inRect(clickQ,STAGE_BTN)))){G.stage=(G.stage+1)%4;G.cam=0;sfx('punch');clickQ=null;}
  if(hit(['Escape'])){if(S.stage>0&&G.mode===0){S.stage=0;S.picks[0]=null;}else G.scene='title';return;}
  const lockIn=w=>{S.picks[w]=S.c[w];sfx('kick');};
  if(S.page==null)S.page=0;
@@ -27,6 +29,9 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
  if(hit(['KeyQ','KeyE','PageUp','PageDown','BracketLeft','BracketRight']))flip(hit(['KeyQ','PageUp','BracketLeft'])?-1:1);
  if(clickQ&&inRect(clickQ,PAGE_BTN)){flip(clickQ.x<PAGE_BTN[0]+PAGE_BTN[2]/2?-1:1);clickQ=null;}
  const nav=(w,L,Rr,U,D)=>{const o=S.c[w];if(hit(L))S.c[w]=(S.c[w]+n-1)%n;if(hit(Rr))S.c[w]=(S.c[w]+1)%n;if(hit(U))S.c[w]=vmove(S.c[w],-1,n);if(hit(D))S.c[w]=vmove(S.c[w],1,n);if(S.c[w]!==o)S.page=pageOf(S.c[w]);};
+ if(G.mode===2){if(S.picks[0]==null){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
+   let lk=confirmP();if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[0]=i;lk=true;break;}
+   if(lk){lockIn(0);S.stage=1;NET.pick(S.c[0]);}}return;}
  if(G.mode===0){const w=S.stage;nav(w,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   if(confirmP()||hit(['KeyJ'])){lockIn(w);S.stage++;if(S.stage<2)S.page=pageOf(S.c[1]);}
   if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[w]=i;lockIn(w);S.stage++;break;}
@@ -37,7 +42,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
   if(S.picks[0]!=null&&S.picks[1]!=null)startIntro();}}
 function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
  T('CHOOSE YOUR WRESTLER',114,4,2,'#ffd35a','center','#5a0608');
- T(G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,'#e9dcc6','center',null);
+ T(G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
  BOX(...STAGE_BTN,'#8f0f14','#ffd35a');T('LEVEL: '+['THE DEN','OUTDOOR','BMF RANCH','RANCH: FULL'][G.stage],STAGE_BTN[0]+42,STAGE_BTN[1]+3,1,'#fff','center',null);
  if(S.page==null)S.page=0;
  {const P=PAGES();BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
@@ -46,11 +51,11 @@ function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
   ctx.save();ctx.beginPath();ctx.rect(x,y,w,h-9);ctx.clip();const st=SETS[ch.id],fy=Math.max(y+h-12,y+4+(AY-(st.idle0_top||20)));ELL(x+w/2,fy,12,2,'rgba(0,0,0,0.35)');drawSpr(st,'idle'+(Math.floor(G.t*1.6+i)%2),x+w/2,fy,1);ctx.restore();
   R(x,y+h-9,w,9,'#0a0506');T(cardName(ch),x+w/2,y+h-7,1,'#fff','center',null);
   R(x+1,y+1,ch.align==='heel'?17:17,7,ch.align==='heel'?'#1c8f3a':'#8f0f14');T(ch.align==='heel'?'HEEL':'FACE',x+2,y+2,1,'#fff','left',null);
-  for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode===0&&S.stage!==who&&S.picks[who]==null)continue;
+  for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode===2&&who===1)continue;if(G.mode===0&&S.stage!==who&&S.picks[who]==null)continue;
    const isC=S.picks[who]==null?S.c[who]===i:S.picks[who]===i;if(!isC)continue;const col=who===0?'#ff4a3a':'#3a8bff',lk=S.picks[who]===i;
    const th=lk?2:1;R(x-th+who,y-th+who,w+th*2-who*2,th,col);R(x-th+who,y+h-who,w+th*2-who*2,th,col);R(x-th+who,y+who,th,h-who*2,col);R(x+w-who,y+who,th,h-who*2,col);
    const lbl=(who===0?'P1':(G.mode===0?'CPU':'P2'))+(lk?'✓':'');R(x+w-TW(lbl)-3,y+1+who*8,TW(lbl)+2,7,col);T(lbl,x+w-2,y+2+who*8,1,'#fff','right',null);}});
- for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;const ch=ROSTER[S.picks[who]!=null?S.picks[who]:S.c[who]],px=who?194:4,py=184;
+ for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode===2&&who===1){BOX(194,184,186,22,'#140a0c','#3a8bff');T(NET.theirPick!=null?'OPPONENT IS LOCKED IN':'OPPONENT IS PICKING...',287,192,1,'#bfae98','center',null);continue;}const ch=ROSTER[S.picks[who]!=null?S.picks[who]:S.c[who]],px=who?194:4,py=184;
   BOX(px,py,186,22,'#140a0c',who?'#3a8bff':'#ff4a3a');T(ch.name,px+3,py+3,1,'#fff','left',null);T(ch.tag+' • '+(ch.align==='heel'?'HEEL':'FACE'),px+3,py+10,1,'#bfae98','left',null);
   [['POW',ch.pow/1.3],['SPD',ch.spd/1.25],['SIZ',ch.size/1.22]].forEach(([l,v],j)=>{const xx=px+112,yy=py+3+j*6;T(l,xx,yy,1,'#8a7a66','left',null);R(xx+14,yy,56,4,'#2a1a1c');R(xx+14,yy,Math.round(56*v),4,'#ffd35a');});
   T(ch.fin,px+3,py+16,1,ch.accent==='#141414'?'#fff':ch.accent,'left',null);}
@@ -61,7 +66,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  G.scene='intro';G.introT=0;sfx('roar');}
 function beginFight(){const[a,b]=G.f;
  // every match gets a seed; a replay re-uses the recorded one
- const seed=G.replay?G.replay.seed:G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
+ const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
@@ -130,7 +135,7 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
  if(wide()&&G.co.n>0&&!G.over){BOX(158,30,68,13,'#140a0c','#ffd35a');T('COUNT '+G.co.n,192,34,1,G.co.n>=7?'#ff4a3a':'#fff','center',null);}
  if(G.over&&G.over.t>1.8){const w=G.over.w||{ch:{name:'NO CONTEST'}};R(0,0,W,H,'rgba(6,2,3,0.65)');T('WINNER',192,62,1,'#bfae98','center',null);
   T(w.ch.name,192,74,TW(w.ch.name,3)>360?2:3,'#ffd35a','center','#5a0608');T(G.over.how&&G.over.how!=='PINFALL'?G.over.how:'BY PINFALL • 1-2-3',192,98,1,'#e9dcc6','center',null);
-  ['REMATCH (ENTER)','CHANGE WRESTLERS (ESC)','MAIN MENU (Q)'].forEach((s,i)=>{const r=OVER_BTNS[i];BOX(...r,i?'#140a0c':'#8f0f14','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
+  ['REMATCH (ENTER)','CHANGE WRESTLERS (ESC)',G.net?'LEAVE ONLINE (Q)':'MAIN MENU (Q)'].forEach((s,i)=>{const r=OVER_BTNS[i];BOX(...r,i?'#140a0c':'#8f0f14','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.paused){R(0,0,W,H,'rgba(6,2,3,0.8)');T('PAUSED',192,50,4,'#ffd35a','center','#5a0608');
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
