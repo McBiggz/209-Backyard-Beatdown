@@ -1,0 +1,9 @@
+// Cloudflare Worker settings: serve the built game (dist/) as a static site.
+// Cloudflare runs `node build.mjs` first, then `npx wrangler deploy`.
+{
+  "name": "209-backyard-beatdown",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}

@@ -24,10 +24,10 @@ Open `dist/index.html` in a browser to play.
 - **Replay / determinism test:** `python3 tests/determinism.py http://127.0.0.1:PORT/index.html` against `dist/` — plays seeded CPU matches twice, replays them from the tape only, and checks the state hashes match.
 - **Data:** wrestlers, referee and strike tuning live in `data/roster.json` and `data/moves.json`; the build bakes them in.
 
-## Hosting (Cloudflare Pages)
-Cloudflare builds the site from this repo on every push to `main`.
+## Hosting (Cloudflare Worker with static assets)
+Cloudflare builds the site from this repo on every push to `main` (settings in `wrangler.jsonc`).
 - Build command: `node build.mjs`
-- Build output directory: `dist`
+- Deploy command: `npx wrangler deploy`
 - No packages need installing to build; `node_modules` is only for the local tests.
 
 Online play uses the free public PeerJS server for matchmaking. To test against a local server instead, open the game with `?peerhost=127.0.0.1&peerport=9000` and run `node tests/peer_server.cjs`.
