@@ -74,7 +74,7 @@ const NET={
  ready(s){const ok=this.local.has(s)&&this.remote.has(s);if(!ok)this.stallT+=1/60;else this.stallT=0;return ok;},
  take(s){const a=this.local.get(s),b=this.remote.get(s);const pair=this.me===0?[a,b]:[b,a];this.hist.set(s,pair);
   this.local.delete(s);this.remote.delete(s);if(this.hist.size>900)this.hist.delete(s-900);return pair;},
- afterStep(fs){if(G.resim)return;
+ afterStep(fs){if(G.resim||G.irp)return;
   // schedule my buttons myD steps ahead. If the delay grew, fill the gap with the same buttons; if it shrank, wait.
   const s=fs-1+this.myD,v=packInp(humanInput(0));
   if(s>this.lastSent){const from=this.lastSent+1,arr=[];for(let k=from;k<=s;k++){this.local.set(k,v);arr.push(v);}this.lastSent=s;this.send({t:'i',m:this.m,s:from,v:arr});}

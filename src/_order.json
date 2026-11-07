@@ -22,5 +22,6 @@
  "src/20_scenes.js",
  "src/21_loading.js",
  "src/21_net.js",
+ "src/21_replay.js",
  "src/22_loop.js"
 ]

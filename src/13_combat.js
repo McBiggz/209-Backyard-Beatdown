@@ -2,7 +2,7 @@
 const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'&&o.finBy==='slam')?o.x-o.dir*24*o.ch.size:o.x;
 function damage(o,dmg,f){o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6);o.meter=Math.min(100,o.meter+dmg*0.7);G.hype=Math.min(1,G.hype+dmg/50);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
-function knock(o,vx,vy,long){setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
+function knock(o,vx,vy,long){irpMark('big');setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
 // BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
 // an attack is coming at f from o, up close
@@ -50,7 +50,7 @@ function updGrapple(f,o){
 function tryFin(f,o){
  if(f.meter<100){popOn(f,'NO MOMENTUM','#bbb');return;}
  if(Math.abs(o.x-f.x)>44||Math.abs(o.z-f.z)>10||(wide()&&f.out!==o.out)||!GRABBABLE.has(o.state)||o.y>2){popOn(f,'GET CLOSER!','#fff');return;}
- f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
+ irpMark('fin');f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
  callout(f.ch.fin+'!!',f.ch.accent,1.7);G.slow=0.8;G.slowT=1.3;G.flash=0.3;sfx('whoosh');
  if(f.ch.finType==='kick')sfx('fire');if(f.ch.finType==='spin')sfx('glitter');crowdReact(f,true);
 }
@@ -82,7 +82,7 @@ function updFinisher(f,o,dt){
   else if(t-f.landT>0.45)setState(f,'idle');
  }
 }
-function startDive(f,o){setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
+function startDive(f,o){irpMark('big');setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
 function landDive(f,o){
  f.y=0;f.vx=f.vz=0;if(wide())f.out=!insideRing(f.x,f.z);clampPos(f);
  const hitIt=Math.abs(bodyX(o)-f.x)<28&&Math.abs(o.z-f.z)<12&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');

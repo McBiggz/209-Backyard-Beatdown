@@ -67,7 +67,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
 function beginFight(){const[a,b]=G.f;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
- G.t=0;G.rope={side:0,t:9}; // the match clock starts at zero for everyone, so online players stay in step
+ G.t=0;G.rope={side:0,t:9};irpReset(); // the match clock starts at zero for everyone, so online players stay in step
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
