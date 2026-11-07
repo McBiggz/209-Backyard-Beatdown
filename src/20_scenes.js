@@ -80,7 +80,7 @@ function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,
  if(t>0.5)T('VS',192,90,t<0.62?6:4,'#ffd35a','center','#5a0608');
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',192,206,1,'#7a6a5a','center',null);}
 const OVER_BTNS=[[122,128,140,14],[122,146,140,14],[122,164,140,14]];
-const PAUSE_BTNS=[[132,120,120,14],[132,140,120,14]];
+const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14]];
 function updFight(dt){
  if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
@@ -119,7 +119,7 @@ function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[orde
 function finishEntrance(){const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5);
@@ -133,7 +133,7 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
  if(G.paused){R(0,0,W,H,'rgba(6,2,3,0.8)');T('PAUSED',192,50,4,'#ffd35a','center','#5a0608');
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
-  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);
+  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('WHIPPED? HIT GRAB WHEN THE ICON FLASHES TO REVERSE IT',192,118,1,'#ffd35a','center',null);T('OFF THE ROPES: PUNCH = FLYING CLOTHESLINE · KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
   [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.flash>0){R(0,0,W,H,`rgba(255,250,235,${G.flash.toFixed(2)})`);}}
 

@@ -49,6 +49,20 @@
    "hs": 0.08,
    "knock": true,
    "air": true
+  },
+  "runline": {
+   "reach": 30,
+   "dmg": 10,
+   "kb": 150,
+   "sfx": "punch",
+   "hs": 0.09,
+   "knock": true
   }
+ },
+ "counters": {
+  "_readme": "Counter windows in seconds. whipReverse = time to press GRAB after being grabbed for a whip. ropeAttack = time after bouncing off the ropes to press PUNCH (flying clothesline) or KICK/JUMP (dropkick).",
+  "whipReverse": 0.3,
+  "ropeAttack": 0.55,
+  "whipSpeed": 210
  }
 }

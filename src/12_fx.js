@@ -29,6 +29,7 @@ const LINES={
 function line(k,a,d){say(pick(LINES[k]).replace(/\{a\}/g,a.ch.short).replace(/\{d\}/g,d?d.ch.short:'').replace(/\{f\}/g,a.ch.fin));}
 
 
+LINES.rev=['{a} reverses the whip!','No you don\'t! {a} turns it around!'];
 LINES.whip=['{a} whips {d} into the ropes!','{a} sends {d} for a ride!'];
 LINES.clothes=['CLOTHESLINE! {a} turns {d} inside out!','{a} meets {d} with a big boot!'];
 

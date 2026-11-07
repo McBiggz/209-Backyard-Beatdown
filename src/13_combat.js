@@ -20,10 +20,13 @@ function tryHit(f,o,A){
  if(A.knock||o.combo>=4||o.y>5){knock(o,f.dir*A.kb*1.3,240);if(A.knock){line('drop',f,o);crowdReact(f,false);}}
  else{setState(o,'hit');o.stun=A.stun;o.vx=f.dir*A.kb;o.vz=0;if(Math.random()<0.3)line(A.sfx==='kick'?'kick':'punch',f,o);}
 }
+// Irish whip: a short wind-up first. That wind-up is the victim's counter window (GRAB reverses it).
+function startWhip(f,o,mx,canRev){setState(f,'whip');setState(o,'whipped');o.whipDir=mx;o.vx=0;o.vz=0;o.dir=-mx;o.z=f.z;
+ o.ctrWin=CTR.whipReverse;o.canRev=canRev;o.bounced=false;o.runWin=0;o.whipId=G.fstep;sfx('grab');}
 function tryGrab(f,o,mx){
  if(wide()&&f.out)mx=0;
  if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*f.ch.size&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){
-  if(mx){setState(f,'whip');setState(o,'whipped');o.whipDir=mx;o.vx=mx*210;o.vz=0;o.dir=mx;o.z=f.z;sfx('grab');line('whip',f,o);return;}
+  if(mx){startWhip(f,o,mx,true);line('whip',f,o);return;}
   setState(f,'grapple');setState(o,'grappled');f.vx=f.vz=o.vx=o.vz=0;o.z=f.z+0.2;sfx('grab');}
  else setState(f,'whiff');
 }

@@ -9,7 +9,8 @@ const CARDNAME=DATA.roster.cardNames;
 const cardName=ch=>(CARDNAME[ch.id]||ch.short||ch.name).toUpperCase();
 
 const ATK=DATA.moves.strikes;
-const HITTABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp','jump','dropkick','perch','whipped','whip']);
+const CTR=DATA.moves.counters;
+const HITTABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp','jump','dropkick','perch','whipped','whip','runline']);
 const GRABBABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp']);
 function basePose(){return{lean:0.08,af:[0.55,1.9],ab:[0.3,2.0],lf:[0.3,-0.5],lb:[-0.22,0.12],rot:0,dy:0,plant:true,hipY:-52};}
 

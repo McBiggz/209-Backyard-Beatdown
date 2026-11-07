@@ -4,6 +4,12 @@ function aiInput(f,o,dt){
  const dx=o.x-f.x,dz=o.z-f.z,ad=Math.abs(dx),az=Math.abs(dz);
  const mv=m=>{if(!m)return;if(m.x>0)inp.right=true;if(m.x<0)inp.left=true;if(m.z>0)inp.down=true;if(m.z<0)inp.up=true;};
  if(f.state==='perch'){if(a.t<=0&&(o.state==='down'||HITTABLE.has(o.state)))inp.punchP=true;return inp;}
+ if(f.state==='whipped'){
+  if(f.ctrWin>0&&f.canRev){if(a.ctrRoll!==f.whipId){a.ctrRoll=f.whipId;a.ctrDo=arand()<0.3;a.ctrAt=arnd(0.08,CTR.whipReverse-0.05);}
+   if(a.ctrDo&&CTR.whipReverse-f.ctrWin>=a.ctrAt)inp.grabP=true;return inp;}
+  if(f.runWin>0){if(a.runDo===undefined)a.runDo=arand();const coming=Math.sign(f.vx)===Math.sign(dx);
+   if(coming&&ad<90&&a.runDo<0.55)inp[a.runDo<0.3?'punchP':'kickP']=true;}else if(f.bounced===false)a.runDo=undefined;
+  return inp;}
  if(!['idle','walk'].includes(f.state))return inp;
  if(wide()){
   if(f.out&&(!o.out||G.co.n>=5)){a.goal=null;
