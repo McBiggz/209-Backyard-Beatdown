@@ -12,17 +12,24 @@ function updFx(dt){
 const STEP=1/60,MAX_STEPS=5;
 let last=performance.now(),acc=0;G.step=0;
 function simStep(){
+ // online: wait until both players' inputs for this fight step have arrived (lockstep)
+ if(G.net&&G.scene==='fight'&&!G.net.ready(G.fstep))return false;
  G.t+=STEP;G.step++;
+ const inFight=G.scene==='fight',rec=G.rec;
+ if(inFight){G.curInp=null;G.stepInp=G.net?G.net.take(G.fstep):G.replay?G.replay.inp[G.fstep]||[0,0]:null;}
  switch(G.scene){case 'loading':updLoading();break;case 'title':updTitle();break;case 'select':updSelect();break;
   case 'intro':G.introT+=STEP;if(G.introT>2.8||(G.introT>0.4&&(confirmP()||clickQ)))beginFight();break;case 'fight':updFight(STEP);break;}
+ // one input pair per fight step goes on the tape (steps where nobody could act record 0,0)
+ if(inFight&&G.rec===rec&&rec){rec.inp.push(G.curInp||[0,0]);G.fstep++;if(G.net)G.net.afterStep(G.fstep);}
+ G.stepInp=null;
  updFx(STEP);
  // a tap/press is consumed by the first step that sees it
  for(const k in pressed)delete pressed[k];clickQ=null;
 }
 function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
  try{
-  let n=0;while(acc>=STEP&&n<MAX_STEPS){simStep();acc-=STEP;n++;}
-  if(n===MAX_STEPS)acc=0; // tab was asleep: don't fast-forward
+  let n=0;while(acc>=STEP&&n<MAX_STEPS){if(simStep()===false){acc=Math.min(acc,STEP*2);break;}acc-=STEP;n++;}
+  if(n===MAX_STEPS)acc=G.net?Math.min(acc,STEP*8):0; // tab was asleep: don't fast-forward (online: catch up a little)
   ctx=SCR;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=false;
   const sx=G.shake?Math.round(rnd(-1,1)*G.shake):0,sy=G.shake?Math.round(rnd(-1,1)*G.shake):0;
   ctx.save();ctx.translate(sx,sy);
@@ -44,6 +51,29 @@ window.DD={simHash,
   if(wideMap)G.stage=3;
   G.mode=0;G.sel={c:[iA,iB],stage:2,picks:[iA,iB]};startIntro();G.f[0].cpu=replay?replay.cpu[0]:true;G.f[1].cpu=replay?replay.cpu[1]:true;
   G.replay=replay||null;G.forceSeed=replay?null:seed;beginFight();G.forceSeed=null;G.scene='fight';
-  const hashes=[];let n=0;for(;n<steps&&!(G.over&&G.over.t>0.5);n++){simStep();if(n%60===0)hashes.push(simHash());}
+  const hashes=[];let n=0,snap=null,snapAt=-1;for(;n<steps&&!(G.over&&G.over.t>0.5);n++){simStep();if(n%60===0)hashes.push(simHash());if(n===600){snap=getSnap();snapAt=G.fstep;}}
   const out={steps:n,hash:simHash(),hashes,rec:G.rec,result:G.over?G.over.how+':'+(G.over.w?G.over.w.ch.id:'none'):'none',hp:G.f.map(f=>Math.round(f.hp))};
+  // snapshot test: rewind to step ~600 and re-simulate from the tape; must land on the same final state
+  if(snap){const tape={inp:G.rec.inp.slice()},end=G.fstep,endHash=out.hash;setSnap(snap);G.replay=tape;G.resim=true;
+   for(let k=0;G.fstep<end&&k<20000;k++)simStep();G.resim=false;out.snapOK=simHash()===endHash;}
   G.replay=null;G.scene='title';return out;}};
+
+// ---- Save / restore the whole match (everything that decides what happens next).
+// Used online to repair a desync: the host's copy wins, the other side jumps to it and re-plays its inputs.
+function encSim(v,top){if(v===null||typeof v!=='object')return typeof v==='function'?undefined:v;
+ const fi=G.f.indexOf(v);if(fi>=0&&!top)return{$f:fi};
+ for(let i=0;i<G.f.length;i++){if(G.f[i].ch===v)return{$ch:i};if(G.f[i].set===v)return{$set:i};}
+ if(v===REF)return{$ref:1};
+ if(Array.isArray(v))return v.map(x=>encSim(x));
+ if(v.constructor!==Object)return undefined;
+ const o={};for(const k in v){const e=encSim(v[k]);if(e!==undefined)o[k]=e;}return o;}
+function decSim(v){if(v===null||typeof v!=='object')return v;if(Array.isArray(v))return v.map(decSim);
+ if('$f' in v)return G.f[v.$f];if('$ch' in v)return G.f[v.$ch].ch;if('$set' in v)return G.f[v.$set].set;if('$ref' in v)return REF;
+ const o={};for(const k in v)o[k]=decSim(v[k]);return o;}
+const SNAP_KEYS=['ref','pin','over','hype','hitStop','slow','slowT','cam','entrance','rope','co','fstep','t','stage'];
+function getSnap(){const s={f:G.f.map(f=>encSim(f,true)),seed:SIM.seed,aseed:AIR.seed,b:[XMIN,XMAX,ZMIN,ZMAX]};
+ for(const k of SNAP_KEYS)s[k]=encSim(G[k]);return JSON.stringify(s);}
+function setSnap(str){const s=JSON.parse(str);
+ G.f.forEach((f,i)=>{const d=s.f[i];for(const k in f)if(!(k in d)&&k!=='ch'&&k!=='set')delete f[k];for(const k in d)f[k]=decSim(d[k]);});
+ for(const k of SNAP_KEYS)G[k]=decSim(s[k]);SIM.seed=s.seed;AIR.seed=s.aseed;[XMIN,XMAX,ZMIN,ZMAX]=s.b;
+ if(G.rec)G.rec.inp.length=G.fstep;}

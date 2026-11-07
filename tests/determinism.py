@@ -15,6 +15,6 @@ async def main():
       r3=await pg.evaluate("t=>DD.runMatch(t.p[0],t.p[1],{replay:t})",tape)
       r4=await pg.evaluate(f"DD.runMatch('{a}','{b2}',{{seed:{seed+1}}})")
       res[f'{a} v {b2}']=dict(steps=r1['steps'],result=r1['result'],hp=r1['hp'],same_seed=r1['hash']==r2['hash'] and r1['hashes']==r2['hashes'],
-        replay=r1['hash']==r3['hash'] and r1['hashes']==r3['hashes'],diff_seed_differs=r1['hash']!=r4['hash'],tape_steps=len(tape['inp']))
+        replay=r1['hash']==r3['hash'] and r1['hashes']==r3['hashes'],diff_seed_differs=r1['hash']!=r4['hash'],tape_steps=len(tape['inp']),snap_ok=r1.get('snapOK'))
     print(json.dumps(res,indent=1));print('errors',errs[:5]);await b.close()
 asyncio.run(main())

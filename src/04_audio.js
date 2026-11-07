@@ -19,7 +19,7 @@ function tone(freq,dur,vol,type='sine',to,delay=0){if(!AC)return;const t=AC.curr
  o.connect(g).connect(master);o.start(t);o.stop(t+dur+0.05);}
 function bell(delay){if(!AC)return;const t=AC.currentTime+delay;[1,2.76,5.4].forEach((m,i)=>{const o=AC.createOscillator();o.frequency.value=820*m;const g=AC.createGain();
  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.32/(i+1),t+0.005);g.gain.exponentialRampToValueAtTime(0.0001,t+1.2/(i+1));o.connect(g).connect(master);o.start(t);o.stop(t+1.3);});}
-function sfx(n){if(!AC||muted)return;switch(n){
+function sfx(n){if(!AC||muted||G.resim)return;switch(n){
  case 'punch':noise(0.07,1900,1,0.55);tone(150,0.08,0.35,'square',60);break;
  case 'kick':noise(0.12,1300,1,0.7);tone(120,0.12,0.45,'triangle',45);break;
  case 'slam':noise(0.4,380,0.7,0.95);tone(75,0.45,0.8,'sine',32);break;
@@ -35,5 +35,5 @@ function sfx(n){if(!AC||muted)return;switch(n){
 }}
 
 
-function ropeSfx(){if(!AC||muted)return;tone(80,0.3,0.45,'triangle',55);noise(0.18,300,1,0.4);}
+function ropeSfx(){if(!AC||muted||G.resim)return;tone(80,0.3,0.45,'triangle',55);noise(0.18,300,1,0.4);}
 

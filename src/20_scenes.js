@@ -82,10 +82,11 @@ function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,
 const OVER_BTNS=[[122,128,140,14],[122,146,140,14],[122,164,140,14]];
 const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14]];
 function updFight(dt){
- if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
+ if(G.net){if(G.net.updFightMeta)G.net.updFightMeta();}
+ else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
  if(hit(['KeyM']))toggleMute();
- if(G.over){G.over.t+=dt;if(G.over.t>1.8){
+ if(G.over){G.over.t+=dt;if(G.over.t>1.8&&!G.net){
   if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0])))beginFight();
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[G.sel.picks[0],G.sel.picks[1]],stage:0,picks:[null,null]};}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2])))G.scene='title';}}
@@ -97,18 +98,18 @@ function updFight(dt){
   else G.co={t:0,n:0};}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
  const sdt=dt*G.slow;G.rope.t+=sdt;
- let inp=G.replay?[blank(),blank()]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
+ // this step's inputs: from the network / replay tape if there is one, otherwise from the controls and CPU
+ let inp=G.stepInp?[unpackInp(G.stepInp[0]),unpackInp(G.stepInp[1])]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
- // record / replay: the step's inputs, packed. In a replay the tape overrides whatever the controls said.
- if(G.replay){const r=G.replay.inp[G.fstep];if(r)inp=[unpackInp(r[0]),unpackInp(r[1])];}
- G.rec.inp.push([packInp(inp[0]),packInp(inp[1])]);G.fstep++;
+ G.curInp=[packInp(inp[0]),packInp(inp[1])];
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
  updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);
  G.hype=Math.max(0.15,G.hype-sdt*0.07);
  G.chantT-=dt;if(G.chantT<=0){G.chantT=rnd(3,7);if(G.hype>0.5)pop(rnd(90,300),rnd(64,78),pick(['2-0-9! 2-0-9!','THIS IS AWESOME!','DEN! DEN!',"LET'S GO!"]),'#f1e6d0');}}
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
- if(E.t>0.3&&(confirmP()||clickQ)){finishEntrance();return;}
+ const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
+ if(E.t>0.3&&skip){finishEntrance();return;}
  if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;}if(E.t>1.8){E.phase='walk';E.t=0;f.hidden=false;f.out=true;f.x=513;f.z=160;f.dir=-1;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}
  else if(E.phase==='walk'){const tx=296,tz=168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*11;f.state='walk';f.dir=dx<0?-1:1;
   if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*120*dt;f.z+=dz/d*120*dt;}}
