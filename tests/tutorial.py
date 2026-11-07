@@ -42,8 +42,9 @@ async def main():
       await pg.evaluate("__run(1)")
       if await pg.evaluate("G.f[0].state==='whipped'&&G.f[0].runWin>0"):break
     await lesson('rope attack',"__k('KeyF',true);__run(1);__k('KeyF',false)",200,pre=False)
+    await lesson('run',"__near();G.f[0].x=G.f[1].x-90;__k('KeyD',true);__run(2);__k('KeyD',false);__run(3);__k('KeyD',true);for(let i=0;i<40&&Math.abs(G.f[1].x-G.f[0].x)>45;i++)simStep();__k('KeyF',true);__run(1);__k('KeyF',false);__k('KeyD',false)",200)
     await lesson('dive',"__run(60);const a=G.f[0];setState(a,'perch');a.x=84;a.z=121;a.y=30;a.dir=1;__k('KeyF',true);__run(1);__k('KeyF',false)",300)
-    await lesson('pin',"__run(60);__near();const b=G.f[1];setState(b,'down');b.downDur=5;__k('KeyH',true);__run(1);__k('KeyH',false)",300)
+    await lesson('pin',"__run(60);__near();const b=G.f[1];setState(b,'down');b.downDur=5;G.f[0].x=bodyX(b)-14;G.f[0].dir=1;__k('KeyH',true);__run(1);__k('KeyH',false)",300)
     await pg.evaluate("__run(200)")
     print('meter at finisher lesson',await pg.evaluate("G.f[0].meter"))
     await lesson('finisher',"__near();__k('KeyR',true);__run(1);__k('KeyR',false)",300)

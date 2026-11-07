@@ -12,6 +12,7 @@ const LESSONS=[
  {t:'HOLD LEFT OR RIGHT AND PRESS {GRAB} TO WHIP HIM INTO THE ROPES',ev:'whip',n:1},
  {t:'HE WILL WHIP YOU. PRESS {GRAB} WHEN THE ICON FLASHES TO REVERSE IT',ev:'reverse',n:1,dummy:'whip'},
  {t:'GET WHIPPED, THEN PRESS {PUNCH} OR {KICK} COMING OFF THE ROPES',ev:'ropeattack',n:1,dummy:'whip'},
+ {t:'DOUBLE-TAP LEFT OR RIGHT TO RUN, THEN {PUNCH} FOR A CLOTHESLINE',ev:'runattack',n:1},
  {t:'WALK INTO A CORNER, PRESS {JUMP} TO CLIMB, THEN {PUNCH} TO FLY',ev:'dive',n:1},
  {t:'KNOCK HIM DOWN, THEN PRESS {GRAB} ON HIM TO PIN',ev:'pin',n:1},
  {t:'YOUR METER IS FULL. PRESS {FINISH} NEXT TO HIM',ev:'fin',n:1,setup:'meter'},

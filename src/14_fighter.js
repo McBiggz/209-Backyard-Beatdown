@@ -11,6 +11,8 @@ function updFighter(f,o,inp,dt){
   if(Math.abs(dx)>2)f.dir=dx>0?1:-1;
   if(f.y<2&&holdsAway(f,o,inp)&&incoming(f,o)){setState(f,'block');f.blockStun=0.12;f.vx=f.vz=0;break;}
   const mx=(inp.right?1:0)-(inp.left?1:0),mz=(inp.down?1:0)-(inp.up?1:0);
+  // RUN: double-tap left or right
+  if(mx&&f.pmx!==mx&&f.y<1){if(f.tapDir===mx&&G.t-f.tapT<CTR.run.doubleTap){f.tapDir=0;f.pmx=mx;setState(f,'run');f.runDir=mx;f.dir=mx;f.vx=mx*CTR.run.speed*f.ch.spd;f.vz=0;f.autoRun=0;sfx('whoosh');break;}f.tapDir=mx;f.tapT=G.t;}
   f.vx=mx*90*f.ch.spd;f.vz=mz*52*f.ch.spd;f.state=(mx||mz)?'walk':'idle';if(mx||mz)f.walkPh+=dt*11;
   const nearBody=Math.abs(bodyX(o)-f.x)<36&&Math.abs(o.z-f.z)<12;
   if(inp.jumpP){
@@ -45,6 +47,13 @@ function updFighter(f,o,inp,dt){
    if(inp.punchP){f.runWin=0;setState(f,'runline');sfx('whoosh');tutEv('ropeattack',f);break;}
    if(inp.kickP||inp.jumpP){f.runWin=0;setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('ropeattack',f);break;}}
   f.walkPh+=dt*22;if(f.t>1.9+CTR.whipReverse){f.vx=0;setState(f,'idle');}break;}
+ case 'run':{const mxh=(inp.right?1:0)-(inp.left?1:0);f.walkPh+=dt*20;f.vz=((inp.down?1:0)-(inp.up?1:0))*40*f.ch.spd;f.vx=f.runDir*CTR.run.speed*f.ch.spd;f.dir=f.runDir;
+  if(inp.punchP){setState(f,'runline');sfx('whoosh');tutEv('runattack',f);break;}
+  if(inp.kickP||inp.jumpP){setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('runattack',f);break;}
+  if(inp.grabP){f.vx=f.vz=0;setState(f,'idle');break;}
+  if(!f.out){const nx=f.x+f.vx*dt,[wb0,wb1]=wbounds(f);if((nx>wb1&&f.vx>0)||(nx<wb0&&f.vx<0)){f.runDir=-f.runDir;f.vx=-f.vx;f.dir=f.runDir;G.rope={side:f.vx<0?1:-1,t:0};ropeSfx();shake(1);f.autoRun=CTR.run.afterRopes;}}
+  f.autoRun-=dt;if((f.autoRun<=0&&mxh!==f.runDir)||f.t>CTR.run.maxTime){f.vx=f.vz=0;setState(f,'idle');}
+  break;}
  case 'runline':f.walkPh+=dt*22;if(!f.hitDone)tryHit(f,o,ATK.runline);else f.vx*=Math.pow(0.05,dt);
   if(f.t>0.55){f.vx=0;setState(f,'idle');}break;
  case 'fall':f.vy-=GRAV*dt;f.y+=f.vy*dt;if(!f.out){const[r0,r1]=wbounds(f),nx=f.x+f.vx*dt;if((nx>r1&&f.vx>0)||(nx<r0&&f.vx<0)){f.vx=-f.vx*0.35;G.rope={side:nx>r1?1:-1,t:0};ropeSfx();shake(2);}}if(f.y<=0&&f.vy<0){f.y=0;f.vx=f.vz=0;setState(f,'down');sfx('slam');shake(4);dust(PX(bodyX(f),f.z),PY(f.z),true);}break;
@@ -60,6 +69,7 @@ function updFighter(f,o,inp,dt){
  case 'win':f.vx=f.vz=0;break;
  case 'roll':updRoll(f,dt);break;
  }
+ f.pmx=(inp.right?1:0)-(inp.left?1:0);
  if(!['grappled','finished','perch','pinned','pinning','roll'].includes(f.state)){f.x+=f.vx*dt;f.z+=f.vz*dt;}
  if(!['perch','dive','roll'].includes(f.state))clampPos(f);
  if(wide()&&f.state==='down'&&f.y<1)keepInRing([[f,'down']]);

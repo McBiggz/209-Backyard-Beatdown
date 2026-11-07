@@ -60,7 +60,7 @@
   }
  },
  "counters": {
-  "_readme": "Counter windows in seconds. whipReverse = time to press GRAB after being grabbed for a whip. ropeAttack = time after bouncing off the ropes to press PUNCH (flying clothesline) or KICK/JUMP (dropkick). block: hold away from the opponent to block strikes; chip = share of damage still taken, stun = seconds stuck in the block pose, push = share of the strike's knockback.",
+  "_readme": "Counter windows in seconds. whipReverse = time to press GRAB after being grabbed for a whip. ropeAttack = time after bouncing off the ropes to press PUNCH (flying clothesline) or KICK/JUMP (dropkick). block: hold away from the opponent to block strikes; chip = share of damage still taken, stun = seconds stuck in the block pose, push = share of the strike's knockback. run: double-tap left/right within doubleTap seconds to run at speed; after bouncing off the ropes you keep running for afterRopes seconds.",
   "whipReverse": 0.3,
   "ropeAttack": 0.55,
   "whipSpeed": 210,
@@ -68,6 +68,12 @@
    "chip": 0.15,
    "stun": 0.22,
    "push": 0.45
+  },
+  "run": {
+   "speed": 185,
+   "doubleTap": 0.25,
+   "afterRopes": 0.7,
+   "maxTime": 3.0
   }
  }
 }

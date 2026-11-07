@@ -10,7 +10,12 @@ function aiInput(f,o,dt){
   if(f.runWin>0){if(a.runDo===undefined)a.runDo=arand();const coming=Math.sign(f.vx)===Math.sign(dx);
    if(coming&&ad<90&&a.runDo<0.55)inp[a.runDo<0.3?'punchP':'kickP']=true;}else if(f.bounced===false)a.runDo=undefined;
   return inp;}
+ if(f.state==='run'){if(f.runDir>0)inp.right=true;else inp.left=true;const coming=Math.sign(dx)===f.runDir;
+  if(coming&&ad<46&&az<10){if(a.rnSid!==f.sid){a.rnSid=f.sid;a.rnDo=arand();}if(a.rnDo<0.5)inp.punchP=true;else if(a.rnDo<0.8)inp.kickP=true;else{inp.left=inp.right=false;inp.grabP=true;}}
+  else if(!coming&&f.autoRun<=0){inp.left=inp.right=false;}return inp;}
+ if(a.tap>0){a.tap++;const d=a.tapD;if(a.tap<=2||a.tap>=5){if(d>0)inp.right=true;else inp.left=true;}if(a.tap>8)a.tap=0;return inp;}
  if(!['idle','walk'].includes(f.state))return inp;
+ if(ad>130&&az<8&&!(wide()&&(f.out||o.out))&&arand()<0.012){a.tap=1;a.tapD=Math.sign(dx);return inp;}
  if(['punch','kick','runline'].includes(o.state)&&ad<70&&az<12){if(a.blkSid!==o.sid){a.blkSid=o.sid;a.blkDo=arand()<0.4;}
   if(a.blkDo){if(dx>0)inp.left=true;else inp.right=true;return inp;}}
  if(wide()){

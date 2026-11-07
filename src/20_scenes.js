@@ -116,7 +116,8 @@ function updFight(dt){
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
  updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);
- G.hype=Math.max(0.15,G.hype-sdt*0.07);
+ // the crowd gets hotter as the match goes on and the wrestlers wear down
+ {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*0.07);}
  G.chantT-=dt;if(G.chantT<=0){G.chantT=rnd(3,7);if(G.hype>0.5)pop(rnd(90,300),rnd(64,78),pick(['2-0-9! 2-0-9!','THIS IS AWESOME!','DEN! DEN!',"LET'S GO!"]),'#f1e6d0');}}
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
  const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
@@ -145,7 +146,7 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
  if(G.paused){R(0,0,W,H,'rgba(6,2,3,0.8)');T('PAUSED',192,50,4,'#ffd35a','center','#5a0608');
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
-  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('HOLD AWAY FROM YOUR OPPONENT TO BLOCK • WHIPPED? GRAB ON THE ICON TO REVERSE',192,118,1,'#ffd35a','center',null);T('OFF THE ROPES: PUNCH = FLYING CLOTHESLINE · KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
+  T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('HOLD AWAY FROM YOUR OPPONENT TO BLOCK • WHIPPED? GRAB ON THE ICON TO REVERSE',192,118,1,'#ffd35a','center',null);T('DOUBLE-TAP TO RUN · RUNNING OR OFF THE ROPES: PUNCH = CLOTHESLINE, KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
   [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.flash>0){R(0,0,W,H,`rgba(255,250,235,${G.flash.toFixed(2)})`);}}
 

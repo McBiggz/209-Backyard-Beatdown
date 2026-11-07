@@ -1,7 +1,7 @@
 // ================= DRAW: WORLD =================
 function shadowOf(f,size){const lying=['down','pinned','fall','pinning'].includes(f.state)||(f.state==='finished'&&f.finBy==='slam'&&f.y<4);
  const x=lying?PX(bodyX(f),f.z):PX(f.x,f.z),y=PY(f.z);ELL(x,y,lying?22*size:Math.max(4,Math.round(9*size*(1-f.y/120))),2,'rgba(0,0,0,0.32)');}
-function drawCtrIcon(f){if(f.cpu||f.state!=='whipped')return;let lbl=null,pct=0;
+function drawCtrIcon(f){if(f.cpu)return; if(f.state!=='whipped')return;let lbl=null,pct=0;
  if(f.ctrWin>0&&f.canRev){lbl=coarse?'GRAB':(f.idx?'L':'H');pct=f.ctrWin/CTR.whipReverse;}
  else if(f.runWin>0){lbl=coarse?'PUNCH/KICK':(f.idx?'J/K':'F/G');pct=f.runWin/CTR.ropeAttack;}
  if(!lbl)return;const x=sx_(f),y=sy_(f)-76*f.ch.size,w=TW(lbl)+8,on=Math.floor(G.t*16)%2;

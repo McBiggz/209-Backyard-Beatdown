@@ -3,7 +3,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  switch(s){
  case 'idle':return 'idle'+(Math.floor(G.t*1.6+f.idx)%2);
  case 'walk':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
- case 'whipped':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
+ case 'whipped':case 'run':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
  case 'punch':return t<0.07||t>0.24?'punch0':'punch1';
  case 'kick':return t<0.11||t>0.32?'kick0':'kick1';
  case 'stomp':return t<0.2?'stomp0':'stomp1';

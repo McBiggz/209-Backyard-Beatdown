@@ -16,7 +16,7 @@ const packInp=o=>IBITS.reduce((n,k,i)=>o[k]?n|(1<<i):n,0);
 const unpackInp=n=>{const o={};IBITS.forEach((k,i)=>o[k]=!!(n&(1<<i)));return o;};
 function humanInput(i){const m=MAP[i];return{left:held(m.left),right:held(m.right),up:held(m.up),down:held(m.down),jumpP:hit(m.jump),punchP:hit(m.punch),kickP:hit(m.kick),grabP:hit(m.grab),finP:hit(m.fin)};}
 const confirmP=()=>hit(['Enter','Space','NumpadEnter','KeyF']);
-const tc=document.getElementById('tc');
+const tc=document.getElementById('tc'),FINBTN=tc.querySelector('.bf');
 const coarse=matchMedia('(pointer:coarse)').matches||('ontouchstart' in window);
 if(coarse)document.body.classList.add('touch');
 const press=k=>{if(!keys[k])pressed[k]=true;keys[k]=true;},release=k=>{keys[k]=false;};

@@ -19,7 +19,7 @@ function tryHit(f,o,A){
   setState(o,'block');o.blockStun=CTR.block.stun+(A.knock?0.15:0);o.vx=f.dir*A.kb*CTR.block.push;o.vz=0;o.combo=0;
   if(f.state==='runline')f.vx*=0.3;sfx('block');tutEv('block',o);G.hitStop=0.03;part(PX(o.x,o.z)-f.dir*10,PY(o.z)-o.y-40*o.ch.size,-f.dir*30,-20,0.25,'#9fd4ff',2);
   if(o.blockN=(o.blockN||0)+1,o.blockN%3===1)popOn(o,'BLOCK','#9fd4ff');return;}
- f.hitDone=true;const whipped=o.state==='whipped';
+ f.hitDone=true;const whipped=o.state==='whipped'||o.state==='run';
  const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);tutEv(A===ATK.punch?'punch':A===ATK.kick?'kick':'hit',f);
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);
  if(A.ground){o.t=Math.max(0,o.t-0.35);if(Math.random()<0.4)line('stomp',f,o);return;}
@@ -102,8 +102,9 @@ function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out
 function startPin(f,o){tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6};G.ref.mode='pin';sfx('grab');line('pin',f,o);}
-function kickout(){const{a,d}=G.pin;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
- callout('KICK OUT!','#fff',1.1);line('kickout',a,d);G.hype=Math.min(1,G.hype+0.4);sfx('roar');shake(3);}
+function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
+ if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);G.hype=1;crowdReact(d,true);sfx('roar');sfx('roar');shake(5);irpMark('big');}
+ else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);G.hype=Math.min(1,G.hype+0.4);sfx('roar');shake(3);}}
 function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}
