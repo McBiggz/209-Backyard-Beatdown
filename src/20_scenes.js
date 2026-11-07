@@ -70,7 +70,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
 function beginFight(){const[a,b]=G.f;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
- G.t=0;G.rope={side:0,t:9};irpReset(); // the match clock starts at zero for everyone, so online players stay in step
+ G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
@@ -122,16 +122,16 @@ function updFight(dt){
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
  const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
  if(E.t>0.3&&skip){finishEntrance();return;}
- if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;}if(E.t>1.8){E.phase='walk';E.t=0;f.hidden=false;f.out=true;f.x=513;f.z=160;f.dir=-1;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}
+ if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;musPlay(f.ch.id.replace('_alt',''),'theme');}if(E.t>1.8){E.phase='walk';E.t=0;f.hidden=false;f.out=true;f.x=513;f.z=160;f.dir=-1;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}
  else if(E.phase==='walk'){const tx=296,tz=168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*11;f.state='walk';f.dir=dx<0?-1:1;
   if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*120*dt;f.z+=dz/d*120*dt;}}
  else if(E.phase==='roll'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll')E.phase='place';}
  else if(E.phase==='place'){const tx=order[E.i]===0?110:205,tz=140,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);
   if(d<2){f.dir=order[E.i]===0?1:-1;setState(f,'win');E.i++;E.t=0;if(E.i>=2){finishEntrance();}else E.phase='show';}
   else{f.state='walk';f.walkPh+=dt*11;f.dir=dx<0?-1:1;f.x+=dx/d*90*dt;f.z+=dz/d*90*dt;}}}
-function finishEntrance(){const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
+function finishEntrance(){musStop(1.2);const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
-function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;}
+function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
 function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;

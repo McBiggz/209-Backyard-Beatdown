@@ -4,6 +4,7 @@
  "src/02_font.js",
  "src/03_assets.js",
  "src/04_audio.js",
+ "src/04b_music.js",
  "src/05_state.js",
  "src/06_roster.js",
  "src/07_poses.js",

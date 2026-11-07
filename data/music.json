@@ -1,0 +1,407 @@
+{
+ "_readme": "One theme per wrestler id (same ids as roster.json), plus 'title'. bpm = speed. key + scale set the notes (scales: major, minor, harmonic, dorian, mixolydian, phrygian, spanish, penta, minpenta, blues). lead / bassWave / padWave: square, pulse, thin, sawtooth, triangle, sine. drums: rock, heavy, march, dhol, disco, fast, cumbia, trap, shuffle, tribal, none. bass: drive, pulse, octave, walk, tumbao, slow. prog = chord root (scale step) for each of the 4 bars. phrases = 3 one-bar melodies (played A B A C) written as step:length pairs in 16th notes, '.' = rest. Victory fanfares are built automatically from the same theme. All melodies are original.",
+ "fallback": "title",
+ "themes": {
+  "title": {
+   "name": "Den Theme",
+   "bpm": 128,
+   "key": "D",
+   "scale": "minor",
+   "lead": "sawtooth",
+   "drums": "rock",
+   "bass": "drive",
+   "pad": true,
+   "prog": [
+    0,
+    5,
+    3,
+    4
+   ],
+   "phrases": [
+    "0:2 2:2 4:4 3:2 2:2 1:4",
+    "5:2 4:2 3:2 2:2 4:8",
+    "7:2 6:2 5:2 4:2 6:4 4:4"
+   ]
+  },
+  "viral": {
+   "name": "Loudest in the 209",
+   "bpm": 160,
+   "key": "E",
+   "scale": "mixolydian",
+   "lead": "sawtooth",
+   "drums": "rock",
+   "bass": "drive",
+   "pad": true,
+   "prog": [
+    0,
+    6,
+    3,
+    0
+   ],
+   "phrases": [
+    "0:2 0:1 4:1 .:2 4:2 6:2 7:4 .:2",
+    "7:2 6:2 4:2 3:2 4:4 .:4",
+    "4:2 6:2 7:2 9:2 7:6 .:2"
+   ]
+  },
+  "bigmf": {
+   "name": "The Owner",
+   "bpm": 92,
+   "key": "C",
+   "scale": "phrygian",
+   "lead": "sawtooth",
+   "leadOct": -1,
+   "drums": "heavy",
+   "bass": "pulse",
+   "bassWave": "sawtooth",
+   "pad": true,
+   "prog": [
+    0,
+    1,
+    0,
+    6
+   ],
+   "phrases": [
+    "0:4 0:2 1:2 0:6 .:2",
+    "3:4 2:2 1:2 0:8",
+    "4:4 3:2 1:2 0:8"
+   ]
+  },
+  "dragon": {
+   "name": "Angry Dragon",
+   "bpm": 140,
+   "key": "A",
+   "scale": "minpenta",
+   "lead": "square",
+   "drums": "march",
+   "bass": "octave",
+   "harmony": true,
+   "prog": [
+    0,
+    0,
+    3,
+    4
+   ],
+   "phrases": [
+    "0:2 2:2 3:2 4:2 5:4 4:2 3:2",
+    "5:2 4:2 3:2 2:2 3:4 .:4",
+    "2:2 3:2 4:2 7:2 5:8"
+   ]
+  },
+  "papi": {
+   "name": "The Champ",
+   "bpm": 130,
+   "key": "D",
+   "scale": "mixolydian",
+   "lead": "pulse",
+   "drums": "dhol",
+   "bass": "octave",
+   "harmony": true,
+   "prog": [
+    0,
+    6,
+    0,
+    4
+   ],
+   "phrases": [
+    "0:1 0:1 2:2 4:2 5:2 4:2 2:2 0:4",
+    "4:2 5:2 7:2 5:2 4:4 2:4",
+    "7:2 9:2 8:2 7:2 5:4 7:4"
+   ]
+  },
+  "mainevent": {
+   "name": "Main Event",
+   "bpm": 138,
+   "key": "A",
+   "scale": "major",
+   "lead": "sawtooth",
+   "drums": "rock",
+   "bass": "drive",
+   "pad": true,
+   "prog": [
+    0,
+    4,
+    5,
+    3
+   ],
+   "phrases": [
+    "4:3 4:1 5:2 4:2 2:4 0:4",
+    "2:3 2:1 4:2 5:2 7:8",
+    "9:3 7:1 5:2 4:2 5:4 4:4"
+   ]
+  },
+  "razzle": {
+   "name": "Dazzle",
+   "bpm": 124,
+   "key": "F#",
+   "scale": "dorian",
+   "lead": "pulse",
+   "drums": "disco",
+   "bass": "octave",
+   "pad": true,
+   "prog": [
+    0,
+    3,
+    0,
+    4
+   ],
+   "phrases": [
+    "0:2 2:1 4:1 6:2 4:2 7:4 6:2 4:2",
+    "3:2 5:1 7:1 8:2 7:2 5:4 .:4",
+    "4:2 6:2 7:2 9:2 7:8"
+   ]
+  },
+  "asesino": {
+   "name": "Asesino",
+   "bpm": 168,
+   "key": "B",
+   "scale": "harmonic",
+   "lead": "square",
+   "drums": "fast",
+   "bass": "drive",
+   "prog": [
+    0,
+    0,
+    5,
+    4
+   ],
+   "phrases": [
+    "0:1 0:1 0:2 1:2 2:2 4:2 3:2 2:4",
+    "4:1 4:1 4:2 5:2 6:2 7:4 6:4",
+    "7:2 6:2 5:2 4:2 3:2 2:2 1:2 0:2"
+   ]
+  },
+  "spektro": {
+   "name": "Spektro",
+   "bpm": 120,
+   "key": "E",
+   "scale": "spanish",
+   "lead": "square",
+   "drums": "cumbia",
+   "bass": "tumbao",
+   "harmony": true,
+   "prog": [
+    0,
+    0,
+    6,
+    0
+   ],
+   "phrases": [
+    "0:2 1:2 2:2 1:2 0:4 .:4",
+    "4:2 5:2 4:2 2:2 1:4 0:4",
+    "7:2 6:2 5:2 4:2 5:4 4:4"
+   ]
+  },
+  "necrosis": {
+   "name": "Necrosis",
+   "bpm": 108,
+   "key": "D",
+   "scale": "harmonic",
+   "lead": "sawtooth",
+   "drums": "heavy",
+   "bass": "pulse",
+   "pad": true,
+   "prog": [
+    0,
+    5,
+    3,
+    4
+   ],
+   "phrases": [
+    "0:4 .:2 0:2 3:4 2:4",
+    "1:4 .:2 1:2 4:4 3:4",
+    "5:2 4:2 3:2 2:2 1:4 0:4"
+   ]
+  },
+  "jojo": {
+   "name": "The Mexican Beast",
+   "bpm": 150,
+   "key": "G",
+   "scale": "major",
+   "lead": "pulse",
+   "drums": "cumbia",
+   "bass": "tumbao",
+   "harmony": true,
+   "prog": [
+    0,
+    4,
+    0,
+    4
+   ],
+   "phrases": [
+    "0:2 2:2 4:2 7:2 6:2 4:2 5:4",
+    "4:2 2:2 3:2 5:2 4:4 .:4",
+    "7:2 9:2 8:2 7:2 6:2 4:2 7:4"
+   ]
+  },
+  "cdiddy": {
+   "name": "Guilty",
+   "bpm": 92,
+   "key": "C",
+   "scale": "minor",
+   "lead": "triangle",
+   "drums": "trap",
+   "bass": "pulse",
+   "bassWave": "sine",
+   "pad": true,
+   "prog": [
+    0,
+    5,
+    3,
+    4
+   ],
+   "phrases": [
+    "0:3 0:1 .:2 3:2 2:2 .:2 0:4",
+    "5:3 5:1 .:2 4:2 3:2 2:2 3:4",
+    "2:2 3:2 4:2 6:2 7:8"
+   ]
+  },
+  "cjdirt": {
+   "name": "Dirt",
+   "bpm": 112,
+   "key": "E",
+   "scale": "blues",
+   "lead": "sawtooth",
+   "drums": "shuffle",
+   "bass": "walk",
+   "prog": [
+    0,
+    0,
+    3,
+    0
+   ],
+   "phrases": [
+    "0:3 2:1 3:2 4:2 3:2 2:2 0:4",
+    "3:3 4:1 5:2 4:2 3:4 2:4",
+    "5:2 4:2 3:2 2:2 0:8"
+   ]
+  },
+  "firebelly": {
+   "name": "Firebelly",
+   "bpm": 132,
+   "key": "Bb",
+   "scale": "major",
+   "lead": "pulse",
+   "drums": "march",
+   "bass": "octave",
+   "harmony": true,
+   "prog": [
+    0,
+    3,
+    4,
+    0
+   ],
+   "phrases": [
+    "0:2 4:2 2:2 4:2 5:2 4:2 2:4",
+    "1:2 3:2 5:2 3:2 4:4 .:4",
+    "4:2 5:2 7:2 9:2 7:8"
+   ]
+  },
+  "maverick": {
+   "name": "The Maverick",
+   "bpm": 120,
+   "key": "D",
+   "scale": "major",
+   "lead": "sawtooth",
+   "drums": "rock",
+   "bass": "drive",
+   "pad": true,
+   "prog": [
+    0,
+    3,
+    4,
+    0
+   ],
+   "phrases": [
+    "0:6 4:2 3:2 2:2 1:4",
+    "-1:6 2:2 1:2 0:2 -1:4",
+    "0:4 2:4 4:4 7:4"
+   ]
+  },
+  "matsunaga": {
+   "name": "Matsunaga",
+   "bpm": 176,
+   "key": "A",
+   "scale": "minor",
+   "lead": "square",
+   "drums": "fast",
+   "bass": "drive",
+   "prog": [
+    0,
+    5,
+    6,
+    4
+   ],
+   "phrases": [
+    "0:1 2:1 4:1 7:1 6:2 4:2 5:2 4:2 2:4",
+    "3:1 5:1 7:1 9:1 8:2 7:2 6:2 4:2 5:4",
+    "7:2 7:2 6:2 7:2 9:8"
+   ]
+  },
+  "zeke": {
+   "name": "The Samoan Reaper",
+   "bpm": 100,
+   "key": "F",
+   "scale": "minpenta",
+   "lead": "sawtooth",
+   "leadOct": -1,
+   "drums": "tribal",
+   "bass": "slow",
+   "bassWave": "sawtooth",
+   "pad": true,
+   "prog": [
+    0,
+    0,
+    2,
+    0
+   ],
+   "phrases": [
+    "0:4 0:2 2:2 3:4 2:4",
+    "4:4 3:2 2:2 0:8",
+    "5:4 4:2 3:2 4:4 0:4"
+   ]
+  },
+  "ghoulie": {
+   "name": "Ghoulie",
+   "bpm": 116,
+   "key": "C#",
+   "scale": "harmonic",
+   "lead": "thin",
+   "drums": "shuffle",
+   "bass": "walk",
+   "pad": true,
+   "prog": [
+    0,
+    5,
+    3,
+    4
+   ],
+   "phrases": [
+    "4:2 3:2 4:2 1:2 0:8",
+    "2:2 1:2 2:2 6:2 4:8",
+    "4:2 5:2 6:2 7:2 4:8"
+   ]
+  },
+  "ultimojaguar": {
+   "name": "Ultimo Jaguar",
+   "bpm": 146,
+   "key": "G",
+   "scale": "spanish",
+   "lead": "pulse",
+   "drums": "cumbia",
+   "bass": "tumbao",
+   "harmony": true,
+   "prog": [
+    0,
+    6,
+    5,
+    0
+   ],
+   "phrases": [
+    "0:2 1:2 2:2 4:2 5:4 4:4",
+    "4:2 5:2 7:2 5:2 4:4 2:4",
+    "7:2 8:2 7:2 5:2 4:4 0:4"
+   ]
+  }
+ }
+}
