@@ -67,8 +67,10 @@ const NET={
   else{G.sel={c:[d.picks[0],d.picks[1]],stage:2,picks:d.picks.slice()};startIntro();G.f[0].cpu=G.f[1].cpu=false;}
   netUI.update();},
  // called by beginFight(): the first DELAY steps have no input yet, so both sides start them blank
- onBegin(){this.local.clear();this.remote.clear();this.hist.clear();
-  for(let s=0;s<this.D;s++){this.local.set(s,0);this.remote.set(s,0);}this.lastSent=this.D-1;if(!this.myD)this.myD=this.D;},
+ // (the other player's early inputs may already be waiting in `remote`: begin() cleared it when this match was
+ // announced, and inputs are tagged with the match number, so anything there now belongs to this match. Keep it.)
+ onBegin(){this.local.clear();this.hist.clear();
+  for(let s=0;s<this.D;s++){this.local.set(s,0);if(!this.remote.has(s))this.remote.set(s,0);}this.lastSent=this.D-1;if(!this.myD)this.myD=this.D;},
 
  // ---- lockstep
  ready(s){const ok=this.local.has(s)&&this.remote.has(s);if(!ok)this.stallT+=1/60;else this.stallT=0;return ok;},

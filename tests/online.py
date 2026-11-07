@@ -2,7 +2,7 @@
 # usage: python3 tests/online.py <lag_ms> [force_desync]
 import asyncio,sys,json
 from playwright.async_api import async_playwright
-LAG=int(sys.argv[1]) if len(sys.argv)>1 else 0;FORCE=len(sys.argv)>2
+LAG=int(sys.argv[1]) if len(sys.argv)>1 else 0;FORCE='force' in sys.argv;RACE='race' in sys.argv
 URL=f'http://127.0.0.1:8766/index.html?peerhost=127.0.0.1&peerport=9000&lag={LAG}'
 MASH="""(()=>{const K=['KeyW','KeyA','KeyS','KeyD','Space','KeyF','KeyG','KeyH','KeyR'];window.__mash=setInterval(()=>{for(const k of K.slice(0,4))keys[k]=false;
  const d=K[Math.floor(Math.random()*4)];keys[d]=Math.random()<0.7;if(Math.random()<0.5){const b=K[4+Math.floor(Math.random()*5)];pressed[b]=true;}},90);})()"""
@@ -19,6 +19,9 @@ async def main():
     print('connected, code',code)
     await A.evaluate("(()=>{const i=ROSTER.findIndex(c=>c.id==='viral');G.sel.picks[0]=i;G.sel.stage=1;NET.pick(i);})()")
     await B.evaluate("(()=>{const i=ROSTER.findIndex(c=>c.id==='papi');G.sel.picks[0]=i;G.sel.stage=1;NET.pick(i);})()")
+    if RACE:
+      await A.wait_for_function("G.scene==='intro'",timeout=15000);await B.wait_for_function("G.scene==='intro'",timeout=15000)
+      await B.evaluate("G.introT=-3");await A.evaluate("beginFight();G.scene='fight'");print('race: A started, B still on intro for 3s')
     await A.wait_for_function("G.scene==='fight'",timeout=15000);await B.wait_for_function("G.scene==='fight'",timeout=15000)
     print('fighters A',await A.evaluate("G.f.map(f=>f.ch.id)"),'B',await B.evaluate("G.f.map(f=>f.ch.id)"),'delay',await A.evaluate("NET.D"))
     await A.evaluate(MASH);await B.evaluate(MASH)

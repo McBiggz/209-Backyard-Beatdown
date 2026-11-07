@@ -105,14 +105,21 @@ function startPin(f,o){tutEv('pin',f);setState(f,'pinning');setState(o,'pinned')
 function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
  if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);G.hype=1;crowdReact(d,true);sfx('roar');sfx('roar');shake(5);irpMark('big');}
  else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);G.hype=Math.min(1,G.hype+0.4);sfx('roar');shake(3);}}
+// SECOND WIND: pinned with a full finisher meter? Press FINISH to burn the whole meter and kick out, even at
+// zero health (you come back with a sliver). Once per match per wrestler. The CPU saves it for the 2.9.
+function secondWind(){const{a,d}=G.pin;d.meter=0;d.readyAnn=false;d.usedSW=true;if(d.hp<12)d.hp=12;kickout();
+ callout('SECOND WIND!','#ff8a1f',1.6);say(`${d.ch.short} burns everything left to kick out! We're not done yet!`);G.flash=0.5;G.hype=1;sfx('fire');
+ fireFx(PX(d.x,d.z),PY(d.z)-20,30);if(!d.cpu)popOn(d,'METER USED','#ff8a1f');}
 function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
+ if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.usedSW&&!P.d.out){secondWind();return;}
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}
  if(P.d.wiggle>0)P.d.wiggle-=dt;
  if(P.ropes&&!P.d.cpu&&(di.left||di.right||di.up||di.down)&&P.t>0.3){ropeBreak();return;}
  if(!P.d.cpu&&P.presses>=P.need){kickout();return;}
  if(P.t>=P.nextAt){
   if(P.ropes&&P.d.cpu&&P.count>=1&&schance(0.8)){ropeBreak();return;}
+  if(P.d.cpu&&P.count===2&&P.d.meter>=100&&!P.d.usedSW&&schance(0.85)){secondWind();return;}
   if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(schance(P.count===1?p*0.4:p)){kickout();return;}}
   P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);G.hype=Math.min(1,G.hype+0.15);
   if(P.count===3)endMatch(P.a,P.d);}
