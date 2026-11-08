@@ -3,7 +3,8 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc']]:[]);
-const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length,p=n>5?9.7:11.4;return[122,157+i*p,140,p-1.4];});
+// up to 5 options in one column; more than that (the test link) goes to two columns so nothing falls off the bottom
+const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length;if(n<=5)return[122,157+i*11.4,140,10];const rows=Math.ceil(n/2),c=Math.floor(i/rows),r=i%rows;return[c?196:38,158+r*11.4,150,10];});
 let TITLE_F=null;
 function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(TITLE_ITEMS.length-1,G.menu+1);let go=confirmP();
  if(clickQ)TITLE_BTNS.forEach((r,i)=>{if(inRect(clickQ,r)){G.menu=i;go=true;}});
@@ -16,7 +17,7 @@ function drawTitle(){drawArena();drawRingBack();
  drawRingFront();R(0,0,W,H,'rgba(6,2,3,0.6)');
  logo('T',192,78+(Math.floor(G.t*2)%2));
  R(122,140,140,16,'#8f0f14');R(122,140,140,1,'#ffd35a');R(122,155,140,1,'#ffd35a');T('BACKYARD BRAWL',192,143,2,'#ffd35a','center','#2a0405');
- TITLE_ITEMS.map(t=>t[0]).forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,192,r[1]+3,1,on?'#fff':'#bfae98','center',null);});}
+ TITLE_ITEMS.map(t=>t[0]).forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,r[0]+r[2]/2,r[1]+3,1,on?'#fff':'#bfae98','center',null);});}
 const CARD={x:4,y:24,w:52,h:78,gap:2,cols:7};
 const PER=14,pageOf=i=>Math.floor(i/PER),PAGES=()=>Math.ceil(ROSTER.length/PER);
 const PAGE_BTN=[226,3,66,11];
