@@ -106,7 +106,7 @@
  },
  "hardcore": {
   "_readme": "Hardcore match tuning: ladderTop = standing height on the ladder, tableDmg = extra damage going through a table, ladderBonus = extra damage for a ladder dive, cpuWeapon = how often the CPU goes for a weapon (0-1).",
-  "ladderTop": 66,
+  "ladderTop": 52,
   "tableDmg": 12,
   "ladderBonus": 8,
   "cpuWeapon": 0.35
