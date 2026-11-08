@@ -15,18 +15,35 @@ const NET={
  // ---- connection
  newPeer(id){if(typeof Peer==='undefined'){this.fail('Online library missing');return null;}
   const p=id?new Peer(id,NET_CFG):new Peer(NET_CFG);
-  p.on('error',e=>{if(e.type==='unavailable-id'&&this.role==='host'){this.host();return;}
+  // phones drop the server connection when the game goes to the background (switching apps to send the code):
+  // reconnect as soon as we're back, keeping the same room code
+  p.on('disconnected',()=>{if(this.peer===p)this.reconnect();});
+  p.on('error',e=>{if(this.peer!==p)return;
+   if(e.type==='unavailable-id'&&this.role==='host'){this.rehost();return;}
+   if(e.type==='peer-unavailable'&&this.st==='joining'&&++this.tries<=10){this.err='Looking for that room... (is their game open?)';netUI.update();setTimeout(()=>this.tryJoin(),2500);return;}
+   if((e.type==='network'||e.type==='server-error'||e.type==='socket-error'||e.type==='disconnected')&&(this.st==='hosting'||this.st==='joining')){this.err='Reconnecting to the online server...';netUI.update();this.reconnect();return;}
    this.fail(e.type==='peer-unavailable'?'No match with that code':e.type==='network'||e.type==='server-error'||e.type==='socket-error'?"Can't reach the online server":'Connection error ('+e.type+')');});
   return p;},
  host(){this.reset();this.role='host';this.me=0;this.code=Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');
-  this.st='hosting';this.peer=this.newPeer(NET_PREFIX+this.code);if(!this.peer)return this.code;
-  this.peer.on('connection',c=>{if(this.conn){c.close();return;}this.bind(c);});return this.code;},
+  this.st='hosting';this.tries=0;this.openHost();return this.code;},
+ openHost(){this.peer=this.newPeer(NET_PREFIX+this.code);if(!this.peer)return;
+  this.peer.on('open',()=>{if(this.st==='hosting'){this.err='';this.tries=0;netUI.update();}});
+  this.peer.on('connection',c=>{if(this.conn&&this.conn.open){c.close();return;}this.bind(c);});},
+ // the server still remembers our room from before the phone slept: wait a moment and claim the same code again
+ rehost(){if(this.st!=='hosting')return;if(++this.tries>8){this.host();return;}this.err='Reconnecting to the online server...';netUI.update();
+  setTimeout(()=>{if(this.st!=='hosting')return;try{this.peer.destroy();}catch(e){}this.openHost();},2500);},
+ reconnect(){const p=this.peer;if(!p||p.destroyed||!p.disconnected)return;if(document.hidden)return; // tried again when the game is visible
+  clearTimeout(this.recT);this.recT=setTimeout(()=>{try{if(this.peer===p&&p.disconnected&&!p.destroyed)p.reconnect();}catch(e){}},300);},
+ tries:0,recT:0,
  join(code){code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==4){this.err='Codes are 4 letters';return;}
-  this.reset();this.role='guest';this.me=1;this.code=code;this.st='joining';this.peer=this.newPeer();if(!this.peer)return;
-  this.peer.on('open',()=>{const c=this.peer.connect(NET_PREFIX+code,{reliable:true});this.bind(c);});},
+  this.reset();this.role='guest';this.me=1;this.code=code;this.st='joining';this.tries=0;this.peer=this.newPeer();if(!this.peer)return;
+  this.peer.on('open',()=>{if(!this.conn)this.tryJoin();});},
+ tryJoin(){if(this.st!=='joining'||!this.peer||this.peer.destroyed)return;if(this.peer.disconnected){this.reconnect();setTimeout(()=>this.tryJoin(),1500);return;}
+  const c=this.peer.connect(NET_PREFIX+this.code,{reliable:true});this.bind(c);},
  bind(c){this.conn=c;c.on('open',()=>{this.lastRecv=performance.now();this.st='connected';this.err='';this.send({t:'hi',v:1});this.ping();netUI.update();onNetConnected();});
   c.on('data',d=>{this.lastRecv=performance.now();if(this.lag)setTimeout(()=>this.recv(d),this.lag);else this.recv(d);});
-  c.on('close',()=>this.drop());c.on('error',()=>this.drop());},
+  // a failed attempt while still looking for the room isn't a disconnect; only a real, opened link counts
+  c.on('close',()=>{if(c===this.conn&&c._was)this.drop();});c.on('error',()=>{if(c===this.conn&&c._was)this.drop();});c.on('open',()=>{c._was=true;});},
  send(o){if(this.conn&&this.conn.open)this.conn.send(o);},
  fail(msg){this.err=msg;if(this.st!=='connected'&&this.st!=='playing'){this.st='error';}netUI.update();},
  drop(){if(this.st==='off')return;this.lost=true;this.err='Opponent disconnected';this.st='lost';netUI.update();},
@@ -139,3 +156,7 @@ const netUI=(()=>{const el=document.createElement('div');el.id='netui';
    $('nshow').textContent=NET.code;$('nmsg').textContent=NET.err||(s==='joining'?'Connecting…':'');
    if(location.protocol==='file:'||/claude|anthropic/.test(location.hostname+document.referrer)){if(!NET.err&&s==='off')$('nmsg').textContent='Online play needs the website version of the game.';}}};
  return api;})();
+
+// back from another app: get the room back on the server right away
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&NET.peer)NET.reconnect();});
+setInterval(()=>{if(NET.peer&&NET.st!=='off')NET.reconnect();},3000);
