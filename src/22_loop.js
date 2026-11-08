@@ -5,7 +5,7 @@ function updFx(dt){
  for(const p of G.pops){p.life-=dt;p.y-=18*dt;}G.pops=G.pops.filter(p=>p.life>0);
  if(G.callout){G.callout.t+=dt;if(G.callout.t>=G.callout.dur)G.callout=null;}
  G.shake=Math.max(0,G.shake-dt*30);G.flash=Math.max(0,G.flash-dt*1.6);G.tickerT+=dt;
- if(crowdG&&AC)crowdG.gain.setTargetAtTime(muted?0:0.025+G.hype*0.16,AC.currentTime,0.25);}
+ if(crowdG&&AC)crowdG.gain.setTargetAtTime(muted?0:(0.015+G.hype*0.11)*(MUS.cur?0.45:1),AC.currentTime,0.25);}
 // ---- Fixed-step simulation: the game always advances in exact 1/60 s steps, no matter the
 // screen's refresh rate (60/90/120 Hz phones, slow laptops). Drawing happens once per screen frame.
 // Same seed + same inputs per step => same match. This is what online play and replays are built on.

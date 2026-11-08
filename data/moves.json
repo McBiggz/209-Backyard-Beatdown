@@ -97,6 +97,11 @@
   "elimHp": 70,
   "elimMax": 0.85,
   "lowHpReach": 1.1,
-  "stallAfter": 45
+  "stallAfter": 45,
+  "tossHp": 40,
+  "tossPush": 0.06,
+  "tossCpuRate": 6.5,
+  "tossTime": 5,
+  "randomElims": false
  }
 }

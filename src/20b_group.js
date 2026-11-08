@@ -82,6 +82,7 @@ function updGroupFight(dt){const mm=G.mm;
   if(mm.type==='tag'&&f.legal&&f.inp.grabP&&FREE.has(f.state)&&tryTag(f))continue;
   updFighter(f,o,f.inp,sdt);}
  const act=G.f.filter(isActive);for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++)if(act[i].out===act[j].out)separate(act[i],act[j]);
+ for(const f of G.f)if(f.toss)updToss(f,sdt);
  if(mm.type==='tag'){const[a,b]=[G.f[mm.legal[0]],G.f[mm.legal[1]]];updRef(sdt,a,b);}
  // crowd
  {const hs=act.length?act.reduce((s,f)=>s+f.hp,0)/act.length:100,floor=0.2+Math.min(0.25,G.fstep/12000)+clamp((100-hs)/100,0,1)*0.2;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
@@ -133,7 +134,9 @@ function wantsTag(f){const p=partnerOf(f);if(!f.legal||!p||p.state!=='apron'||!F
 function walkToTag(f){const c=cornerSpot(f.team),inp=blank(),dx=c.x-f.x,dz=c.z-f.z;
  if(Math.abs(dx)>20)inp[dx>0?'right':'left']=true;if(Math.abs(dz)>10)inp[dz>0?'down':'up']=true;if(Math.abs(dx)<=26&&Math.abs(dz)<=14)inp.grabP=true;return inp;}
 function tagSaveCheck(){const P=G.pin;if(!P)return;const p=partnerOf(P.d);if(!p||p.state!=='apron'||p.saving)return;
- if(p.cpu&&P.count>=1&&!P.saveTried){P.saveTried=true;if(schance(0.7)){p.saving={phase:'in',who:P.a.idx};startRoll(p,clamp(P.a.x+(p.team?24:-24),ringX(150)[0]+6,ringX(150)[1]-6),P.a.z,false);}}
+ if(p.cpu&&P.count>=1&&!P.saveTried){P.saveTried=true;const mm=G.mm;mm.saves=mm.saves||[0,0];
+  // every save a team makes, the next one gets less likely, so matches still end
+  if(schance(Math.max(0.12,0.7-0.1*mm.saves[p.team]))){mm.saves[p.team]++;p.saving={phase:'in',who:P.a.idx};startRoll(p,clamp(P.a.x+(p.team?24:-24),ringX(150)[0]+6,ringX(150)[1]-6),P.a.z,false);}}
  else if(!p.cpu&&p.inp&&p.inp.grabP){p.saving={phase:'in',who:P.a.idx};startRoll(p,P.a.x,P.a.z,false);}}
 function updSave(f,dt){const S=f.saving;
  if(S.phase==='tagin'||S.phase==='tagout'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){f.saving=null;if(S.phase==='tagout')toApron(f);else{f.out=false;setState(f,'idle');}}return;}
@@ -141,6 +144,43 @@ function updSave(f,dt){const S=f.saving;
  if(S.phase==='hit'){f.t+=dt;if(f.t>0.25&&!S.done){S.done=true;const a=G.f[S.who];if(G.pin&&G.pin.a===a){kickout();callout('SAVE!','#5fe07a',1.2);say(`${f.ch.short} breaks up the pin!`);heat(0.15);knock(a,(a.x>f.x?1:-1)*120,180);}}
   if(f.t>0.7){S.phase='out';const ap=apronSpot(f.team);startRoll(f,ap.x,ap.z,true);}return;}
  if(S.phase==='out'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){f.saving=null;toApron(f);}}}
+
+// ---------- Over the top: the toss struggle ----------
+// Grab a worn-down opponent while pushing left or right: you drag him to those ropes and it's a mash-off.
+// Win it and he goes over the top. Lose it (or run out of time) and he hangs on and shoves you off.
+// Anyone else in the ring can break it up by hitting the thrower.
+HITTABLE.add('toss');
+const canToss=(f,o)=>!!(G.mm&&G.mm.elim&&!f.out&&!o.out&&o.idx>=0&&o.hp<=(GM().tossHp||40));
+const mashed=i=>!!(i&&(i.punchP||i.kickP||i.grabP||i.jumpP||i.finP));
+function startToss(f,o,dir){const g=GM(),w=clamp(((g.tossHp||40)-o.hp)/(g.tossHp||40),0,1);link(f,o);
+ setState(f,'toss');setState(o,'tossed');f.vx=f.vz=o.vx=o.vz=0;o.y=0;o.z=f.z;f.dir=dir;o.dir=-dir;
+ f.toss={d:o.idx,dir,bar:0.42+w*0.22,phase:'drag',t:0};o.tossBy=f.idx;sfx('grab');heat(0.05);irpMark('big');
+ if(f.idx===0||o.idx===0)callout('OVER THE TOP?','#ffd35a',0.9);say(`${f.ch.short} is trying to throw ${o.ch.short} over the top!`);}
+function freeToss(f,o){f.toss=null;if(o)o.tossBy=-1;}
+function updToss(f,dt){const T=f.toss,o=G.f[T.d],g=GM();
+ // broken up: someone hit the thrower, or the man being thrown got knocked loose
+ if(f.state!=='toss'||o.state!=='tossed'){freeToss(f,o);if(o.state==='tossed')setState(o,'idle');if(f.state==='toss')setState(f,'idle');
+  if(f.idx===0||o.idx===0)callout('BROKEN UP!','#fff',0.9);return;}
+ const[x0,x1]=ringX(o.z),ex=T.dir>0?x1:x0,gap=T.dir*22*(f.ch.size||1);
+ if(T.phase==='drag'){const d=ex-o.x,st=150*dt;o.x+=clamp(d,-st,st);f.x=o.x-gap;f.z=o.z;
+  if(Math.abs(d)<1||f.t>1.2){T.phase='mash';T.t=0;}return;}
+ T.t+=dt;o.x=ex;f.x=o.x-gap;f.z=o.z;
+ const rate=g.tossCpuRate||6.5,a=f.cpu?schance(dt*rate):mashed(f.inp),d=o.cpu?schance(dt*rate*(0.75+o.hp/160)):mashed(o.inp),k=g.tossPush||0.06;
+ if(a){T.bar+=k;f.wiggle=0.12;}if(d){T.bar-=k;o.wiggle=0.12;}if(f.wiggle>0)f.wiggle-=dt;if(o.wiggle>0)o.wiggle-=dt;
+ // the longer nobody's been eliminated, and the more beaten down he is, the closer he slides to going over
+ const stall=clamp((G.mm.sinceElim||0)-(g.stallAfter||45),0,60)/60;T.bar+=dt*(0.04+stall*0.1+(o.hp<=0?0.1:0));
+ if(T.bar>=1){freeToss(f,o);setState(f,'idle');eliminate(o,T.dir);return;}
+ if(T.bar<=0||T.t>(g.tossTime||5)){freeToss(f,o);setState(o,'idle');setState(f,'hit');f.stun=0.6;f.vx=-T.dir*120;sfx('hit');
+  if(f.idx===0||o.idx===0)callout(o.ch.short+' HANGS ON!','#5fe07a',1.0);say(`${o.ch.short} hangs on and fights ${f.ch.short} off!`);heat(0.06);}}
+function drawTossBars(){for(const f of G.f){const T=f.toss;if(!T||T.phase!=='mash')continue;const o=G.f[T.d];
+ const x=clamp(PX((f.x+o.x)/2,o.z),40,W-40),y=PY(o.z)-96*(o.ch.size||1);
+ R(x-31,y-1,62,7,'#000');R(x-30,y,60*clamp(T.bar,0,1),5,'#ff4a3a');R(x+29,y-2,2,9,'#ffd35a');
+ TossT('OVER THE TOP',x,y-10,1,'#fff');
+ if(f.idx===0||o.idx===0){const me=f.idx===0;TossT((coarse?'TAP FAST TO ':'MASH ATTACK TO ')+(me?'THROW HIM OVER!':'HANG ON!'),x,y+16,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff');}}}
+function drawTossHints(me){if(!isActive(me)||!FREE.has(me.state))return;
+ for(const o of G.f){if(o===me||!isActive(o)||!canToss(me,o)||!GRABBABLE.has(o.state))continue;if(Math.abs(o.x-me.x)>90||Math.abs(o.z-me.z)>20)continue;
+  const x=PX(o.x,o.z),y=PY(o.z)-o.y-80*(o.ch.size||1);if(Math.floor(G.t*3)%2)TossT(coarse?'GRAB + PUSH: TOSS!':'GRAB + ←/→: TOSS!',x,y,1,'#ffd35a');}}
+const TossT=(s,x,y,sc,c)=>T(s,x,y,sc,c,'center','#000');
 
 // ---------- drawing ----------
 function drawGroupHUD(){const mm=G.mm;
@@ -158,5 +198,5 @@ function drawGroupHUD(){const mm=G.mm;
   const msg=mm.entered<G.f.length?'NEXT ENTRANT 0:'+String(Math.ceil(mm.nextT)).padStart(2,'0')+'  •  '+left+' IN THE RING':'ALL IN! LAST ONE STANDING  •  '+left+' LEFT';
   BOX(110,194,164,11,'#140a0c','#ffd35a');T(msg,192,197,1,'#fff','center',null);
   if(mm.p1Out){BOX(92,90,200,34,'#140a0c','#ff4a3a');T("YOU'RE ELIMINATED!",192,95,2,'#ff4a3a','center',null);T('YOU FINISHED #'+mm.p1Out+' OF '+G.f.length,192,108,1,'#e9dcc6','center',null);T(mm.ff?'FAST FORWARDING...':(coarse?'TAP TO FAST FORWARD':'ENTER TO FAST FORWARD'),192,116,1,'#ffd35a','center',null);}}}
-function drawGroupMarkers(){const me=G.f[0];if(!isActive(me)&&!me.entering)return;const x=PX(me.x,me.z),y=PY(me.z)-me.y-74*(me.ch.size||1);
+function drawGroupMarkers(){const me=G.f[0];drawTossBars();drawTossHints(me);if(!isActive(me)&&!me.entering)return;const x=PX(me.x,me.z),y=PY(me.z)-me.y-74*(me.ch.size||1);
  const b=Math.floor(G.t*4)%2;R(x-1,y-6+b,3,4,'#ffd35a');R(x-3,y-3+b,7,1,'#ffd35a');R(x-2,y-2+b,5,1,'#ffd35a');R(x-1,y-1+b,3,1,'#ffd35a');T('YOU',x,y-13+b,1,'#ffd35a','center','#000');}

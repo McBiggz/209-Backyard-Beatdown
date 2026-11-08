@@ -5,7 +5,7 @@ const crowdMul=()=>G.hype>=CTR.crowd.hot?1+CTR.crowd.meterBonus:1;
 const heat=v=>{G.hype=Math.min(1,G.hype+v);};
 function damage(o,dmg,f){if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
-function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
+function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
 // BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
 // an attack is coming at f from o, up close
@@ -38,6 +38,7 @@ function startWhip(f,o,mx,canRev){link(f,o);setState(f,'whip');setState(o,'whipp
 function tryGrab(f,o,mx){if(o.ghost){setState(f,'whiff');return;}
  if(wide()&&f.out)mx=0;
  if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*f.ch.size&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){
+  if(mx&&canToss(f,o)){startToss(f,o,mx);return;}
   if(mx){startWhip(f,o,mx,true);line('whip',f,o);tutEv('whip',f);return;}
   link(f,o);setState(f,'grapple');setState(o,'grappled');f.vx=f.vz=o.vx=o.vz=0;o.z=f.z+0.2;sfx('grab');}
  else setState(f,'whiff');

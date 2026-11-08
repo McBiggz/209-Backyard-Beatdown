@@ -6,8 +6,13 @@ function initAudio(){
   AC=new (window.AudioContext||window.webkitAudioContext)();
   master=AC.createGain();master.gain.value=0.5;master.connect(AC.destination);
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  const s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=850;f.Q.value=0.5;
-  crowdG=AC.createGain();crowdG.gain.value=0.03;s.connect(f).connect(crowdG).connect(master);s.start();
+  // crowd murmur: dark filtered noise that swells and dips slowly, so it reads as people, not TV static
+  const s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;
+  const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=520;lp.Q.value=0.4;
+  const hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=140;
+  const sw=AC.createGain();sw.gain.value=0.75;
+  for(const[hz,amt]of[[0.23,0.18],[0.41,0.12],[0.07,0.1]]){const l=AC.createOscillator(),lg=AC.createGain();l.frequency.value=hz;lg.gain.value=amt;l.connect(lg).connect(sw.gain);l.start();}
+  crowdG=AC.createGain();crowdG.gain.value=0.015;s.connect(lp).connect(hp).connect(sw).connect(crowdG).connect(master);s.start();
  }catch(e){AC=null;}
 }
 function noise(dur,freq,q,vol,type='lowpass',atk=0.002){if(!AC)return;const t=AC.currentTime;const s=AC.createBufferSource();s.buffer=noiseBuf;

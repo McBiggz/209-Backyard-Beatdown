@@ -13,6 +13,8 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'block':return 'grap0';
  case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
  case 'elim':return 'fall';
+ case 'toss':return f.wiggle>0?'grap1':'grap0';
+ case 'tossed':return f.wiggle>0?'hit':'dazed';
  case 'elimdown':return 'down';
  case 'runline':return f.t<0.1?'punch0':'punch1';
  case 'roll':return 'jump';

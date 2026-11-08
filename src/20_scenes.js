@@ -1,6 +1,8 @@
+// unfinished modes only show up on the test link: add ?test=1 (or the older ?tag=1) to the address
+const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearchParams(location.search));
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
-const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['ROYAL RUMBLE (8 MAN)',4],['TUTORIAL & PRACTICE',3]].concat(new URLSearchParams(location.search).get('tag')?[['TAG TEAM (TEST)',5]]:[]);
+const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5]]:[]);
 const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length,p=n>5?9.7:11.4;return[122,157+i*p,140,p-1.4];});
 let TITLE_F=null;
 function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(TITLE_ITEMS.length-1,G.menu+1);let go=confirmP();
