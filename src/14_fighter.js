@@ -41,7 +41,8 @@ function updFighter(f,o,inp,dt){
    if(f.ctrWin<=0){f.vx=f.whipDir*CTR.whipSpeed;f.dir=f.whipDir;}
    break;}
   const nx=f.x+f.vx*dt;const[wb0,wb1]=wbounds(f);if((nx>wb1&&f.vx>0)||(nx<wb0&&f.vx<0)){f.vx=-f.vx;f.dir=f.vx>0?1:-1;G.rope={side:f.vx<0?1:-1,t:0};ropeSfx();shake(2);
-   if(!f.bounced){f.bounced=true;f.runWin=CTR.ropeAttack;}}
+   if(!f.bounced){f.bounced=true;f.runWin=CTR.ropeAttack;}
+   if(G.mm&&G.mm.elim&&rumbleOverTop(f,f.vx>0?-1:1,true))break;}
   // off the ropes: PUNCH = flying clothesline, KICK/JUMP = running dropkick
   if(f.runWin>0){f.runWin-=dt;
    if(inp.punchP){f.runWin=0;setState(f,'runline');sfx('whoosh');tutEv('ropeattack',f);break;}

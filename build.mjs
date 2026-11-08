@@ -11,6 +11,8 @@ for (const f of fs.existsSync('data') ? fs.readdirSync('data') : []) {
 }
 js = js.replace('/*@@DATA@@*/', 'const DATA=' + JSON.stringify(data) + ';');
 // Inline every asset so the page has no outside files to lose
+// catch typos before they ship: the game must at least parse
+try { new Function(js.replace(/__ASSET\(([^)]+)\)__/g, 'A')); } catch (e) { console.error('BUILD STOPPED - code error: ' + e.message); process.exit(1); }
 js = js.replace(/__ASSET\(([^)]+)\)__/g, (_, p) => {
   const ext = p.split('.').pop();
   return `data:${mime[ext]};base64,` + fs.readFileSync('assets/' + p).toString('base64');

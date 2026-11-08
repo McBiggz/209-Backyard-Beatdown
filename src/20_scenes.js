@@ -1,18 +1,20 @@
 // ================= SCENES =================
-const TITLE_BTNS=[[122,158,140,11],[122,171,140,11],[122,184,140,11],[122,197,140,11]];
+// title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
+const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['ROYAL RUMBLE (8 MAN)',4],['TUTORIAL & PRACTICE',3]].concat(new URLSearchParams(location.search).get('tag')?[['TAG TEAM (TEST)',5]]:[]);
+const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length,p=n>5?9.7:11.4;return[122,157+i*p,140,p-1.4];});
 let TITLE_F=null;
-function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(3,G.menu+1);let go=confirmP();
+function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(TITLE_ITEMS.length-1,G.menu+1);let go=confirmP();
  if(clickQ)TITLE_BTNS.forEach((r,i)=>{if(inRect(clickQ,r)){G.menu=i;go=true;}});
- if(go&&G.menu===2){G.scene='lobby';netUI.show(true);sfx('punch');return;}
- if(go){G.mode=G.menu;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
+ const it=TITLE_ITEMS[G.menu];
+ if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
+ if(go){G.mode=it[1];G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
 function drawTitle(){drawArena();drawRingBack();
  if(!TITLE_F){TITLE_F=[makeFighter(ROSTER[0],-120,40,1,false,0),makeFighter(ROSTER.find(c=>c.id==='papi'),120,40,-1,false,1)];TITLE_F.forEach(f=>{f.set=SETS[f.ch.id];f.state='win';});}
  for(const f of TITLE_F){if(wide()){G.cam=0;f.x=f.idx?205:110;f.z=140;}else{f.x=f.idx?120:-120;f.z=40;}shadowOf(f,f.ch.size);drawSpr(f.set,'win'+(Math.floor(G.t*2.5+f.idx)%2),PX(f.x,f.z),PY(f.z),f.dir,f.ch.drawScale||1);}
  drawRingFront();R(0,0,W,H,'rgba(6,2,3,0.6)');
  logo('T',192,78+(Math.floor(G.t*2)%2));
  R(122,140,140,16,'#8f0f14');R(122,140,140,1,'#ffd35a');R(122,155,140,1,'#ffd35a');T('BACKYARD BRAWL',192,143,2,'#ffd35a','center','#2a0405');
- ['1 PLAYER VS CPU','2 PLAYERS (SAME SCREEN)','PLAY ONLINE','TUTORIAL & PRACTICE'].forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,192,r[1]+3,1,on?'#fff':'#bfae98','center',null);});
- T(coarse?'TAP A MODE':'W/S CHOOSE  •  ENTER START',192,210,1,'#bfae98','center','#000');}
+ TITLE_ITEMS.map(t=>t[0]).forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,192,r[1]+3,1,on?'#fff':'#bfae98','center',null);});}
 const CARD={x:4,y:24,w:52,h:78,gap:2,cols:7};
 const PER=14,pageOf=i=>Math.floor(i/PER),PAGES=()=>Math.ceil(ROSTER.length/PER);
 const PAGE_BTN=[226,3,66,11];
@@ -32,9 +34,9 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
  if(G.mode===2){if(S.picks[0]==null){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
    let lk=confirmP();if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[0]=i;lk=true;break;}
    if(lk){lockIn(0);S.stage=1;NET.pick(S.c[0]);}}return;}
- if(G.mode===3){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
+ if(G.mode>=3){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   let lk=confirmP();if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[0]=i;lk=true;break;}
-  if(lk){lockIn(0);const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
+  if(lk){lockIn(0);if(G.mode===4){startRumble(S.c[0]);return;}if(G.mode===5){startTag(S.c[0]);return;}const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
  if(G.mode===0){const w=S.stage;nav(w,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   if(confirmP()||hit(['KeyJ'])){lockIn(w);S.stage++;if(S.stage<2)S.page=pageOf(S.c[1]);}
   if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[w]=i;lockIn(w);S.stage++;break;}
@@ -45,7 +47,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
   if(S.picks[0]!=null&&S.picks[1]!=null)startIntro();}}
 function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
  T('CHOOSE YOUR WRESTLER',114,4,2,'#ffd35a','center','#5a0608');
- T(G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
+ T(G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
  BOX(...STAGE_BTN,'#8f0f14','#ffd35a');T('LEVEL: '+['THE DEN','OUTDOOR','BMF RANCH','RANCH: FULL'][G.stage],STAGE_BTN[0]+42,STAGE_BTN[1]+3,1,'#fff','center',null);
  if(S.page==null)S.page=0;
  {const P=PAGES();BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
@@ -54,11 +56,11 @@ function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
   ctx.save();ctx.beginPath();ctx.rect(x,y,w,h-9);ctx.clip();const st=SETS[ch.id],fy=Math.max(y+h-12,y+4+(AY-(st.idle0_top||20)));ELL(x+w/2,fy,12,2,'rgba(0,0,0,0.35)');drawSpr(st,'idle'+(Math.floor(G.t*1.6+i)%2),x+w/2,fy,1);ctx.restore();
   R(x,y+h-9,w,9,'#0a0506');T(cardName(ch),x+w/2,y+h-7,1,'#fff','center',null);
   R(x+1,y+1,ch.align==='heel'?17:17,7,ch.align==='heel'?'#1c8f3a':'#8f0f14');T(ch.align==='heel'?'HEEL':'FACE',x+2,y+2,1,'#fff','left',null);
-  for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode===3&&who===1)continue;if(G.mode===2&&who===1)continue;if(G.mode===0&&S.stage!==who&&S.picks[who]==null)continue;
+  for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode>=3&&who===1)continue;if(G.mode===2&&who===1)continue;if(G.mode===0&&S.stage!==who&&S.picks[who]==null)continue;
    const isC=S.picks[who]==null?S.c[who]===i:S.picks[who]===i;if(!isC)continue;const col=who===0?'#ff4a3a':'#3a8bff',lk=S.picks[who]===i;
    const th=lk?2:1;R(x-th+who,y-th+who,w+th*2-who*2,th,col);R(x-th+who,y+h-who,w+th*2-who*2,th,col);R(x-th+who,y+who,th,h-who*2,col);R(x+w-who,y+who,th,h-who*2,col);
    const lbl=(who===0?'P1':(G.mode===0?'CPU':'P2'))+(lk?'✓':'');R(x+w-TW(lbl)-3,y+1+who*8,TW(lbl)+2,7,col);T(lbl,x+w-2,y+2+who*8,1,'#fff','right',null);}});
- for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode===3&&who===1)continue;if(G.mode===2&&who===1){BOX(194,184,186,22,'#140a0c','#3a8bff');T(NET.theirPick!=null?'OPPONENT IS LOCKED IN':'OPPONENT IS PICKING...',287,192,1,'#bfae98','center',null);continue;}const ch=ROSTER[S.picks[who]!=null?S.picks[who]:S.c[who]],px=who?194:4,py=184;
+ for(let who=0;who<2;who++){if(G.mode===0&&S.stage<who&&S.picks[who]==null)continue;if(G.mode>=3&&who===1)continue;if(G.mode===2&&who===1){BOX(194,184,186,22,'#140a0c','#3a8bff');T(NET.theirPick!=null?'OPPONENT IS LOCKED IN':'OPPONENT IS PICKING...',287,192,1,'#bfae98','center',null);continue;}const ch=ROSTER[S.picks[who]!=null?S.picks[who]:S.c[who]],px=who?194:4,py=184;
   BOX(px,py,186,22,'#140a0c',who?'#3a8bff':'#ff4a3a');T(ch.name,px+3,py+3,1,'#fff','left',null);T(ch.tag+' • '+(ch.align==='heel'?'HEEL':'FACE'),px+3,py+10,1,'#bfae98','left',null);
   [['POW',ch.pow/1.3],['SPD',ch.spd/1.25],['SIZ',ch.size/1.22]].forEach(([l,v],j)=>{const xx=px+112,yy=py+3+j*6;T(l,xx,yy,1,'#8a7a66','left',null);R(xx+14,yy,56,4,'#2a1a1c');R(xx+14,yy,Math.round(56*v),4,'#ffd35a');});
   T(ch.fin,px+3,py+16,1,ch.accent==='#141414'?'#fff':ch.accent,'left',null);}
@@ -67,7 +69,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  G.f=[makeFighter(c0,-40,32,1,false,0),makeFighter(c1,40,32,-1,G.mode===0,1)];G.f.forEach(f=>f.set=SETS[f.ch.id]);
  if(c0.id===c1.id){const alt=Object.assign({},c1,{trunks:c1.accent,accent:c1.trunks,name:c1.name+' II',short:c1.short+' II',id:c1.id+'_alt'});if(!SETS[alt.id])buildWrestler(alt);G.f[1].ch=alt;G.f[1].set=SETS[alt.id];}
  G.scene='intro';G.introT=0;sfx('roar');}
-function beginFight(){const[a,b]=G.f;
+function beginFight(){G.mm=null;const[a,b]=G.f;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
@@ -90,7 +92,7 @@ function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',192,206,1,'#7a6a5a','center',null);}
 const OVER_BTNS=[[122,128,140,14],[122,146,140,14],[122,164,140,14]];
 const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14]];
-function updFight(dt){
+function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.net){if(G.net.updFightMeta)G.net.updFightMeta();}
  else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
@@ -134,7 +136,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3; // the crowd settles in at th
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));

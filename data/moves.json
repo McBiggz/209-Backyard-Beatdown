@@ -90,5 +90,13 @@
    "nearFall": 0.16,
    "coolHot": 0.16
   }
+ },
+ "group": {
+  "_readme": "Group matches. rumbleInterval = seconds between Royal Rumble entrants. Over-the-top elimination chance rises as health drops below elimHp, up to elimMax (always at 0 health). lowHpReach: worn-down wrestlers can be knocked over from further from the ropes. stallAfter: seconds with no elimination before the odds start rising.",
+  "rumbleInterval": 20,
+  "elimHp": 70,
+  "elimMax": 0.85,
+  "lowHpReach": 1.1,
+  "stallAfter": 45
  }
 }

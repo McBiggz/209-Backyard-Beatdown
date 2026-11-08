@@ -30,6 +30,7 @@ function simStep(){
 function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
  try{
   let n=0;if(G.irp){irpFrame();acc=0;}
+  else if(G.mm&&G.mm.ff&&G.scene==='fight'&&!G.over){for(let k=0;k<8&&!G.over;k++)simStep();acc=0;}
   else while(acc>=STEP&&n<MAX_STEPS&&!G.irp){if(simStep()===false){acc=Math.min(acc,STEP*2);break;}acc-=STEP;n++;}
   if(n===MAX_STEPS)acc=G.net?Math.min(acc,STEP*8):0; // tab was asleep: don't fast-forward (online: catch up a little)
   ctx=SCR;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.imageSmoothingEnabled=false;
@@ -73,7 +74,7 @@ function encSim(v,top){if(v===null||typeof v!=='object')return typeof v==='funct
 function decSim(v){if(v===null||typeof v!=='object')return v;if(Array.isArray(v))return v.map(decSim);
  if('$f' in v)return G.f[v.$f];if('$ch' in v)return G.f[v.$ch].ch;if('$set' in v)return G.f[v.$set].set;if('$ref' in v)return REF;
  const o={};for(const k in v)o[k]=decSim(v[k]);return o;}
-const SNAP_KEYS=['ref','pin','over','hype','crowdHot','hitStop','slow','slowT','cam','entrance','rope','co','fstep','t','stage'];
+const SNAP_KEYS=['ref','pin','over','hype','crowdHot','mm','hitStop','slow','slowT','cam','entrance','rope','co','fstep','t','stage'];
 function getSnap(){const s={f:G.f.map(f=>encSim(f,true)),seed:SIM.seed,aseed:AIR.seed,b:[XMIN,XMAX,ZMIN,ZMAX]};
  for(const k of SNAP_KEYS)s[k]=encSim(G[k]);return JSON.stringify(s);}
 function setSnap(str){const s=JSON.parse(str);

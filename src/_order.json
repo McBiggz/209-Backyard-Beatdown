@@ -21,6 +21,7 @@
  "src/18_draw_arena.js",
  "src/19_draw_world.js",
  "src/20_scenes.js",
+ "src/20b_group.js",
  "src/21_loading.js",
  "src/21_net.js",
  "src/21_replay.js",

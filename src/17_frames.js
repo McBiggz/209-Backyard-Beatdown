@@ -11,6 +11,9 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'grapple':return t<0.3?'grap0':'grap1';
  case 'whip':return 'grap0';
  case 'block':return 'grap0';
+ case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
+ case 'elim':return 'fall';
+ case 'elimdown':return 'down';
  case 'runline':return f.t<0.1?'punch0':'punch1';
  case 'roll':return 'jump';
  case 'grappled':{const k=((Math.round((f.spin||0)/(Math.PI/4))%8)+8)%8;return 'flip'+k;}

@@ -7,7 +7,7 @@ function drawCtrIcon(f){if(f.cpu)return; if(f.state!=='whipped')return;let lbl=n
  if(!lbl)return;const x=sx_(f),y=sy_(f)-76*f.ch.size,w=TW(lbl)+8,on=Math.floor(G.t*16)%2;
  BOX(x-w/2,y,w,11,'#140a0c',on?'#ffd35a':'#ff4a3a');T(lbl,x,y+3,1,'#fff','center',null);R(x-w/2+1,y+9,Math.round((w-2)*pct),1,'#ffd35a');}
 function drawFighters(){
- const R0=G.ref,ents=G.f.filter(f=>!f.hidden).map(f=>({f,z:f.z+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));ents.push({f:R0,z:R0.z,ref:true});
+ const R0=G.ref,ents=G.f.filter(f=>!f.hidden).map(f=>({f,z:f.z+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden)ents.push({f:R0,z:R0.z,ref:true});
  for(const e of ents)shadowOf(e.f,e.ref?0.9:e.f.ch.size);
  ents.sort((p,q)=>p.z-q.z);
  const front=e=>wide()&&(e.z>=180||(!e.ref&&e.f.state==='perch'));let postsDone=!wide();
@@ -20,7 +20,7 @@ function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='fire'&&a<0.3)continue;R(p.x,p.y,p.size,p.size,p.col);}}
 function drawPops(){for(const p of G.pops){ctx.globalAlpha=clamp(p.life/p.max*2,0,1);T(p.text,p.x,p.y,1,p.col,'center','#000');}ctx.globalAlpha=1;}
 function drawCallout(){const c=G.callout;if(!c)return;const p=c.t/c.dur;ctx.globalAlpha=p>0.8?(1-p)/0.2:1;T(c.text,192,44,c.t<0.1?4:3,c.col,'center','#1a0304');ctx.globalAlpha=1;}
-function drawHUD(){const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
+function drawHUD(){if(G.mm){drawGroupHUD();return;}const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
  R(0,207,W,9,'#0a0506');R(0,207,20,9,'#8f0f14');T('LIVE',10,209,1,'#fff','center',null);
  const vis=Math.min(G.ticker.length,Math.floor(G.tickerT*60));T(G.ticker.slice(0,vis),24,209,1,'#f1e6d0','left',null);
  T(muted?'M:SOUND OFF':'M:SOUND',W-3,209,1,'#7a6a5a','right',null);

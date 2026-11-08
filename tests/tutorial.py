@@ -11,7 +11,7 @@ async def main():
     pg.on('pageerror',lambda e:errs.append(str(e)))
     await pg.goto(URL);await pg.wait_for_function("typeof G!=='undefined'&&G.scene==='title'",timeout=60000)
     await pg.evaluate(H)
-    await pg.evaluate("G.menu=3;__k('Enter',true);__run(1);__k('Enter',false);__run(1);")
+    await pg.evaluate("G.menu=TITLE_ITEMS.findIndex(t=>t[1]===3);__k('Enter',true);__run(1);__k('Enter',false);__run(1);")
     print('select mode',await pg.evaluate("[G.scene,G.mode]"))
     await pg.evaluate("__k('Enter',true);__run(1);__k('Enter',false);__run(5);")
     print('started',await pg.evaluate("[G.scene,!!G.tut,G.f.map(f=>f.ch.id)]"))

@@ -1,0 +1,162 @@
+// ================= GROUP MATCHES (more than two wrestlers) =================
+// One-on-one matches (and online) use the original two-wrestler loop in updFight and are untouched.
+// Group matches run here: every wrestler fights a "target" (the nearest opponent, locked while grappling,
+// whipping or pinning), so all the existing one-on-one move code works unchanged.
+//   ROYAL RUMBLE: 8 wrestlers, 2 start, a new entrant on a countdown, out over the top rope = eliminated.
+//   TAG TEAM (built, hidden from the menu until it's ready: open the game with ?tag=1): 2 vs 2, legal men
+//   in the ring, partners on the apron, tag at your corner, partner can run in to break up a pin.
+const GM=()=>DATA.moves.group||{};
+const FREE=new Set(['idle','walk','run','block']);
+const isActive=f=>!f.wait&&!f.elim&&!f.entering&&f.state!=='elim'&&f.state!=='elimdown'&&f.state!=='apron'&&!f.saving;
+const sameTeam=(a,b)=>a.team!=null&&a.team===b.team;
+function link(f,o){if(!G.mm||!o||o.ghost)return;f.tgt=o.idx;o.tgt=f.idx;}
+function tgtOf(f){const o=f.tgt>=0?G.f[f.tgt]:null;return o&&isActive(o)&&!sameTeam(f,o)?o:null;}
+function retarget(f){let cur=tgtOf(f);if(cur&&!FREE.has(f.state))return;
+ let best=null,bs=1e9;for(const o of G.f){if(o===f||!isActive(o)||sameTeam(f,o))continue;if(G.mm.type==='tag'&&!o.legal)continue;
+  let s=Math.abs(o.x-f.x)+2*Math.abs(o.z-f.z)+(o.out!==f.out?120:0)-(o.tgt===f.idx?20:0);if(s<bs){bs=s;best=o;}}
+ if(!best){f.tgt=-1;return;}
+ if(cur&&cur!==best){const sc=Math.abs(cur.x-f.x)+2*Math.abs(cur.z-f.z)+(cur.out!==f.out?120:0)-(cur.tgt===f.idx?20:0);if(sc<=bs+25)return;}
+ f.tgt=best.idx;}
+function ghostFor(f){const g=G.ghost;g.x=f.x<157?262:52;g.z=140;return g;}
+
+// ---------- starting a group match ----------
+function startGroup(cfg){G.mm=null;G.mmCfg=cfg;const seed=G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
+ G.stage=3;XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;
+ G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const f=makeFighter(ch,110,140,1,i!==0||cfg.cpuAll,i);f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
+ G.ghost=makeFighter(G.f[0].ch,300,150,1,true,-1);G.ghost.ghost=true;G.ghost.hidden=true;
+ G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4);G.rec={v:1,seed,group:cfg.type,ids:cfg.ids,inp:[]};G.fstep=0;G.co={t:0,n:0};G.entrance=null;
+ G.ref={x:157,z:127,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false,hidden:cfg.type==='rumble'};
+ G.pin=null;G.over=null;G.parts=[];G.pops=[];G.hype=0.45;G.crowdHot=false;G.paused=false;G.slow=1;G.slowT=0;G.hitStop=0;G.cam=60;
+ const mm={type:cfg.type,pins:cfg.type==='tag',elim:cfg.type==='rumble',order:[],elimOrder:[],entered:0,nextT:0,ff:false,p1Out:0};G.mm=mm;
+ for(const f of G.f){f.wait=true;f.hidden=true;}
+ if(cfg.type==='rumble'){mm.order=cfg.order;mm.interval=GM().rumbleInterval||20;mm.nextT=mm.interval;
+  for(let k=0;k<2;k++){const f=G.f[mm.order[k]];f.wait=false;f.hidden=false;f.x=k?205:110;f.z=140;f.dir=k?-1:1;mm.entered++;}
+  callout('ROYAL RUMBLE!','#ffd35a',1.6);say(`Over the top rope to eliminate! Whip worn-down wrestlers into the ropes to throw them out!`);}
+ else{// tag: team 0 = wrestlers 0,1 (left corner), team 1 = 2,3 (right corner)
+  G.f.forEach((f,i)=>{f.team=i<2?0:1;f.wait=false;f.hidden=false;});mm.legal=[0,2];
+  for(const f of G.f){if(f.idx===0||f.idx===2){f.legal=true;f.x=f.team?205:110;f.z=140;f.dir=f.team?-1:1;}else{f.legal=false;toApron(f);}}
+  callout('TAG TEAM MATCH!','#ffd35a',1.6);say('Tag at your corner! Partners can save a pin!');}
+ G.scene='fight';sfx('bell');}
+function startRumble(pick){const others=ROSTER.filter(c=>c.id!==ROSTER[pick].id&&c.id!=='kliq').map(c=>c.id);
+ let r=(Math.random()*4294967296)>>>0;const R=()=>{r=(Math.imul(r,1664525)+1013904223)>>>0;return r/4294967296;};
+ for(let i=others.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+ const ids=[ROSTER[pick].id,...others.slice(0,7)];const order=[1,2,3,4,5,6,7];
+ for(let i=order.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+ order.splice(Math.floor(R()*4),0,0); // you draw one of the first four numbers
+ startGroup({type:'rumble',ids,order});}
+function startTag(pick){const others=ROSTER.filter(c=>c.id!==ROSTER[pick].id&&c.id!=='kliq').map(c=>c.id);
+ let r=(Math.random()*4294967296)>>>0;const R=()=>{r=(Math.imul(r,1664525)+1013904223)>>>0;return r/4294967296;};
+ for(let i=others.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+ startGroup({type:'tag',ids:[ROSTER[pick].id,...others.slice(0,3)]});}
+
+// ---------- the group match loop (runs instead of the one-on-one loop) ----------
+function updGroupFight(dt){const mm=G.mm;
+ if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
+ if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
+ if(hit(['KeyM']))toggleMute();
+ if(G.over){G.over.t+=dt;if(G.over.t>1.8){mm.ff=false;
+  if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0]))){G.forceSeed=null;G.mmCfg.type==='rumble'?startRumble(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0])):startTag(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0]));return;}
+  else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0]),0],stage:0,picks:[null,null]};return;}
+  else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2]))){G.scene='title';return;}}}
+ else if(mm.p1Out&&!mm.ff&&(confirmP()||clickQ)){mm.ff=true;callout('FAST FORWARD','#fff',0.8);}
+ // camera: follow you; if you're out, follow the action
+ {const me=G.f[0],act=G.f.filter(isActive);let fx=157;if(isActive(me))fx=me.x;else if(act.length)fx=act.reduce((s,f)=>s+f.x,0)/act.length;
+  const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*4));}
+ if(G.hitStop>0){G.hitStop-=dt;return;}
+ if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
+ const sdt=dt*G.slow;G.rope.t+=sdt;
+ if(mm.type==='rumble')rumbleClock(sdt);
+ for(const f of G.f){if(f.entering)updEntering(f,sdt);if(f.state==='elim'||f.state==='elimdown')updElim(f,sdt);if(f.saving)updSave(f,sdt);}
+ // who's fighting whom
+ for(const f of G.f)if(isActive(f))retarget(f);
+ // this step's inputs (recorded so the instant replay can play the whole ring back)
+ const n=G.f.length;let inp;
+ if(G.stepInp)inp=G.f.map((f,i)=>unpackInp(G.stepInp[i]||0));
+ else inp=G.f.map((f,i)=>{if(!isActive(f)||G.over)return blank();const o=tgtOf(f)||ghostFor(f);
+  if(mm.type==='tag'&&f.cpu&&wantsTag(f))return walkToTag(f);
+  return f.cpu?aiInput(f,o,sdt):humanInput(0);});
+ G.curInp=inp.map(packInp);G.f.forEach((f,i)=>f.inp=inp[i]);
+ if(G.pin){updPin(sdt,inp);if(mm.type==='tag')tagSaveCheck();}
+ if(G.scene!=='fight'||G.mm!==mm)return;
+ for(const f of G.f){if(!isActive(f))continue;const o=tgtOf(f)||ghostFor(f);
+  if(mm.type==='tag'&&f.legal&&f.inp.grabP&&FREE.has(f.state)&&tryTag(f))continue;
+  updFighter(f,o,f.inp,sdt);}
+ const act=G.f.filter(isActive);for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++)if(act[i].out===act[j].out)separate(act[i],act[j]);
+ if(mm.type==='tag'){const[a,b]=[G.f[mm.legal[0]],G.f[mm.legal[1]]];updRef(sdt,a,b);}
+ // crowd
+ {const hs=act.length?act.reduce((s,f)=>s+f.hp,0)/act.length:100,floor=0.2+Math.min(0.25,G.fstep/12000)+clamp((100-hs)/100,0,1)*0.2;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
+ // a winner?
+ if(!G.over&&mm.type==='rumble'&&mm.entered>=G.f.length){const left=G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown'&&!f.wait);
+  if(left.length===1){const w=left[0];G.over={w,l:null,t:0,how:'ROYAL RUMBLE WINNER'};setState(w,'win');sfx('bell');sfx('roar');heat(0.4);callout(w.ch.short+' WINS THE RUMBLE!','#ffd35a',2.2);say(`${w.ch.name} has won the Royal Rumble!`);}}
+ if(!G.f[0].elim&&!mm.p1Out&&(G.f[0].state==='elim')){mm.p1Out=1+G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown').length;}}
+
+// ---------- Royal Rumble pieces ----------
+function rumbleClock(dt){const mm=G.mm;mm.sinceElim=(mm.sinceElim||0)+dt;if(G.over||mm.entered>=G.f.length)return;mm.nextT-=dt;
+ if(mm.nextT<=0){mm.nextT=mm.interval;const f=G.f[mm.order[mm.entered]];mm.entered++;f.wait=false;f.hidden=false;f.entering={phase:'walk'};
+  f.x=470;f.z=160;f.out=true;f.dir=-1;setState(f,'walk');callout('#'+mm.entered+' '+f.ch.name+'!','#fff',1.6);sfx('roar');heat(0.12);
+  musPlay(f.ch.id,'theme',{quiet:0.6});say(`Entrant number ${mm.entered}: ${f.ch.name}!`);
+  for(let k=0;k<20;k++)part(PX(470,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#ffd35a','#ff8a1f','#fff']),2,'dust');}}
+function updEntering(f,dt){const E=f.entering;
+ if(E.phase==='walk'){const tx=296,tz=168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*16;f.state='walk';f.dir=dx<0?-1:1;
+  if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*170*dt;f.z+=dz/d*170*dt;}}
+ else if(E.phase==='roll'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){f.entering=null;f.out=false;setState(f,'idle');}}}
+// over the top rope? Called when someone is knocked flying or whipped into the ropes.
+function rumbleOverTop(o,dir,whip){const mm=G.mm;if(!mm||!mm.elim||o.out||o.state==='elim'||o.y>30)return false;
+ const[x0,x1]=ringX(o.z),edge=dir>0?x1-o.x:o.x-x0,g=GM();
+ // worn-down wrestlers go over from further out; a long stretch with no elimination makes it easier too
+ const reach=whip?8:34+clamp(50-o.hp,0,50)*(g.lowHpReach||1.1);if(edge>reach)return false;
+ const stall=clamp((mm.sinceElim||0)-(g.stallAfter||45),0,60)/60;
+ const p=o.hp<=0?1:clamp(clamp((g.elimHp||70)-o.hp,0,70)/70*(g.elimMax||0.85)+(whip&&o.hp<70?0.12:0)+stall*(o.hp<70?0.5:0.15),0,1);if(!schance(p))return false;
+ eliminate(o,dir);return true;}
+function eliminate(o,dir){const mm=G.mm;mm.sinceElim=0;setState(o,'elim');o.edir=dir;o.ex0=o.x;o.vx=o.vz=0;o.out=true;mm.elimOrder.push(o.idx);
+ const left=G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown'&&!f.wait).length;
+ callout(o.ch.short+' IS OUT!','#ff4a3a',1.4);say(`${o.ch.name} goes over the top! ${left} left in the Rumble!`);sfx('roar');shake(5);heat(0.15);irpMark('big');}
+function updElim(f,dt){if(f.state==='elim'){const p=clamp(f.t/0.7,0,1);f.x=f.ex0+f.edir*p*60;f.y=Math.sin(p*Math.PI)*38+(1-p)*10;if(p>=1){f.y=0;setState(f,'elimdown');sfx('slam');dust(sx_(f),PY(f.z),true);}}
+ else if(f.t>1.6){f.elim=true;f.hidden=true;}}
+
+// ---------- Tag team pieces ----------
+const apronSpot=t=>({x:t?ringX(158)[1]+12:ringX(158)[0]-12,z:160});
+// the team's corner, just inside the ropes where a fighter can actually stand
+const cornerSpot=t=>{const r=ringX(146);return{x:t?r[1]-2:r[0]+2,z:146};};
+function toApron(f){const a=apronSpot(f.team);f.x=a.x;f.z=a.z;f.out=true;f.dir=f.team?-1:1;f.legal=false;setState(f,'apron');}
+function partnerOf(f){return G.f.find(p=>p!==f&&p.team===f.team);}
+function tryTag(f){const c=cornerSpot(f.team),p=partnerOf(f);if(!p||p.state!=='apron'||f.out)return false;
+ if(Math.abs(f.x-c.x)>26||Math.abs(f.z-c.z)>14)return false;
+ // tag!
+ const mm=G.mm;p.legal=true;mm.legal[f.team]=p.idx;f.legal=false;
+ startRoll(p,f.team?ringX(150)[1]-10:ringX(150)[0]+10,150,false);p.saving={phase:'tagin'};
+ const a=apronSpot(f.team);startRoll(f,a.x,a.z,true);f.saving={phase:'tagout'};
+ callout('TAG!','#5fe07a',1.0);sfx('grab');say(`${f.ch.short} tags in ${p.ch.short}!`);heat(0.06);
+ for(const o of G.f)if(o.tgt===f.idx)o.tgt=-1;return true;}
+function wantsTag(f){const p=partnerOf(f);if(!f.legal||!p||p.state!=='apron'||!FREE.has(f.state)||f.out)return false;
+ if(f.ai==null)f.ai={};if(f.hp<(f.ai.tagAt||(f.ai.tagAt=45+Math.floor(arand()*25)))&&p.hp>f.hp+15)return true;return false;}
+function walkToTag(f){const c=cornerSpot(f.team),inp=blank(),dx=c.x-f.x,dz=c.z-f.z;
+ if(Math.abs(dx)>20)inp[dx>0?'right':'left']=true;if(Math.abs(dz)>10)inp[dz>0?'down':'up']=true;if(Math.abs(dx)<=26&&Math.abs(dz)<=14)inp.grabP=true;return inp;}
+function tagSaveCheck(){const P=G.pin;if(!P)return;const p=partnerOf(P.d);if(!p||p.state!=='apron'||p.saving)return;
+ if(p.cpu&&P.count>=1&&!P.saveTried){P.saveTried=true;if(schance(0.7)){p.saving={phase:'in',who:P.a.idx};startRoll(p,clamp(P.a.x+(p.team?24:-24),ringX(150)[0]+6,ringX(150)[1]-6),P.a.z,false);}}
+ else if(!p.cpu&&p.inp&&p.inp.grabP){p.saving={phase:'in',who:P.a.idx};startRoll(p,P.a.x,P.a.z,false);}}
+function updSave(f,dt){const S=f.saving;
+ if(S.phase==='tagin'||S.phase==='tagout'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){f.saving=null;if(S.phase==='tagout')toApron(f);else{f.out=false;setState(f,'idle');}}return;}
+ if(S.phase==='in'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){S.phase='hit';setState(f,'stomp');f.out=false;}return;}
+ if(S.phase==='hit'){f.t+=dt;if(f.t>0.25&&!S.done){S.done=true;const a=G.f[S.who];if(G.pin&&G.pin.a===a){kickout();callout('SAVE!','#5fe07a',1.2);say(`${f.ch.short} breaks up the pin!`);heat(0.15);knock(a,(a.x>f.x?1:-1)*120,180);}}
+  if(f.t>0.7){S.phase='out';const ap=apronSpot(f.team);startRoll(f,ap.x,ap.z,true);}return;}
+ if(S.phase==='out'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll'){f.saving=null;toApron(f);}}}
+
+// ---------- drawing ----------
+function drawGroupHUD(){const mm=G.mm;
+ const slot=(f,x,y,right)=>{const w=94,on=isActive(f)||f.entering,col=f.elim||f.state==='elim'||f.state==='elimdown'?'#7a3030':f.wait?'#5a4a40':'#f1e6d0';
+  const label=f.wait?'#'+(mm.order?mm.order.indexOf(f.idx)+1:'?')+' ???':(f.ch.short||f.ch.name).slice(0,13)+(f.idx===0?' (YOU)':'')+(mm.type==='tag'&&!f.legal&&!f.elim?' •':'');
+  T(label,right?x+w:x,y,1,f.idx===0?'#ffd35a':col,right?'right':'left','#000');
+  if(!f.wait){R(x,y+6,w,3,'#000');if(!(f.elim||f.state==='elim'||f.state==='elimdown'))R(right?x+w-Math.round(w*clamp(f.hp,0,100)/100):x,y+6,Math.round(w*clamp(f.hp,0,100)/100),3,f.hp>50?'#5fe07a':f.hp>25?'#ffd35a':'#ff4a3a');else R(x,y+7,w,1,'#ff4a3a');}};
+ const L=mm.type==='tag'?[0,1]:G.f.map((f,i)=>i).filter(i=>i%2===0),Rr=mm.type==='tag'?[2,3]:G.f.map((f,i)=>i).filter(i=>i%2===1);
+ const ord=mm.type==='rumble'?mm.order:null;const lst=ord?ord.slice(0,4):L,rst=ord?ord.slice(4):Rr;
+ lst.forEach((i,k)=>slot(G.f[i],3,3+k*11,false));rst.forEach((i,k)=>slot(G.f[i],W-97,3+k*11,true));
+ drawCrowd();
+ R(0,207,W,9,'#0a0506');R(0,207,20,9,'#8f0f14');T('LIVE',10,209,1,'#fff','center',null);
+ const vis=Math.min(G.ticker.length,Math.floor(G.tickerT*60));T(G.ticker.slice(0,vis),24,209,1,'#f1e6d0','left',null);
+ if(mm.type==='rumble'&&!G.over){const left=G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown'&&!f.wait).length;
+  const msg=mm.entered<G.f.length?'NEXT ENTRANT 0:'+String(Math.ceil(mm.nextT)).padStart(2,'0')+'  •  '+left+' IN THE RING':'ALL IN! LAST ONE STANDING  •  '+left+' LEFT';
+  BOX(110,194,164,11,'#140a0c','#ffd35a');T(msg,192,197,1,'#fff','center',null);
+  if(mm.p1Out){BOX(92,90,200,34,'#140a0c','#ff4a3a');T("YOU'RE ELIMINATED!",192,95,2,'#ff4a3a','center',null);T('YOU FINISHED #'+mm.p1Out+' OF '+G.f.length,192,108,1,'#e9dcc6','center',null);T(mm.ff?'FAST FORWARDING...':(coarse?'TAP TO FAST FORWARD':'ENTER TO FAST FORWARD'),192,116,1,'#ffd35a','center',null);}}}
+function drawGroupMarkers(){const me=G.f[0];if(!isActive(me)&&!me.entering)return;const x=PX(me.x,me.z),y=PY(me.z)-me.y-74*(me.ch.size||1);
+ const b=Math.floor(G.t*4)%2;R(x-1,y-6+b,3,4,'#ffd35a');R(x-3,y-3+b,7,1,'#ffd35a');R(x-2,y-2+b,5,1,'#ffd35a');R(x-1,y-1+b,3,1,'#ffd35a');T('YOU',x,y-13+b,1,'#ffd35a','center','#000');}
