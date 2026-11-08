@@ -77,7 +77,7 @@ function beginFight(){const[a,b]=G.f;
  G.co={t:0,n:0};
  if(wide()){a.x=110;b.x=205;a.z=b.z=140;a.hidden=b.hidden=true;G.entrance={i:0,t:0,phase:'show'};G.cam=264;}else G.entrance=null;
  G.ref={x:wide()?157:0,z:wide()?127:8,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false};
- G.pin=null;G.over=null;G.parts=[];G.pops=[];G.hype=0.35;G.paused=false;G.slow=1;G.slowT=0;G.hitStop=0;
+ G.pin=null;G.over=null;G.parts=[];G.pops=[];G.hype=0.35;G.crowdHot=false;G.paused=false;G.slow=1;G.slowT=0;G.hitStop=0;
  G.scene='fight';if(!G.entrance){sfx('bell');callout('DING DING DING!','#fff',1.3);}
  say(coarse?'THUMB PAD TO MOVE · PUNCH/KICK/GRAB · JUMP AT ROPES TO ROLL OUT':'WASD move · SPACE jump · F punch · G kick · H grab/pin · R finisher');}
 function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,[a,b]=G.f,e=1-Math.pow(1-Math.min(1,t/0.4),3);
@@ -117,7 +117,8 @@ function updFight(dt){
  if(G.scene!=='fight')return;
  updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);
  // the crowd gets hotter as the match goes on and the wrestlers wear down
- {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*0.07);}
+ {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
+ if(!G.crowdHot&&G.hype>=CTR.crowd.hot&&!G.entrance&&!G.over){G.crowdHot=true;say('Listen to this crowd! The Ranch is ON FIRE!');sfx('roar');}else if(G.crowdHot&&G.hype<CTR.crowd.hot-0.15)G.crowdHot=false;
  G.chantT-=dt;if(G.chantT<=0){G.chantT=rnd(3,7);if(G.hype>0.5)pop(rnd(90,300),rnd(64,78),pick(['2-0-9! 2-0-9!','THIS IS AWESOME!','DEN! DEN!',"LET'S GO!"]),'#f1e6d0');}}
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
  const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
@@ -129,7 +130,8 @@ function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[orde
  else if(E.phase==='place'){const tx=order[E.i]===0?110:205,tz=140,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);
   if(d<2){f.dir=order[E.i]===0?1:-1;setState(f,'win');E.i++;E.t=0;if(E.i>=2){finishEntrance();}else E.phase='show';}
   else{f.state='walk';f.walkPh+=dt*11;f.dir=dx<0?-1:1;f.x+=dx/d*90*dt;f.z+=dz/d*90*dt;}}}
-function finishEntrance(){musStop(1.2);const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
+function finishEntrance(){musStop(1.2);G.hype=0.3; // the crowd settles in at the bell
+const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
 function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}

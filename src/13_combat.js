@@ -1,8 +1,11 @@
 // ================= COMBAT =================
 const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'&&o.finBy==='slam')?o.x-o.dir*24*o.ch.size:o.x;
-function damage(o,dmg,f){o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6);o.meter=Math.min(100,o.meter+dmg*0.7);G.hype=Math.min(1,G.hype+dmg/50);
+// CROWD METER: G.hype (0-1). When the crowd is hot, both finisher meters fill faster.
+const crowdMul=()=>G.hype>=CTR.crowd.hot?1+CTR.crowd.meterBonus:1;
+const heat=v=>{G.hype=Math.min(1,G.hype+v);};
+function damage(o,dmg,f){o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
-function knock(o,vx,vy,long){irpMark('big');setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
+function knock(o,vx,vy,long){irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
 // BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
 // an attack is coming at f from o, up close
@@ -50,7 +53,7 @@ function updGrapple(f,o){
 function tryFin(f,o){
  if(f.meter<100){popOn(f,'NO MOMENTUM','#bbb');return;}
  if(Math.abs(o.x-f.x)>44||Math.abs(o.z-f.z)>10||(wide()&&f.out!==o.out)||!GRABBABLE.has(o.state)||o.y>2){popOn(f,'GET CLOSER!','#fff');return;}
- irpMark('fin');tutEv('fin',f);f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
+ irpMark('fin');tutEv('fin',f);heat(CTR.crowd.finisher);f.meter=0;f.readyAnn=false;setState(f,'finisher');setState(o,'finished');o.finBy=f.ch.finType;f.vx=f.vz=o.vx=o.vz=0;f.finHit=false;f.launched=false;f.dir=o.x>f.x?1:-1;o.dir=-f.dir;o.z=f.z+0.3;
  callout(f.ch.fin+'!!',f.ch.accent,1.7);G.slow=0.8;G.slowT=1.3;G.flash=0.3;sfx('whoosh');
  if(f.ch.finType==='kick')sfx('fire');if(f.ch.finType==='spin')sfx('glitter');crowdReact(f,true);
 }
@@ -82,7 +85,7 @@ function updFinisher(f,o,dt){
   else if(t-f.landT>0.45)setState(f,'idle');
  }
 }
-function startDive(f,o){irpMark('big');tutEv('dive',f);setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
+function startDive(f,o){irpMark('big');heat(CTR.crowd.dive);tutEv('dive',f);setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
 function landDive(f,o){
  f.y=0;f.vx=f.vz=0;if(wide())f.out=!insideRing(f.x,f.z);clampPos(f);
  const hitIt=Math.abs(bodyX(o)-f.x)<28&&Math.abs(o.z-f.z)<12&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');
@@ -103,12 +106,12 @@ function startPin(f,o){tutEv('pin',f);setState(f,'pinning');setState(o,'pinned')
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6};G.ref.mode='pin';sfx('grab');line('pin',f,o);}
 function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
- if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);G.hype=1;crowdReact(d,true);sfx('roar');sfx('roar');shake(5);irpMark('big');}
- else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);G.hype=Math.min(1,G.hype+0.4);sfx('roar');shake(3);}}
+ if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);heat(CTR.crowd.nearFall);crowdReact(d,false);sfx('roar');sfx('roar');shake(5);irpMark('big');}
+ else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);heat(CTR.crowd.kickout);sfx('roar');shake(3);}}
 // SECOND WIND: pinned with a full finisher meter? Press FINISH to burn the whole meter and kick out, even at
 // zero health (you come back with a sliver). Once per match per wrestler. The CPU saves it for the 2.9.
 function secondWind(){const{a,d}=G.pin;d.meter=0;d.readyAnn=false;d.usedSW=true;if(d.hp<12)d.hp=12;kickout();
- callout('SECOND WIND!','#ff8a1f',1.6);say(`${d.ch.short} burns everything left to kick out! We're not done yet!`);G.flash=0.5;G.hype=1;sfx('fire');
+ callout('SECOND WIND!','#ff8a1f',1.6);say(`${d.ch.short} burns everything left to kick out! We're not done yet!`);G.flash=0.5;heat(CTR.crowd.nearFall);sfx('fire');
  fireFx(PX(d.x,d.z),PY(d.z)-20,30);if(!d.cpu)popOn(d,'METER USED','#ff8a1f');}
 function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
@@ -121,7 +124,7 @@ function updPin(dt,inp){
   if(P.ropes&&P.d.cpu&&P.count>=1&&schance(0.8)){ropeBreak();return;}
   if(P.d.cpu&&P.count===2&&P.d.meter>=100&&!P.d.usedSW&&schance(0.85)){secondWind();return;}
   if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(schance(P.count===1?p*0.4:p)){kickout();return;}}
-  P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);G.hype=Math.min(1,G.hype+0.15);
+  P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);heat(CTR.crowd.pinCount);
   if(P.count===3)endMatch(P.a,P.d);}
 }
 function endMatch(w,l){G.pin=null;G.over={w,l,t:0,how:'PINFALL'};l.downDur=999;setState(w,'getup');G.ref.mode='raise';setTimeout(()=>sfx('bell'),250);sfx('roar');crowdReact(w,true);say(`Here is your winner... ${w.ch.name}!`);}

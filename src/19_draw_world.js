@@ -20,7 +20,7 @@ function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='fire'&&a<0.3)continue;R(p.x,p.y,p.size,p.size,p.col);}}
 function drawPops(){for(const p of G.pops){ctx.globalAlpha=clamp(p.life/p.max*2,0,1);T(p.text,p.x,p.y,1,p.col,'center','#000');}ctx.globalAlpha=1;}
 function drawCallout(){const c=G.callout;if(!c)return;const p=c.t/c.dur;ctx.globalAlpha=p>0.8?(1-p)/0.2:1;T(c.text,192,44,c.t<0.1?4:3,c.col,'center','#1a0304');ctx.globalAlpha=1;}
-function drawHUD(){const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);
+function drawHUD(){const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
  R(0,207,W,9,'#0a0506');R(0,207,20,9,'#8f0f14');T('LIVE',10,209,1,'#fff','center',null);
  const vis=Math.min(G.ticker.length,Math.floor(G.tickerT*60));T(G.ticker.slice(0,vis),24,209,1,'#f1e6d0','left',null);
  T(muted?'M:SOUND OFF':'M:SOUND',W-3,209,1,'#7a6a5a','right',null);
@@ -38,3 +38,9 @@ function hpBar(f,x,y,d){const w=140,x0=d>0?x+2:x-w-2;
  R(d>0?mx:mx+mw-mv,by+10,mv,2,full?(Math.floor(G.t*8)%2?'#ffd35a':'#ff8a1f'):'#c99a2a');
  if(full){const key=f.cpu?'':(f.idx===0?(coarse?' [FINISH]':' [R]'):' [I]');T('* READY'+key,d>0?mx+mw+3:mx-3,by+9,1,'#ffd35a',d>0?'left':'right','#000');}}
 
+
+// crowd meter: centre top, under the pause button. Cold = blue, warming = gold, hot = flashing orange "ON FIRE"
+function drawCrowd(){if(G.entrance)return;const v=clamp(G.hype,0,1),hot=v>=CTR.crowd.hot,x=W/2-36,y=coarse?29:24,w=72;
+ const col=hot?(Math.floor(G.t*8)%2?'#ff8a1f':'#ffd35a'):v>0.5?'#ffd35a':'#5aa8ff';
+ T(hot?'CROWD: ON FIRE!':'CROWD',W/2,y-7,1,hot?col:'#bfae98','center','#000');
+ R(x-1,y-1,w+2,6,'#000');R(x,y,w,4,'#2a1418');R(x,y,Math.round(w*v),4,col);R(x+Math.round(w*CTR.crowd.hot),y-1,1,6,'#fff');}

@@ -10,7 +10,7 @@ function hitFx(x,y,n=8,cols=['#fff','#ffe680','#ffb347']){for(let i=0;i<n;i++){c
 function dust(x,y,big){for(let i=0;i<(big?14:6);i++)part(x+rnd(-14,14),y+rnd(-2,1),rnd(-70,70),rnd(-50,-10),rnd(0.25,0.55),pick(['#d8cfbf','#bdb3a2']),2,'dust');}
 function fireFx(x,y,n=10){for(let i=0;i<n;i++)part(x+rnd(-8,8),y+rnd(-12,12),rnd(-40,40),rnd(-110,-20),rnd(0.25,0.6),pick(['#ff3b1f','#ff8a1f','#ffd35a']),2,'fire');}
 function glitterFx(x,y,n=10){for(let i=0;i<n;i++){const a=rnd(Math.PI*2),s=rnd(20,120);part(x,y,Math.cos(a)*s,Math.sin(a)*s-30,rnd(0.35,0.8),pick(['#ff5ad8','#22d3c5','#fff36b','#ffffff','#a77bff']),1,'glitter');}}
-function crowdReact(f,big){G.hype=Math.min(1,G.hype+(big?0.35:0.12));
+function crowdReact(f,big){G.hype=Math.min(1,G.hype+(big?CTR.crowd.reactBig:CTR.crowd.react));
  if(f.ch.align==='heel'){sfx('boo');pop(rnd(110,280),rnd(66,80),pick(['BOOO!','BOO!']),'#9cff57');}
  else{sfx('roar');pop(rnd(110,280),rnd(66,80),pick(['OHHH!','209!','YEAH!']),'#ffd35a');}}
 const LINES={
