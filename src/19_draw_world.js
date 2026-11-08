@@ -8,12 +8,13 @@ function drawCtrIcon(f){if(f.cpu)return; if(f.state!=='whipped')return;let lbl=n
  BOX(x-w/2,y,w,11,'#140a0c',on?'#ffd35a':'#ff4a3a');T(lbl,x,y+3,1,'#fff','center',null);R(x-w/2+1,y+9,Math.round((w-2)*pct),1,'#ffd35a');}
 function drawFighters(){
  const R0=G.ref,ents=G.f.filter(f=>!f.hidden).map(f=>({f,z:f.z+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden)ents.push({f:R0,z:R0.z,ref:true});
- for(const e of ents)shadowOf(e.f,e.ref?0.9:e.f.ch.size);
+ if(G.props&&wide())for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});
+ for(const e of ents)if(e.f)shadowOf(e.f,e.ref?0.9:e.f.ch.size);
  ents.sort((p,q)=>p.z-q.z);
- const front=e=>wide()&&(e.z>=180||(!e.ref&&e.f.state==='perch'));let postsDone=!wide();
+ const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide();
  const drawPosts=()=>{postsDone=true;for(const k in POSTS){const p=POSTS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
- for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(e===null){drawPosts();continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
-  const f=e.f,ds=depthS(f.z);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds,f.dir*(f.turn||1),ds*(f.ch.drawScale||1));}
+ for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
+  const f=e.f,ds=depthS(f.z);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds,f.dir*(f.turn||1),ds*(f.ch.drawScale||1));if(G.props&&f.wpn>=0)drawHeld(f);}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}

@@ -2,14 +2,14 @@
 const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearchParams(location.search));
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
-const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5]]:[]);
+const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc']]:[]);
 const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length,p=n>5?9.7:11.4;return[122,157+i*p,140,p-1.4];});
 let TITLE_F=null;
 function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(TITLE_ITEMS.length-1,G.menu+1);let go=confirmP();
  if(clickQ)TITLE_BTNS.forEach((r,i)=>{if(inRect(clickQ,r)){G.menu=i;go=true;}});
  const it=TITLE_ITEMS[G.menu];
  if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
- if(go){G.mode=it[1];G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
+ if(go){G.mode=it[1];G.hc=it[2]==='hc';if(G.hc)G.stage=3;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
 function drawTitle(){drawArena();drawRingBack();
  if(!TITLE_F){TITLE_F=[makeFighter(ROSTER[0],-120,40,1,false,0),makeFighter(ROSTER.find(c=>c.id==='papi'),120,40,-1,false,1)];TITLE_F.forEach(f=>{f.set=SETS[f.ch.id];f.state='win';});}
  for(const f of TITLE_F){if(wide()){G.cam=0;f.x=f.idx?205:110;f.z=140;}else{f.x=f.idx?120:-120;f.z=40;}shadowOf(f,f.ch.size);drawSpr(f.set,'win'+(Math.floor(G.t*2.5+f.idx)%2),PX(f.x,f.z),PY(f.z),f.dir,f.ch.drawScale||1);}
@@ -71,13 +71,14 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  G.f=[makeFighter(c0,-40,32,1,false,0),makeFighter(c1,40,32,-1,G.mode===0,1)];G.f.forEach(f=>f.set=SETS[f.ch.id]);
  if(c0.id===c1.id){const alt=Object.assign({},c1,{trunks:c1.accent,accent:c1.trunks,name:c1.name+' II',short:c1.short+' II',id:c1.id+'_alt'});if(!SETS[alt.id])buildWrestler(alt);G.f[1].ch=alt;G.f[1].set=SETS[alt.id];}
  G.scene='intro';G.introT=0;sfx('roar');}
-function beginFight(){G.mm=null;const[a,b]=G.f;
+function beginFight(){G.mm=null;const[a,b]=G.f;if(G.hc)G.stage=3;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
- G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),inp:[]};G.fstep=0;
+ G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
- for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;}
+ for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;f.wpn=-1;f.lad=-1;f.ladDive=null;}
+ G.props=G.hc?hcProps():null;
  G.co={t:0,n:0};
  if(wide()){a.x=110;b.x=205;a.z=b.z=140;a.hidden=b.hidden=true;G.entrance={i:0,t:0,phase:'show'};G.cam=264;}else G.entrance=null;
  G.ref={x:wide()?157:0,z:wide()?127:8,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false};
@@ -107,7 +108,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*(E?3:5)));}
  if(G.entrance){updEntrance(dt);updRef(dt);return;}
  if(G.hitStop>0){G.hitStop-=dt;return;}
- if(wide()&&!G.over&&!G.pin){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
+ if(wide()&&!G.over&&!G.pin&&!G.hc){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
    if(G.co.n>=10){const[a,b]=G.f;if(a.out&&b.out){G.over={w:null,l:null,t:0,how:'DOUBLE COUNT-OUT'};callout('DOUBLE COUNT-OUT!','#ff4a3a',1.6);}else{const w=a.out?b:a,l=a.out?a:b;G.over={w,l,t:0,how:'COUNT-OUT'};setState(w,'win');G.ref.mode='raise';callout('COUNT-OUT!','#ff4a3a',1.6);say(`${l.ch.short} is counted out! Your winner... ${w.ch.name}!`);}setTimeout(()=>sfx('bell'),200);sfx('roar');}}}
   else G.co={t:0,n:0};}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
@@ -116,10 +117,12 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  let inp=G.stepInp?[unpackInp(G.stepInp[0]),unpackInp(G.stepInp[1])]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
  if(G.tut&&!G.stepInp&&!G.over)inp[1]=tutDummyInput();
+ if(G.hc&&G.props&&!G.stepInp)hcCpuAll(inp,sdt);
  G.curInp=[packInp(inp[0]),packInp(inp[1])];G.f[0].inp=inp[0];G.f[1].inp=inp[1];
+ if(G.hc&&G.props)hcPre(inp,sdt);
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
- updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);updRef(sdt);
+ updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);if(G.hc&&G.props)hcPost(sdt);updRef(sdt);
  // the crowd gets hotter as the match goes on and the wrestlers wear down
  {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
  if(!G.crowdHot&&G.hype>=CTR.crowd.hot&&!G.entrance&&!G.over){G.crowdHot=true;say('Listen to this crowd! The Ranch is ON FIRE!');sfx('roar');}else if(G.crowdHot&&G.hype<CTR.crowd.hot-0.15)G.crowdHot=false;
@@ -138,7 +141,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3; // the crowd settles in at th
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();if(G.hc&&G.props)drawHCHint();G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
