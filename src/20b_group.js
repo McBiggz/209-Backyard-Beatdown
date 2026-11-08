@@ -199,6 +199,9 @@ function drawGroupHUD(){const mm=G.mm;
   BOX(110,194,164,11,'#140a0c','#ffd35a');T(msg,192,197,1,'#fff','center',null);
   if(mm.p1Out){BOX(92,90,200,34,'#140a0c','#ff4a3a');T("YOU'RE ELIMINATED!",192,95,2,'#ff4a3a','center',null);T('YOU FINISHED #'+mm.p1Out+' OF '+G.f.length,192,108,1,'#e9dcc6','center',null);T(mm.ff?'FAST FORWARDING...':(coarse?'TAP TO FAST FORWARD':'ENTER TO FAST FORWARD'),192,116,1,'#ffd35a','center',null);}}}
 function drawGroupMarkers(){const me=G.f[0];drawTossBars();drawTossHints(me);
+ if(G.mm.type==='tag'&&me.legal&&isActive(me)&&FREE.has(me.state)&&!me.out){const p=partnerOf(me),c=cornerSpot(me.team);
+  if(p&&p.state==='apron'&&Math.abs(me.x-c.x)<60&&Math.abs(me.z-c.z)<24){const x=clamp(PX(me.x,me.z),70,W-70),y=PY(me.z)-me.y-100*(me.ch.size||1);
+   TossT(Math.abs(me.x-c.x)<=26&&Math.abs(me.z-c.z)<=14?(coarse?'TAP GRAB TO TAG!':'PRESS GRAB TO TAG!'):'GET TO YOUR CORNER',x,y,1,Math.floor(G.t*8)%2?'#5fe07a':'#fff');}}
  if(G.mm.type==='tag'&&me.state==='apron'&&!me.saving&&G.pin&&G.pin.d.team===me.team){const x=clamp(PX(me.x,me.z),70,W-70),y=PY(me.z)-me.y-84;
   TossT(coarse?'TAP GRAB TO SAVE HIM!':'PRESS GRAB TO SAVE HIM!',x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff');}if(!isActive(me)&&!me.entering)return;const x=PX(me.x,me.z),y=PY(me.z)-me.y-74*(me.ch.size||1);
  const b=Math.floor(G.t*4)%2;R(x-1,y-6+b,3,4,'#ffd35a');R(x-3,y-3+b,7,1,'#ffd35a');R(x-2,y-2+b,5,1,'#ffd35a');R(x-1,y-1+b,3,1,'#ffd35a');T('YOU',x,y-13+b,1,'#ffd35a','center','#000');}
