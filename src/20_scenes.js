@@ -3,11 +3,29 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc']]:[]);
-// up to 5 options in one column; more than that (the test link) goes to two columns so nothing falls off the bottom
-const TITLE_BTNS=TITLE_ITEMS.map((_,i)=>{const n=TITLE_ITEMS.length;if(n<=5)return[122,157+i*11.4,140,10];const rows=Math.ceil(n/2),c=Math.floor(i/rows),r=i%rows;return[c?196:38,158+r*11.4,150,10];});
+// one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
+const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
+const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
+let menuS=0,menuSTarget=0,menuLast=0;
+const TITLE_BTNS_NOW=()=>TITLE_ITEMS.map((_,i)=>[122,MENU_Y+(i-menuS)*MENU_ROW,140,10]);
+const MENU_UP=[264,157,14,12],MENU_DN=[264,201,14,12];
+function menuScroll(d){menuSTarget=clamp(menuSTarget+d,0,menuMax());}
+// swipe on the menu to scroll it (a short tap still picks an option)
+let menuDrag=null,menuTap=null;cv.style.touchAction='none';addEventListener('pointercancel',()=>{menuDrag=null;});
+cv.addEventListener('pointerdown',e=>{if(G.scene!=='title')return;const r=cv.getBoundingClientRect(),y=(e.clientY-r.top)/r.height*H,x=(e.clientX-r.left)/r.width*W;menuDrag={y0:y,s0:menuSTarget,moved:false,x,y};});
+cv.addEventListener('pointermove',e=>{if(!menuDrag||G.scene!=='title')return;const r=cv.getBoundingClientRect(),y=(e.clientY-r.top)/r.height*H,dy=y-menuDrag.y0;if(Math.abs(dy)>5)menuDrag.moved=true;
+ if(menuDrag.moved){menuSTarget=clamp(menuDrag.s0-dy/MENU_ROW,0,menuMax());menuS=menuSTarget;}});
+addEventListener('pointerup',()=>{if(menuDrag&&!menuDrag.moved&&G.scene==='title')menuTap={x:menuDrag.x,y:menuDrag.y};if(menuDrag&&menuDrag.moved)menuSTarget=Math.round(menuSTarget);menuDrag=null;});
+cv.addEventListener('wheel',e=>{if(G.scene!=='title')return;e.preventDefault();menuScroll(e.deltaY>0?1:-1);},{passive:false});
 let TITLE_F=null;
 function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.menu-1);if(hit(['KeyS','ArrowDown']))G.menu=Math.min(TITLE_ITEMS.length-1,G.menu+1);let go=confirmP();
- if(clickQ)TITLE_BTNS.forEach((r,i)=>{if(inRect(clickQ,r)){G.menu=i;go=true;}});
+ // taps are read on release (so a swipe doesn't pick anything); the tap must land inside the visible list
+ clickQ=null;if(menuTap){const q=menuTap;menuTap=null;
+  if(menuMax()&&inRect(q,MENU_UP))menuScroll(-1);else if(menuMax()&&inRect(q,MENU_DN))menuScroll(1);
+  else if(inRect(q,MENU_BOX))TITLE_BTNS_NOW().forEach((r,i)=>{if(inRect(q,r)){G.menu=i;go=true;}});}
+ // keep the highlighted option on screen, and glide the list
+ if(G.menu!==menuLast){menuLast=G.menu;if(G.menu<menuSTarget)menuSTarget=G.menu;if(G.menu>menuSTarget+MENU_VIS-1)menuSTarget=G.menu-MENU_VIS+1;}
+ if(!menuDrag)menuS+=(menuSTarget-menuS)*0.35;if(Math.abs(menuS-menuSTarget)<0.01)menuS=menuSTarget;
  const it=TITLE_ITEMS[G.menu];
  if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
  if(go){G.mode=it[1];G.hc=it[2]==='hc';if(G.hc)G.stage=3;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
@@ -17,7 +35,13 @@ function drawTitle(){drawArena();drawRingBack();
  drawRingFront();R(0,0,W,H,'rgba(6,2,3,0.6)');
  logo('T',192,78+(Math.floor(G.t*2)%2));
  R(122,140,140,16,'#8f0f14');R(122,140,140,1,'#ffd35a');R(122,155,140,1,'#ffd35a');T('BACKYARD BRAWL',192,143,2,'#ffd35a','center','#2a0405');
- TITLE_ITEMS.map(t=>t[0]).forEach((s,i)=>{const r=TITLE_BTNS[i],on=G.menu===i;BOX(r[0],r[1],r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,r[0]+r[2]/2,r[1]+3,1,on?'#fff':'#bfae98','center',null);});}
+ const B=TITLE_BTNS_NOW();ctx.save();ctx.beginPath();ctx.rect(MENU_BOX[0]-2,MENU_BOX[1],MENU_BOX[2]+4,MENU_BOX[3]);ctx.clip();
+ TITLE_ITEMS.map(t=>t[0]).forEach((s,i)=>{const r=B[i];if(r[1]<MENU_BOX[1]-12||r[1]>MENU_BOX[1]+MENU_BOX[3])return;const on=G.menu===i;BOX(r[0],Math.round(r[1]),r[2],r[3],on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,r[0]+r[2]/2,Math.round(r[1])+3,1,on?'#fff':'#bfae98','center',null);});
+ ctx.restore();
+ // scroll arrows (only when there's more to see), plus a little position bar
+ if(menuMax()){const bl=Math.floor(G.t*3)%2;if(menuS>0.05){BOX(...MENU_UP,'#140a0c','#ffd35a');for(let k=0;k<4;k++)R(MENU_UP[0]+7-k,MENU_UP[1]+3+k,2*k+1,1,bl?'#ffd35a':'#fff');}
+  if(menuS<menuMax()-0.05){BOX(...MENU_DN,'#140a0c','#ffd35a');for(let k=0;k<4;k++)R(MENU_DN[0]+7-k,MENU_DN[1]+8-k,2*k+1,1,bl?'#ffd35a':'#fff');}
+  const th=Math.max(6,30*MENU_VIS/TITLE_ITEMS.length),ty=171+(28-th)*(menuS/menuMax());R(270,171,2,28,'#3a2a24');R(270,Math.round(ty),2,Math.round(th),'#ffd35a');}}
 const CARD={x:4,y:24,w:52,h:78,gap:2,cols:7};
 const PER=14,pageOf=i=>Math.floor(i/PER),PAGES=()=>Math.ceil(ROSTER.length/PER);
 const PAGE_BTN=[226,3,66,11];
