@@ -92,7 +92,7 @@ const PARTY={
 
  // ---------- host: settings and starting ----------
  canStart(){if(this.role!=='host'||!this.L)return'';const h=this.humans(),n=msSlots(this.L.cfg.type);
-  if(h.length<2)return'WAITING FOR PLAYERS TO JOIN...';if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
+if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
   if(h.some(k=>this.L.seats[k].pick==null))return'WAITING FOR EVERYONE TO PICK...';return'';},
  start(rematch){const L=this.L,c=L.cfg,h=this.humans(),n=msSlots(c.type),t=MS_TYPES[c.type][1];
   // where the humans stand: in tag, the first two players are on opposite teams
