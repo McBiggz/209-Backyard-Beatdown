@@ -4,6 +4,8 @@ const ARENA_IMG=new Image();ARENA_IMG.src=HD.arena;
 const POSTS={"L": {"src": "__ASSET(maps/post_L.png)__", "x": 28.6416, "y": 82.9413, "w": 30.0, "h": 103.5}, "R": {"src": "__ASSET(maps/post_R.png)__", "x": 255.3876, "y": 82.9413, "w": 31.0, "h": 103.5}};for(const k in POSTS){const im=new Image();im.src=POSTS[k].src;POSTS[k].img=im;}
 const PANO=new Image();PANO.src="__ASSET(maps/bmfranch_full.webp)__";
 // the Secret Map: inside the barn. Same ring layout, its own front posts
+// the entrance's curtains, BMF banner and truss, drawn in front of anyone inside the tunnel
+const ENTFRONT={img:new Image(),x:486,y:18,w:128,h:140,z:151};ENTFRONT.img.src="__ASSET(maps/ranch_ent_front.png)__";
 const SECRET=new Image();SECRET.src="__ASSET(maps/secret_full.webp)__";
 const SPOSTS={F:{src:"__ASSET(maps/secret_front.png)__",x:30,y:76,w:254,h:112}};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
 const HDKEYS=Object.keys(HD).filter(k=>k!=='arena');const HDIMG={};for(const k of HDKEYS){HDIMG[k]=new Image();HDIMG[k].src=HD[k].src;}
