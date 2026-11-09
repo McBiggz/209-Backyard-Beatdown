@@ -62,6 +62,7 @@ function mselOpen(party){const n=party?1:msSlots();G.msel={slot:0,n,picks:[],c:0
 const MSEL_RND=[296,3,84,11];
 function mselCtl(i){return G.msel.party?0:G.ms.ctl[i];}
 function updMsel(){const S=G.msel,n=ROSTER.length-1; // the last roster entry is the ref
+ if(clickQ&&inRect(clickQ,SEL_BACK)){G.scene=S.party?'party':'setup';sfx('punch');return;} // BACK: to the setup screen (or the online lobby)
  if(hit(['Escape'])){if(S.slot>0){S.slot--;S.c=S.picks.pop();}else G.scene=S.party?'party':'setup';sfx('punch');return;}
  const o=S.c;if(hit(['KeyA','ArrowLeft']))S.c=(S.c+n-1)%n;if(hit(['KeyD','ArrowRight']))S.c=(S.c+1)%n;
  if(hit(['KeyW','ArrowUp']))S.c=vmove(S.c,-1,n);if(hit(['KeyS','ArrowDown']))S.c=vmove(S.c,1,n);if(S.c!==o)S.page=pageOf(S.c);
@@ -77,7 +78,8 @@ function updMsel(){const S=G.msel,n=ROSTER.length-1; // the last roster entry is
  if(++S.slot>=S.n){G.mselLast=S.picks.slice();startFromSetup();}}
 function drawMsel(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.msel,n=ROSTER.length-1,ctl=mselCtl(S.slot);
  const who=S.party?'PICK YOUR WRESTLER':msSlotName(S.slot)+' ('+MS_CTL[ctl]+')';
- R(4,3,218,11,MS_CTLCOL[ctl]);T(who+(S.party?'':'  '+(S.slot+1)+'/'+S.n),113,5,1,'#fff','center',null);
+ BOX(...SEL_BACK,'#140a0c','#5a4a40');T('< BACK',SEL_BACK[0]+15,SEL_BACK[1]+3,1,'#bfae98','center',null);
+ R(38,3,184,11,MS_CTLCOL[ctl]);T(who+(S.party?'':'  '+(S.slot+1)+'/'+S.n),130,5,1,'#fff','center',null);
  {const P=Math.ceil(n/PER);BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
  BOX(...MSEL_RND,'#8f0f14','#ffd35a');T('RANDOM',MSEL_RND[0]+42,MSEL_RND[1]+3,1,'#fff','center',null);
  for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++){const ch=ROSTER[i],[x,y,w,h]=cardRect(i);const bc=['#111111','#161616','#141414'].includes(ch.trunks)?ch.accent:ch.trunks;

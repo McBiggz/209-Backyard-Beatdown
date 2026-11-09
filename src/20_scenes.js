@@ -53,7 +53,10 @@ const PAGE_BTN=[226,3,66,11];
 const cardRect=i=>(i=i%PER,[CARD.x+(i%CARD.cols)*(CARD.w+CARD.gap),CARD.y+Math.floor(i/CARD.cols)*(CARD.h+CARD.gap),CARD.w,CARD.h]);
 const vmove=(c,d,n)=>{const v=c+d*CARD.cols;if(pageOf(v)!==pageOf(c))return c;return v>=0&&v<n?v:c;};
 const STAGE_BTN=[296,3,84,11];
+const SEL_BACK=[4,3,30,11];
 function updSelect(){const S=G.sel,n=ROSTER.length;
+ // BACK (tap or Esc): straight to the main menu from any mode's wrestler select
+ if(clickQ&&inRect(clickQ,SEL_BACK)){if(G.mode===2)NET.leave();G.scene='title';sfx('punch');clickQ=null;return;}
  if(G.mode===2&&hit(['Escape'])){NET.leave();G.scene='title';return;}
  if((G.mode!==2||NET.role==='host')&&(hit(['KeyT','Tab'])||(clickQ&&inRect(clickQ,STAGE_BTN)))){G.stage=(G.stage+1)%4;G.cam=0;sfx('punch');clickQ=null;}
  if(hit(['Escape'])){if(S.stage>0&&G.mode===0){S.stage=0;S.picks[0]=null;}else G.scene='title';return;}
@@ -78,8 +81,9 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
   if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){const w=S.picks[0]==null?0:1;if(S.picks[w]==null){S.c[w]=i;lockIn(w);}break;}
   if(S.picks[0]!=null&&S.picks[1]!=null)startIntro();}}
 function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
- T('CHOOSE YOUR WRESTLER',114,4,2,'#ffd35a','center','#5a0608');
- T(G.mode===6?'UNIVERSE: PICK YOUR WRESTLER':G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
+ BOX(...SEL_BACK,'#140a0c','#5a4a40');T('< BACK',SEL_BACK[0]+15,SEL_BACK[1]+3,1,'#bfae98','center',null);
+ T('CHOOSE YOUR WRESTLER',130,4,2,'#ffd35a','center','#5a0608');
+ T(G.mode===6?'UNIVERSE: PICK YOUR WRESTLER':G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',130,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
  BOX(...STAGE_BTN,'#8f0f14','#ffd35a');T('LEVEL: '+['THE DEN','OUTDOOR','BMF RANCH','RANCH: FULL'][G.stage],STAGE_BTN[0]+42,STAGE_BTN[1]+3,1,'#fff','center',null);
  if(S.page==null)S.page=0;
  {const P=PAGES();BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
