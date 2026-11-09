@@ -18,7 +18,7 @@ const PARTY={
  conn:null,                       // guest: the link to the host
  L:null,                          // lobby: {cfg:{type,elim,map}, seats:[{pick}|null x4]}
  frames:new Map(),hist:new Map(),hashes:new Map(),rhashes:new Map(),snaps:new Map(),
- inb:[new Map(),new Map(),new Map(),new Map()],next:0,lastSent:0,seatSlot:null,slotSeat:null,dropQ:[],gone:new Set(),
+ inb:[new Map(),new Map(),new Map(),new Map()],away:new Set(),next:0,lastSent:0,seatSlot:null,slotSeat:null,dropQ:[],gone:new Set(),
  wantRematch:false,lastRecv:[0,0,0,0],
 
  // ---------- connection ----------
@@ -59,7 +59,7 @@ const PARTY={
  leave(){this.send({t:'bye'});this.close();},
  close(){for(const c of this.conns)try{if(c)c.close();}catch(e){}try{if(this.conn)this.conn.close();}catch(e){}try{if(this.peer)this.peer.destroy();}catch(e){}
   this.conns=[null,null,null,null];this.conn=this.peer=null;this.st='off';if(G.net===this)G.net=null;G.netMenu=false;},
- reset(){this.close();this.err='';this.L=null;this.m=0;this.wantRematch=false;this.gone=new Set();this.rtt=0;},
+ reset(){this.close();this.away=new Set();this.err='';this.L=null;this.m=0;this.wantRematch=false;this.gone=new Set();this.rtt=0;},
  // a guest's link closed: in the lobby their seat frees up; mid-match a CPU takes over their wrestler
  seatLeft(seat){this.conns[seat]=null;if(!this.L)return;
   if(this.st==='playing'&&this.seatSlot&&this.seatSlot[seat]!=null&&!this.gone.has(seat)){this.gone.add(seat);this.dropQ.push(this.seatSlot[seat]);this.assemble();}
@@ -72,7 +72,8 @@ const PARTY={
   case 'p':this.sendTo(seat,{t:'q',ts:d.ts});break;
   case 'rtt':if(this.L.seats[seat])this.L.seats[seat].rtt=d.r;break;
   case 'pick':if(this.L.seats[seat]){this.L.seats[seat].pick=d.i;this.sendLobby();}break;
-  case 'i':if(d.m===this.m&&!this.gone.has(seat)){for(let k=0;k<d.v.length;k++)this.inb[seat].set(d.s+k,d.v[k]);this.assemble();}break;
+  case 'i':if(d.m===this.m&&!this.gone.has(seat))this.takeInputs(seat,d.s,d.v);break;
+  case 'away':this.away.add(seat);this.assemble();break;
   case 'need':if(d.m===this.m&&this.snaps.has(d.s))this.sendTo(seat,{t:'snap',m:this.m,s:d.s,d:this.snaps.get(d.s)});break;
   case 'bye':this.seatLeft(seat);break;}},
  recvGuest(d){if(!d||!d.t)return;
@@ -82,7 +83,7 @@ const PARTY={
   case 'q':{const r=performance.now()-d.ts;this.rtt=this.rtt?this.rtt*0.7+r*0.3:r;this.send({t:'rtt',r:Math.round(this.rtt)});break;}
   case 'lobby':this.L=d.L;break;
   case 'start':this.begin(d);break;
-  case 'f':if(d.m===this.m)this.frames.set(d.s,{v:d.v,dr:d.dr});break;
+  case 'f':if(d.m===this.m){this.frames.set(d.s,{v:d.v,dr:d.dr});if(d.s>this.maxF)this.maxF=d.s;}break;
   case 'h':if(d.m===this.m){this.rhashes.set(d.s,d.h);this.check(d.s);}break;
   case 'snap':if(d.m===this.m)this.repair(d.s,d.d);break;
   case 'tolobby':this.toLobby();break;
@@ -114,14 +115,17 @@ if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
   startGroup(Object.assign({},d.cfg,{me:me!=null?me:0}));G.forceSeed=null;
   this.st='playing';G.net=this;G.netMenu=false;
   // the first D steps have no buttons yet: everyone starts them blank
-  const n=G.f.length;for(let s=0;s<this.D;s++)this.frames.set(s,{v:new Array(n).fill(0)});this.lastSent=this.D-1;this.next=this.D;},
+  const n=G.f.length;for(let s=0;s<this.D;s++)this.frames.set(s,{v:new Array(n).fill(0)});this.lastSent=this.D-1;this.next=this.D;this.maxF=this.D-1;},
  // host: once every human's buttons for the next step are in, send the whole step to everyone
+ takeInputs(seat,from,v){let any=false;for(let k=0;k<v.length;k++)if(from+k>=this.next){this.inb[seat].set(from+k,v[k]);any=true;}
+  if(any&&this.away.delete(seat)){}this.assemble();},
  assemble(){if(this.role!=='host'||this.st!=='playing')return;const n=G.f.length;
-  for(let guard=0;guard<120;guard++){const s=this.next,live=Object.keys(this.seatSlot).map(Number).filter(k=>!this.gone.has(k));
+  for(let guard=0;guard<120;guard++){const s=this.next,live=Object.keys(this.seatSlot).map(Number).filter(k=>!this.gone.has(k)&&!this.away.has(k));
    if(!live.every(k=>this.inb[k].has(s)))break;
    const v=new Array(n).fill(0);live.forEach(k=>{v[this.seatSlot[k]]=this.inb[k].get(s);this.inb[k].delete(s);});
    const fr={v};if(this.dropQ.length){fr.dr=this.dropQ.splice(0);}
-   this.frames.set(s,fr);this.send({t:'f',m:this.m,s,v,dr:fr.dr});this.next++;}},
+   this.frames.set(s,fr);this.send({t:'f',m:this.m,s,v,dr:fr.dr});this.next++;}
+  if(this.next%120===0)this.inb.forEach(b=>{for(const k of b.keys())if(k<this.next)b.delete(k);});},
 
  // ---------- lockstep (the same calls the 1-on-1 online code uses) ----------
  ready(s){const ok=this.frames.has(s);if(!ok)this.stallT+=1/60;else this.stallT=0;return ok;},
@@ -129,13 +133,16 @@ if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
   if(fr.dr)for(const slot of fr.dr){const f=G.f[slot];if(f){f.cpu=true;callout(f.ch.short+' LEFT - CPU TAKES OVER','#bfae98',1.4);}}
   this.hist.set(s,fr.v);if(this.hist.size>900)this.hist.delete(s-900);return fr.v;},
  afterStep(fs){if(G.resim||G.irp)return;
-  const s=fs-1+this.D,v=packInp(PARTY_BOT?botInput():humanInput(0));
+  let s=fs-1+this.D;const v=packInp(PARTY_BOT?botInput():humanInput(0));
+  // back from another tab/app and caught up: jump my buttons ahead of where the match is now, so the host counts me in again
+  if(this.returning&&this.frames.size<=this.D+4){s=Math.max(s,(this.role==='host'?this.next:this.maxF+1)+this.D);this.returning=false;}
   if(s>this.lastSent){const from=this.lastSent+1,arr=[];for(let k=from;k<=s;k++)arr.push(v);this.lastSent=s;
-   if(this.role==='host'){arr.forEach((x,k)=>this.inb[0].set(from+k,x));this.assemble();}else this.send({t:'i',m:this.m,s:from,v:arr});}
+   if(this.role==='host')this.takeInputs(0,from,arr);else this.send({t:'i',m:this.m,s:from,v:arr});}
   if(fs%60===0){const h=simHash();
    if(this.role==='host'){this.snaps.set(fs,getSnap());this.snaps.delete(fs-600);this.send({t:'h',m:this.m,s:fs,h});}
    else{this.hashes.set(fs,h);this.check(fs);this.hashes.delete(fs-1200);if(fs%120===0)this.ping();}}},
  onBegin(){},
+ catchUp(){let k=0;while(this.st==='playing'&&G.scene==='fight'&&this.frames.size>this.D+4&&k<45){if(simStep()===false)break;k++;}},
  check(s){if(!this.hashes.has(s)||!this.rhashes.has(s))return;
   if(this.hashes.get(s)!==this.rhashes.get(s))this.send({t:'need',m:this.m,s});this.rhashes.delete(s);},
  repair(s,data){if(this.role!=='guest'||G.scene!=='fight')return;const end=G.fstep;if(end<s)return;
@@ -166,8 +173,8 @@ if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
 };
 // heartbeat: a link that's been silent for 8 s is treated as gone
 setInterval(()=>{if(PARTY.st==='off'||PARTY.st==='lost')return;const now=performance.now();
- if(PARTY.role==='guest'){PARTY.ping();if(PARTY.lastRecv[0]&&now-PARTY.lastRecv[0]>8000&&PARTY.conn&&PARTY.conn._was)PARTY.lost('LOST THE HOST');}
- else{PARTY.send({t:'hb'});for(let k=1;k<4;k++)if(PARTY.conns[k]&&PARTY.conns[k].open&&now-PARTY.lastRecv[k]>8000)PARTY.seatLeft(k);}},1000);
+ if(PARTY.role==='guest'){PARTY.ping();if(PARTY.lastRecv[0]&&now-PARTY.lastRecv[0]>15000&&PARTY.conn&&PARTY.conn._was)PARTY.lost('LOST THE HOST');}
+ else{PARTY.send({t:'hb'});for(let k=1;k<4;k++)if(PARTY.conns[k]&&PARTY.conns[k].open&&now-PARTY.lastRecv[k]>15000)PARTY.seatLeft(k);}},1000);
 
 // ---------- the lobby screen (drawn on the game canvas) ----------
 const PL_BACK=[4,4,40,13],PL_PICK=[24,186,110,19],PL_GO=[250,186,110,19],PL_ROWS=[[150,30,220,14],[150,46,220,14],[150,62,220,14]];
@@ -223,3 +230,9 @@ const partyUI=(()=>{const el=document.createElement('div');el.id='partyui';el.cl
  const api={show(on){el.classList.toggle('on',on);if(on)this.update();},
   update(){$('pmsg').textContent=PARTY.err||(PARTY.st==='joining'?'Connecting…':'');}};
  return api;})();
+
+// switching tabs / apps pauses the game in that window: tell the host, so the match goes on without waiting.
+// (the host's own window does the same for itself: frames keep going out to everyone else)
+document.addEventListener('visibilitychange',()=>{const P=PARTY;if(P.st!=='playing')return;
+ if(!document.hidden){P.returning=true;return;}
+ if(P.role==='guest')P.send({t:'away'});else{P.away.add(0);P.assemble();}});
