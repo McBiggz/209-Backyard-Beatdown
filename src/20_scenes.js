@@ -206,14 +206,15 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
 // ================= SECRET MAP =================
 // Both wrestlers walk out to the entrance together and the fight moves inside the barn.
 // Inside, both walking to the barn door takes it back outside.
-const MAPZONE={ranch:{x0:480,x1:600,z1:168},secret:{x0:548,x1:600,z1:174}};
+// trigger areas: the open floor in front of the entrance / barn doors (any depth). Reaching it starts the walk-through.
+const MAPZONE={ranch:{x0:455,x1:600,z1:212},secret:{x0:520,x1:600,z1:212}};
 const MAPOK=new Set(['idle','walk','run','punch','kick','stomp','hit','block','grab','grapple','grabbed','held','whiff','dazed']);
 function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
 function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance||G.mapWalk)return;
  const both=G.f.every(inMapZone);
  if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
  if(!G.mapArm)return;
- G.mapT+=dt;if(G.mapT<1.0)return;
+ G.mapT+=dt;if(G.mapT<0.4)return;
  // both wrestlers walk through the doorway together: into the dark, a moment of black, then out the other side
  const toSecret=G.map!=='secret';G.mapT=0;G.mapArm=false;G.co.n=0;G.co.t=0;
  const lead=G.f[0].x>=G.f[1].x?0:1; // whoever is nearer the door goes first
