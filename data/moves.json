@@ -98,6 +98,11 @@
    "chainGap": 3.5,
    "cpu": 0.45,
    "cpuAt": 115
+  },
+  "perch": {
+   "_readme": "Height (world px) a wrestler stands at on the top turnbuckle: back corners are further away so they sit lower on screen",
+   "back": 37,
+   "front": 63
   }
  },
  "group": {
@@ -115,7 +120,7 @@
  },
  "hardcore": {
   "_readme": "Hardcore match tuning: ladderTop = standing height on the ladder, tableDmg = extra damage going through a table, ladderBonus = extra damage for a ladder dive, cpuWeapon = how often the CPU goes for a weapon (0-1).",
-  "ladderTop": 52,
+  "ladderTop": 74,
   "tableDmg": 12,
   "ladderBonus": 8,
   "cpuWeapon": 0.35

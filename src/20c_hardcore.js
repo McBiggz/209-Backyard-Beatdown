@@ -32,7 +32,7 @@ function updSwing(f,o){const p=propAt(f.wpn);if(!p){setState(f,'idle');return;}
  if(f.t>0.5)setState(f,'idle');}
 // the ladder: climbing up, standing on top
 function updLadderMan(f,o,inp,dt){const p=propAt(f.lad);if(!p||p.st!=='open'){f.lad=-1;if(f.y>4)knock(f,-f.dir*60,40,true);else setState(f,'idle');return;}
- const top=HC().ladderTop||52;f.vx=f.vz=0;f.x=p.x;f.z=p.z+0.3;
+ const top=HC().ladderTop||74;f.vx=f.vz=0;f.x=p.x;f.z=p.z+0.3;
  if(f.state==='lclimb'){f.y=top*Math.min(1,f.t/0.9);f.walkPh+=dt*12;if(f.t>=0.9){setState(f,'ltop');f.y=top;say(`${f.ch.short} is at the top of the ladder!`);heat(0.12);sfx('roar');}return;}
  f.y=top;f.dir=o.x>=f.x?1:-1;
  if(inp.punchP||inp.kickP){p.climber=-1;f.lad=-1;f.ladDive={hp:o.hp};startDive(f,o);callout('OFF THE LADDER!','#ff8a1f',1.2);}
