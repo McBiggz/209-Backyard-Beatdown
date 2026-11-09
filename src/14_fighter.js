@@ -88,7 +88,7 @@ function checkDodge(f,o){const D=f.dodge;if(!D)return;if(f.state!=='dropdown'&&!
  if(!['run','runline','dropkick'].includes(o.state)||Math.sign(o.x-f.x)===D.side)return;
  const whiff=o.state!=='run';if(whiff)D.kind=D.kind==='LEAPFROG!'?'LEAPFROG! WHIFF!':'DUCKED IT!';
  // he went past: a clean dodge
- f.dodge=null;const n=(G.t-(f.r5t||-9)<CTR.dodge.chainGap?(f.r5n||0):0)+1;f.r5n=o.r5n=n;f.r5t=o.r5t=G.t;
+ f.dodge=null;tutEv(D.kind.startsWith('LEAP')?'leapfrog':'dropdown',f);const n=(G.t-(f.r5t||-9)<CTR.dodge.chainGap?(f.r5n||0):0)+1;f.r5n=o.r5n=n;f.r5t=o.r5t=G.t;
  popOn(f,D.kind+(n>1?' x'+n:''),'#ffd35a');heat(0.03+0.015*n);sfx('whoosh');irpMark('big');
  if(!whiff){o.autoRun=Math.max(o.autoRun,CTR.run.afterRopes+0.8);o.t=Math.min(o.t,0.4);} // keep him running into the next one
  if(n===5){callout('5 BY 5!','#ffd35a',1.6);say(`A perfect 5-by-5 from ${f.ch.short} and ${o.ch.short}! Listen to this place!`);heat(0.25);sfx('roar');crowdReact(f,true);}
