@@ -6,6 +6,12 @@
 // their wrestler on the same step for everyone. Every second the host sends a fingerprint of the match;
 // a guest that drifted asks for the host's snapshot and replays from there.
 const PARTY_PREFIX='dd209p-';
+const PARTY_LAG=+(QS.get('lag')||0),PARTY_BOT=QS.has('bot');
+let botT=0,botHeld=null;
+function botInput(){if(--botT<=0){botT=6+Math.floor(Math.random()*20);botHeld=['left','right','up','down',null][Math.floor(Math.random()*5)];}
+ const I={left:false,right:false,up:false,down:false,jumpP:false,punchP:false,kickP:false,grabP:false,finP:false};if(botHeld)I[botHeld]=true;
+ if(Math.random()<0.08)I[['punchP','kickP','grabP','jumpP','punchP'][Math.floor(Math.random()*5)]]=true;return I;}
+const plDelay=fn=>PARTY_LAG?setTimeout(fn,PARTY_LAG):fn();
 const PARTY={
  st:'off',role:null,peer:null,code:'',err:'',seat:0,m:0,D:6,rtt:0,stallT:0,
  conns:[null,null,null,null],     // host: one data link per guest seat (seat 0 is the host)
@@ -35,7 +41,7 @@ const PARTY={
    if(seat==null||this.st==='playing'){c.on('open',()=>{c.send({t:'full',playing:this.st==='playing'});setTimeout(()=>c.close(),500);});return;}
    this.conns[seat]=c;this.lastRecv[seat]=performance.now();
    c.on('open',()=>{this.L.seats[seat]={pick:null};c.send({t:'welcome',seat,code:this.code});this.sendLobby();sfx('bell');});
-   c.on('data',d=>{this.lastRecv[seat]=performance.now();this.recvHost(seat,d);});
+   c.on('data',d=>{this.lastRecv[seat]=performance.now();plDelay(()=>this.recvHost(seat,d));});
    const gone=()=>{if(this.conns[seat]===c)this.seatLeft(seat);};c.on('close',gone);c.on('error',gone);});},
  join(code){code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==4){this.err='Codes are 4 letters';partyUI.update();return;}
   this.reset();this.role='guest';this.code=code;this.st='joining';this.tries=0;
@@ -43,7 +49,7 @@ const PARTY={
  tryJoin(){if(this.st!=='joining'||!this.peer||this.peer.destroyed)return;
   const c=this.peer.connect(PARTY_PREFIX+this.code,{reliable:true});this.conn=c;
   c.on('open',()=>{c._was=true;this.lastRecv[0]=performance.now();});
-  c.on('data',d=>{this.lastRecv[0]=performance.now();this.recvGuest(d);});
+  c.on('data',d=>{this.lastRecv[0]=performance.now();plDelay(()=>this.recvGuest(d));});
   const gone=()=>{if(this.conn===c&&c._was)this.lost('THE HOST LEFT');};c.on('close',gone);c.on('error',gone);},
  send(o){if(this.role==='guest'){if(this.conn&&this.conn.open)this.conn.send(o);}else this.conns.forEach(c=>{if(c&&c.open)c.send(o);});},
  sendTo(seat,o){const c=this.conns[seat];if(c&&c.open)c.send(o);},
@@ -123,7 +129,7 @@ const PARTY={
   if(fr.dr)for(const slot of fr.dr){const f=G.f[slot];if(f){f.cpu=true;callout(f.ch.short+' LEFT - CPU TAKES OVER','#bfae98',1.4);}}
   this.hist.set(s,fr.v);if(this.hist.size>900)this.hist.delete(s-900);return fr.v;},
  afterStep(fs){if(G.resim||G.irp)return;
-  const s=fs-1+this.D,v=packInp(humanInput(0));
+  const s=fs-1+this.D,v=packInp(PARTY_BOT?botInput():humanInput(0));
   if(s>this.lastSent){const from=this.lastSent+1,arr=[];for(let k=from;k<=s;k++)arr.push(v);this.lastSent=s;
    if(this.role==='host'){arr.forEach((x,k)=>this.inb[0].set(from+k,x));this.assemble();}else this.send({t:'i',m:this.m,s:from,v:arr});}
   if(fs%60===0){const h=simHash();
@@ -152,7 +158,7 @@ const PARTY={
  hud(){
   if(this.st==='lost'){R(0,0,W,H,'rgba(6,2,3,0.85)');T(this.err||'DISCONNECTED',192,90,2,'#ff4a3a','center','#000');T(coarse?'TAP TO RETURN':'PRESS ENTER',192,112,1,'#e9dcc6','center',null);return;}
   if(G.net!==this||G.scene!=='fight')return;
-  if(!G.entrance)T('ONLINE • '+this.humans().length+' PLAYERS'+(this.role==='guest'?' • '+Math.round(this.rtt)+'MS':''),192,30,1,'#5fe07a','center','#000');
+  if(!G.entrance)T((PARTY_BOT?'BOT • ':'')+(PARTY_LAG?'+'+PARTY_LAG+'MS LAG • ':'')+'ONLINE • '+this.humans().length+' PLAYERS'+(this.role==='guest'?' • '+Math.round(this.rtt)+'MS':''),192,30,1,'#5fe07a','center','#000');
   if(this.stallT>0.5){BOX(132,44,120,13,'#140a0c','#ffd35a');T('WAITING FOR PLAYERS...',192,48,1,'#fff','center',null);}
   if(G.netMenu&&!G.over){R(0,0,W,H,'rgba(6,2,3,0.7)');T('ONLINE MATCH',192,60,3,'#ffd35a','center','#5a0608');T("THE MATCH KEEPS GOING - YOU CAN'T PAUSE ONLINE",192,92,1,'#e9dcc6','center',null);
    [['BACK TO MATCH (ESC)',0],['LEAVE MATCH (Q)',1]].forEach(([s,i])=>{const b=PAUSE_BTNS[i];BOX(...b,'#140a0c','#ffd35a');T(s,192,b[1]+5,1,'#fff','center',null);});}
