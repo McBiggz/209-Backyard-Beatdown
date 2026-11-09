@@ -14,7 +14,7 @@ function uniNew(pick){const me=ROSTER[pick].id,others=ROSTER.map(c=>c.id).filter
  for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
  return uniFix({me,week:1,stats:{pow:10,spd:10,tec:10},rec:{w:0,l:0},sched:others.slice(0,UNI_WEEKS),trained:false,champ:false,log:[],sel:0});}
 // older saves: add the rivalry fields
-function uniFix(U){if(!U.kind)U.kind=Array(UNI_WEEKS).fill('single');if(!U.riv)U.riv={};return U;}
+function uniFix(U){smFix(U);if(!U.kind)U.kind=Array(UNI_WEEKS).fill('single');if(!U.riv)U.riv={};return U;}
 // ---------- RIVALRIES ----------
 // Lose to someone -> he's your rival. Two weeks later: a singles REMATCH. Two weeks after that: the BLOW-OFF,
 // a Hardcore or Steel Cage match, whoever won the rematch. Then it's over. Gimmick matches only ever happen as blow-offs.
@@ -31,8 +31,8 @@ function uniRivalAfter(U,opId,won){const r=U.riv[opId],nm=(ROSTER.find(c=>c.id==
  if(!won&&!U.riv[opId]&&U.week<UNI_WEEKS&&!(U.rivDone||[]).some(x=>x.id===opId)){const w=uniBook(U,opId,'rematch',U.week+RIV_GAP);
   if(w){U.riv[opId]={stage:'rematch',week:w,score:[0,1]};return `RIVALRY! YOU WANT PAYBACK ON ${nm}. REMATCH WEEK ${w}`;}}
  return '';}
-const KIND_LBL={single:'SINGLES',rematch:'RIVALRY REMATCH',hardcore:'BLOW-OFF: HARDCORE',cage:'BLOW-OFF: STEEL CAGE'};
-function uniStart(pick){const old=uniLoad();G.uni=old&&old.me===ROSTER[pick].id&&old.week<=UNI_WEEKS?uniFix(old):uniNew(pick);uniSave();G.scene='uni';G.uni.sel=G.uni.trained?3:0;}
+const KIND_LBL={smtitle:'SOCIAL MEDIA TITLE',single:'SINGLES',rematch:'RIVALRY REMATCH',hardcore:'BLOW-OFF: HARDCORE',cage:'BLOW-OFF: STEEL CAGE'};
+function uniStart(pick){const old=uniLoad();G.uni=old&&old.me===ROSTER[pick].id&&old.week<=UNI_WEEKS?uniFix(old):uniNew(pick);uniSave();G.scene='uni';G.uni.sel=G.uni.trained?uniMatchIdx():0;}
 function uniOpp(){const U=G.uni;return ROSTER.find(c=>c.id===U.sched[(U.week-1)%U.sched.length])||ROSTER[1];}
 // stats -> match boost. Power: damage dealt, Speed: movement, Technique: damage taken (up to ~20% each at 100)
 function uniBoost(ch){const s=G.uni.stats;return Object.assign({},ch,{pow:ch.pow*(1+0.2*s.pow/100),spd:ch.spd*(1+0.12*s.spd/100)});}
@@ -40,16 +40,18 @@ function uniDef(){return 1-0.15*G.uni.stats.tec/100;}
 function uniMatch(){const U=G.uni,me=ROSTER.findIndex(c=>c.id===U.me),op=ROSTER.indexOf(uniOpp());
  const k=U.kind[U.week-1];G.mode=0;G.hc=k==='hardcore';G.cage=k==='cage';G.stage=3;G.sel={c:[me,op],stage:2,picks:[me,op]};startIntro();
  G.f[0].ch=uniBoost(G.f[0].ch);G.f[0].uniDef=uniDef();G.uniMatch=true;
- const r=U.riv[U.sched[U.week-1]];if(r&&r.week===U.week)G.uniHype=k==='rematch'?`REMATCH! ${ROSTER[me].short} wants payback on ${uniOpp().short}!`:`It ends tonight! A ${k==='cage'?'steel cage':'hardcore'} match to settle this rivalry!`;else G.uniHype=null;}
+ const r=U.riv[U.sched[U.week-1]];if(r&&r.week===U.week)G.uniHype=k==='rematch'?`REMATCH! ${ROSTER[me].short} wants payback on ${uniOpp().short}!`:`It ends tonight! A ${k==='cage'?'steel cage':'hardcore'} match to settle this rivalry!`;else G.uniHype=null;
+ if(k==='smtitle')G.uniHype=`The Social Media Championship is on the line! ${uniOpp().short} defends against ${ROSTER[me].short}!`;}
 function uniAfterMatch(){const U=G.uni,won=G.over&&G.over.w===G.f[0];G.uniMatch=false;
  if(won)U.rec.w++;else U.rec.l++;const title=U.week===UNI_WEEKS;
  U.log.unshift(`${U.week}. ${won?'W':'L'} ${uniOpp().short.toUpperCase().slice(0,9)}`);U.log=U.log.slice(0,4);
- if(title&&won)U.champ=true;const rmsg=uniRivalAfter(U,uniOpp().id,won);G.hc=G.cage=false;
- U.week++;U.trained=false;U.sel=0;uniSave();G.scene='uni';G.over=null;
+ if(title&&won)U.champ=true;const smsg=smAfterMatch(U,won,uniOpp().id),rmsg=[uniRivalAfter(U,uniOpp().id,won),smsg].filter(Boolean).join(' • ');G.hc=G.cage=false;
+ U.week++;U.trained=false;U.posted=false;U.sel=0;smCheckTitle(U);uniSave();G.scene='uni';G.over=null;
  U.flash=title?(won?'YOU ARE THE DEN CHAMPION!':'SO CLOSE. THE SEASON IS OVER.'):rmsg||(won?'WIN! +1 ON YOUR RECORD':'LOSS. GET BACK IN THE GYM.');U.flashT=rmsg?4:2.5;}
 // ---------- hub ----------
 function uniItems(){const U=G.uni;if(U.week>UNI_WEEKS)return[['NEW SEASON','new'],['MAIN MENU','quit']];
- return[...UNI_DRILLS.map(d=>[U.trained?'(TRAINED THIS WEEK)':'TRAIN: '+d.name,'train:'+d.k]),[U.week===UNI_WEEKS?'WRESTLE: TITLE MATCH':'WRESTLE THIS WEEK','match'],['MAIN MENU','quit']];}
+ return[...UNI_DRILLS.map(d=>[U.trained?'(TRAINED THIS WEEK)':'TRAIN: '+d.name,'train:'+d.k]),[U.posted?'(POSTED THIS WEEK)':'CUT A PROMO / POST','promo'],[U.week===UNI_WEEKS?'WRESTLE: TITLE MATCH':U.kind[U.week-1]==='smtitle'?'WRESTLE: SOCIAL MEDIA TITLE':'WRESTLE THIS WEEK','match'],['MAIN MENU','quit']];}
+const uniMatchIdx=()=>uniItems().findIndex(x=>x[1]==='match');
 const UNI_BTN=i=>[198,92+i*15,176,13];
 function updUni(){const U=G.uni,it=uniItems();G.pops.length=0;if(U.flashT>0)U.flashT-=STEP;
  if(hit(['KeyW','ArrowUp']))U.sel=(U.sel+it.length-1)%it.length;if(hit(['KeyS','ArrowDown']))U.sel=(U.sel+1)%it.length;
@@ -59,6 +61,7 @@ function updUni(){const U=G.uni,it=uniItems();G.pops.length=0;if(U.flashT>0)U.fl
  if(a==='quit'){G.scene='title';return;}
  if(a==='new'){G.uni=uniNew(ROSTER.findIndex(c=>c.id===U.me));uniSave();return;}
  if(a==='match'){uniMatch();return;}
+ if(a==='promo'){if(U.posted){sfx('hit');return;}promoStart();return;}
  if(a.startsWith('train:')){if(U.trained){sfx('hit');return;}trainStart(a.slice(6));}}
 function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
  if(SECRET.complete)ctx.drawImage(SECRET,-60,0,MAPW,H);R(0,0,W,H,'rgba(8,4,6,0.78)');
@@ -66,6 +69,7 @@ function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
  T(U.week>UNI_WEEKS?'SEASON OVER':'WEEK '+U.week+' OF '+UNI_WEEKS,372,10,1,'#fff','right',null);
  drawSpr(SETS[U.me],'idle0',70,178,1,1);if(U.champ)T('CHAMPION',70,182,1,'#ffd35a','center','#000');
  T(me.name,12,28,1,'#fff','left',null);T('RECORD  '+U.rec.w+' - '+U.rec.l,12,40,1,'#bfae98','left',null);
+ T('FOLLOWERS '+smFmt(U.fol||0),12,50,1,'#3a8bff','left',null);if(U.sm&&U.sm.champ)T('SOCIAL MEDIA CHAMP',12,60,1,'#ff4a3a','left',null);else if((U.fol||0)<SM_TITLE_AT)T('TITLE SHOT AT '+smFmt(SM_TITLE_AT),12,60,1,'#6a5a6a','left',null);
  let y=52;for(const k of ['pow','spd','tec']){T(STAT_LBL[k],124,y,1,'#e9dcc6','left',null);R(124,y+9,64,4,'#2a1a1c');R(124,y+9,Math.round(64*U.stats[k]/100),4,k==='pow'?'#ff4a3a':k==='spd'?'#3a8bff':'#5fe07a');T(''+U.stats[k],190,y+6,1,'#fff','left',null);y+=20;}
  if(U.week<=UNI_WEEKS){const op=uniOpp(),title=U.week===UNI_WEEKS;BOX(198,28,176,56,'#140a0c',title?'#ffd35a':'#5a4a40');
   const kd=U.kind[U.week-1],hot=kd!=='single';
@@ -96,7 +100,7 @@ function updTrain(){const T=G.trn,dt=STEP,inp=humanInput(0);G.pops.length=0;T.t+
  const anyP=confirmP()||clickQ||inp.punchP||inp.kickP||inp.grabP||inp.jumpP;
  if(T.phase==='intro'){if(T.t>2.2||(T.t>0.5&&anyP)){T.phase='go';T.t=0;}return;}
  if(T.phase==='done'){if(T.t>1.2&&anyP){const U=G.uni,s=T.d.stat,gain=Math.round(3+9*clamp(T.score/T.max,0,1));
-   U.stats[s]=Math.min(100,U.stats[s]+gain);U.trained=true;U.sel=3;U.flash=`${STAT_LBL[s]} +${gain}!`;U.flashT=2.5;uniSave();G.scene='uni';}return;}
+   U.stats[s]=Math.min(100,U.stats[s]+gain);U.trained=true;U.sel=uniMatchIdx();U.flash=`${STAT_LBL[s]} +${gain}!`;U.flashT=2.5;uniSave();G.scene='uni';}return;}
  if(T.k==='bench')trBench(T,inp,dt);else if(T.k==='fivex5')trFive(T,inp,dt);else trChain(T,inp,dt);}
 function trDone(T){T.phase='done';T.t=0;sfx('bell');}
 // --- BENCH PRESS: mash to push the bar up; it keeps sinking, faster as you tire. 20 seconds, as many reps as you can (8 = max)

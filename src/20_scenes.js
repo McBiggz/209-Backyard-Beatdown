@@ -111,6 +111,7 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  G.ref={x:wide()?157:0,z:wide()?127:8,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false};
  G.pin=null;G.over=null;G.parts=[];G.pops=[];G.hype=0.35;G.crowdHot=false;G.paused=false;G.slow=1;G.slowT=0;G.hitStop=0;
  G.scene='fight';if(!G.entrance){sfx('bell');callout('DING DING DING!','#fff',1.3);}
+ if(G.uniMatch)smMatchStart();
  if(G.uniMatch&&G.uniHype){say(G.uniHype);if(G.hc||G.cage)callout(G.cage?'STEEL CAGE BLOW-OFF!':'HARDCORE BLOW-OFF!','#ff4a3a',2);}
  say(coarse?'THUMB PAD TO MOVE · PUNCH/KICK/GRAB · JUMP AT ROPES TO ROLL OUT':'WASD move · SPACE jump · F punch · G kick · H grab/pin · R finisher');}
 function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,[a,b]=G.f,e=1-Math.pow(1-Math.min(1,t/0.4),3);
