@@ -178,7 +178,7 @@ setInterval(()=>{if(PARTY.st==='off'||PARTY.st==='lost')return;const now=perform
 
 // ---------- the lobby screen (drawn on the game canvas) ----------
 const PL_BACK=[4,4,40,13],PL_PICK=[24,186,110,19],PL_GO=[250,186,110,19],PL_ROWS=[[150,30,220,14],[150,46,220,14],[150,62,220,14]];
-function plRows(){const t=MS_TYPES[PARTY.L.cfg.type][1];return t==='multi'?['type','elim','map']:['type','map'];}
+function plRows(){const t=MS_TYPES[PARTY.L.cfg.type][1],r=t==='multi'?['type','elim']:['type'];if(TEST_MODES)r.push('map');return r;}
 function updParty(){const P=PARTY;if(!P.L){if(hit(['Escape'])||(clickQ&&inRect(clickQ,PL_BACK))){P.leave();G.scene='title';}return;}
  const c=P.L.cfg,host=P.role==='host',rows=plRows();G.plRow=Math.min(G.plRow||0,rows.length-1);
  if(hit(['Escape'])||(clickQ&&inRect(clickQ,PL_BACK))){P.leave();G.scene='title';sfx('punch');return;}

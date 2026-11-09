@@ -1,7 +1,8 @@
 // ================= MATCH SETUP (test link) =================
 // One screen to set up any match: type, rules, elimination, arena and who controls each wrestler.
 // Works with keys (arrows/WASD to move and change, Enter to start) and with taps (big rows, < > arrows, START).
-const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4],['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]];
+// live game: 1 on 1, Triple Threat, Fatal 4-Way. Tag, Rumble, Hardcore/Cage rules and The Barn are test-link only for now.
+const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4]].concat(TEST_MODES?[['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]]:[]);
 const MS_RULES=[['NORMAL',''],['HARDCORE','hc'],['STEEL CAGE','cage']];
 const MS_MAPS=[['BMF RANCH','ranch'],['THE BARN','secret']];
 const MS_CTL=['P1','P2','CPU'],MS_CTLCOL=['#ff4a3a','#3a8bff','#8a7a66'];
@@ -11,7 +12,7 @@ const msSlots=(t=G.ms.type)=>Math.min(4,msCount(t));
 function msSlotName(i){const t=MS_TYPES[G.ms.type][1];
  if(t==='tag')return (i<2?'TEAM A':'TEAM B')+' #'+(i%2+1);if(t==='rumble')return 'ENTRANT '+(i+1);return 'WRESTLER '+(i+1);}
 function msRows(){const ms=G.ms,t=MS_TYPES[ms.type][1],rows=[{k:'type'}];
- if(t==='single')rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});rows.push({k:'map'});
+ if(t==='single'&&TEST_MODES)rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});
  for(let i=0;i<msSlots();i++)rows.push({k:'slot',i});rows.push({k:'start'});return rows;}
 function msVal(r){const ms=G.ms;
  if(r.k==='type')return['MATCH',MS_TYPES[ms.type][0]];if(r.k==='rules')return['RULES',MS_RULES[ms.rules][0]];
@@ -99,7 +100,7 @@ function msRandomIds(have,count){const pool=ROSTER.filter(c=>c.id!=='kliq'&&c.id
 function msBuildCfg(typeIdx,picks,ctl,elim,map){const ty=MS_TYPES[typeIdx],ids=picks.map(p=>ROSTER[p].id);let order;
  if(ty[1]==='rumble'){ids.push(...msRandomIds(ids,8-ids.length));while(ctl.length<8)ctl.push('cpu');
   order=[...Array(8).keys()];for(let i=7;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}}
- return{type:ty[1]==='single'?'multi':ty[1],ids,ctl,elim:ty[1]==='multi'&&!!elim,map,order,fromSetup:true};}
+ return{type:ty[1]==='single'?'multi':ty[1],ids,ctl,elim:ty[1]==='multi'&&!!elim,map,order,fromSetup:true,testFx:TEST_MODES};}
 function startFromSetup(){const ms=G.ms,ty=MS_TYPES[ms.type],picks=G.msel.picks.slice(),ctl=ms.ctl.slice(0,picks.length).map(c=>c===2?'cpu':c);
  G.mapPick=MS_MAPS[ms.map][1];G.fromSetup=true;
  // 1 on 1 with a human runs on the classic engine (it has hardcore, cage, entrances and the Secret Map)

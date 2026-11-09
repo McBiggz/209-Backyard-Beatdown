@@ -3,8 +3,8 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 // the test link gets the new menu: every match type is set up on one screen, and online takes up to 4 players
-const TITLE_ITEMS=TEST_MODES?[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party'],['UNIVERSE MODE',6],['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]
- :[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]];
+// (Universe is still test-link only)
+const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6]]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
