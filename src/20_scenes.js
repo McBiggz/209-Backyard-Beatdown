@@ -2,7 +2,7 @@
 const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearchParams(location.search));
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
-const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc'],['STEEL CAGE (TEST)',0,'cage']]:[]);
+const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc'],['STEEL CAGE (TEST)',0,'cage'],['UNIVERSE MODE (TEST)',6]]:[]);
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
@@ -63,7 +63,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
    if(lk){lockIn(0);S.stage=1;NET.pick(S.c[0]);}}return;}
  if(G.mode>=3){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   let lk=confirmP();if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[0]=i;lk=true;break;}
-  if(lk){lockIn(0);if(G.mode===4){startRumble(S.c[0]);return;}if(G.mode===5){startTag(S.c[0]);return;}const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
+  if(lk){lockIn(0);if(G.mode===6){uniStart(S.c[0]);return;}if(G.mode===4){startRumble(S.c[0]);return;}if(G.mode===5){startTag(S.c[0]);return;}const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
  if(G.mode===0){const w=S.stage;nav(w,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   if(confirmP()||hit(['KeyJ'])){lockIn(w);S.stage++;if(S.stage<2)S.page=pageOf(S.c[1]);}
   if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[w]=i;lockIn(w);S.stage++;break;}
@@ -74,7 +74,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
   if(S.picks[0]!=null&&S.picks[1]!=null)startIntro();}}
 function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
  T('CHOOSE YOUR WRESTLER',114,4,2,'#ffd35a','center','#5a0608');
- T(G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
+ T(G.mode===6?'UNIVERSE: PICK YOUR WRESTLER':G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',114,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
  BOX(...STAGE_BTN,'#8f0f14','#ffd35a');T('LEVEL: '+['THE DEN','OUTDOOR','BMF RANCH','RANCH: FULL'][G.stage],STAGE_BTN[0]+42,STAGE_BTN[1]+3,1,'#fff','center',null);
  if(S.page==null)S.page=0;
  {const P=PAGES();BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
@@ -96,7 +96,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  G.f=[makeFighter(c0,-40,32,1,false,0),makeFighter(c1,40,32,-1,G.mode===0,1)];G.f.forEach(f=>f.set=SETS[f.ch.id]);
  if(c0.id===c1.id){const alt=Object.assign({},c1,{trunks:c1.accent,accent:c1.trunks,name:c1.name+' II',short:c1.short+' II',id:c1.id+'_alt'});if(!SETS[alt.id])buildWrestler(alt);G.f[1].ch=alt;G.f[1].set=SETS[alt.id];}
  G.scene='intro';G.introT=0;sfx('roar');}
-function beginFight(){G.mm=null;const[a,b]=G.f;if(G.hc||G.cage)G.stage=3;
+function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);const[a,b]=G.f;if(G.hc||G.cage)G.stage=3;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
@@ -128,7 +128,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
  if(hit(['KeyM']))toggleMute();
  if(G.tut){tutMeta();tutStep(dt);}
- if(G.over){G.over.t+=dt;if(G.over.t>1.8&&!G.net){
+ if(G.over){G.over.t+=dt;if(G.uniMatch){if(G.over.t>1.8&&(confirmP()||clickQ||hit(['Escape'])))uniAfterMatch();return;}if(G.over.t>1.8&&!G.net){
   if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0])))beginFight();
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[G.sel.picks[0],G.sel.picks[1]],stage:0,picks:[null,null]};}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2])))G.scene='title';}}
@@ -180,7 +180,8 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
  if(wide()&&G.co.n>0&&!G.over){BOX(158,30,68,13,'#140a0c','#ffd35a');T('COUNT '+G.co.n,192,34,1,G.co.n>=7?'#ff4a3a':'#fff','center',null);}
  if(G.over&&G.over.t>1.8){const w=G.over.w||{ch:{name:'NO CONTEST'}};R(0,0,W,H,'rgba(6,2,3,0.65)');T('WINNER',192,62,1,'#bfae98','center',null);
   T(w.ch.name,192,74,TW(w.ch.name,3)>360?2:3,'#ffd35a','center','#5a0608');T(G.over.how&&G.over.how!=='PINFALL'?G.over.how:'BY PINFALL • 1-2-3',192,98,1,'#e9dcc6','center',null);
-  ['REMATCH (ENTER)','CHANGE WRESTLERS (ESC)',G.net?'LEAVE ONLINE (Q)':'MAIN MENU (Q)'].forEach((s,i)=>{const r=OVER_BTNS[i];BOX(...r,i?'#140a0c':'#8f0f14','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
+  if(G.uniMatch){BOX(...OVER_BTNS[0],'#8f0f14','#ffd35a');T(coarse?'TAP TO CONTINUE':'CONTINUE (ENTER)',192,OVER_BTNS[0][1]+5,1,'#fff','center',null);}
+  else ['REMATCH (ENTER)','CHANGE WRESTLERS (ESC)',G.net?'LEAVE ONLINE (Q)':'MAIN MENU (Q)'].forEach((s,i)=>{const r=OVER_BTNS[i];BOX(...r,i?'#140a0c':'#8f0f14','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.paused){R(0,0,W,H,'rgba(6,2,3,0.8)');T('PAUSED',192,50,4,'#ffd35a','center','#5a0608');
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
