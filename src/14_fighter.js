@@ -81,7 +81,7 @@ function updFighter(f,o,inp,dt){
 }
 // ---- 5-BY-5s: dodging a runner. JUMP = leapfrog over him, DOWN + JUMP = drop down flat and let him run over you.
 // He bounces off the ropes and comes back, so the two of you can string them together; 5 in a row pops the crowd.
-function runnerComing(f,o){return o.state==='run'&&o.out===f.out&&(o.x-f.x)*o.runDir<0&&Math.abs(o.x-f.x)<CTR.dodge.range&&Math.abs(o.z-f.z)<16;}
+function runnerComing(f,o){return !!G.dodgeOn&&o.state==='run'&&o.out===f.out&&(o.x-f.x)*o.runDir<0&&Math.abs(o.x-f.x)<CTR.dodge.range&&Math.abs(o.z-f.z)<16;}
 function startDodge(f,o,down){f.dodge={by:o.idx,side:Math.sign(o.x-f.x)||1,kind:down?'DROP DOWN!':'LEAPFROG!'};f.vx=f.vz=0;
  if(down)setState(f,'dropdown');else{setState(f,'jump');f.vy=CTR.dodge.leapVy;f.y=0.5;f.leap=true;}sfx('whoosh');}
 function checkDodge(f,o){const D=f.dodge;if(!D)return;if(f.state!=='dropdown'&&!(f.state==='jump'&&f.leap)){f.dodge=null;return;}if(o.idx!==D.by)return;

@@ -16,7 +16,7 @@ function aiInput(f,o,dt){
  if(a.tap>0){a.tap++;const d=a.tapD;if(a.tap<=2||a.tap>=5){if(d>0)inp.right=true;else inp.left=true;}if(a.tap>8)a.tap=0;return inp;}
  if(!['idle','walk'].includes(f.state))return inp;
  // a runner coming: sometimes leapfrog him or drop down and let him go over
- if(o.state==='run'&&o.out===f.out&&(o.x-f.x)*o.runDir<0&&ad<CTR.dodge.cpuAt&&ad>18&&az<14){const k=o.sid+'/'+o.runDir;if(a.dgK!==k){a.dgK=k;a.dgDo=arand()<CTR.dodge.cpu;a.dgDn=arand()<0.5;}
+ if(G.dodgeOn&&o.state==='run'&&o.out===f.out&&(o.x-f.x)*o.runDir<0&&ad<CTR.dodge.cpuAt&&ad>18&&az<14){const k=o.sid+'/'+o.runDir;if(a.dgK!==k){a.dgK=k;a.dgDo=arand()<CTR.dodge.cpu;a.dgDn=arand()<0.5;}
   if(a.dgDo){inp.jumpP=true;if(a.dgDn)inp.down=true;return inp;}}
  // Royal Rumble: grab a worn-down target and try to throw him over the nearest side ropes
  if(G.mm&&G.mm.elim&&ad<28&&az<8&&GRABBABLE.has(o.state)&&o.y<2&&canToss(f,o)){if(a.elSid!==o.sid){a.elSid=o.sid;a.elDo=arand()<0.55;}

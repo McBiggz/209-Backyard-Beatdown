@@ -21,7 +21,7 @@ function ghostFor(f){const g=G.ghost;g.x=f.x<157?262:52;g.z=140;return g;}
 
 // ---------- starting a group match ----------
 function startGroup(cfg){G.mm=null;G.mmCfg=cfg;const seed=G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
- G.stage=3;XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;
+ G.stage=3;XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;G.dodgeOn=TEST_MODES;
  G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const f=makeFighter(ch,110,140,1,i!==0||cfg.cpuAll,i);f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
  G.ghost=makeFighter(G.f[0].ch,300,150,1,true,-1);G.ghost.ghost=true;G.ghost.hidden=true;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4);G.rec={v:1,seed,group:cfg.type,ids:cfg.ids,inp:[]};G.fstep=0;G.co={t:0,n:0};G.entrance=null;
