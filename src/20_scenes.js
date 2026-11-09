@@ -110,7 +110,7 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
- G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0; // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
+ G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0;G.mapWalk=null;G.f.forEach(f=>f.mwA=1); // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,map:G.map,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;f.wpn=-1;f.lad=-1;f.ladDive=null;f.esc=0;f.escKind=null;}
@@ -147,11 +147,12 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*(E?3:5)));}
  if(G.entrance){updEntrance(dt);updRef(dt);return;}
  if(G.hitStop>0){G.hitStop-=dt;return;}
- if(wide()&&!G.over&&!G.pin&&!G.hc&&!G.cage){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
+ if(wide()&&!G.over&&!G.pin&&!G.hc&&!G.cage&&!G.mapWalk){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
    if(G.co.n>=10){const[a,b]=G.f;if(a.out&&b.out){G.over={w:null,l:null,t:0,how:'DOUBLE COUNT-OUT'};callout('DOUBLE COUNT-OUT!','#ff4a3a',1.6);}else{const w=a.out?b:a,l=a.out?a:b;G.over={w,l,t:0,how:'COUNT-OUT'};setState(w,'win');G.ref.mode='raise';callout('COUNT-OUT!','#ff4a3a',1.6);say(`${l.ch.short} is counted out! Your winner... ${w.ch.name}!`);}setTimeout(()=>sfx('bell'),200);sfx('roar');}}}
   else G.co={t:0,n:0};}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
  const sdt=dt*G.slow;G.rope.t+=sdt;
+ if(G.mapWalk){G.curInp=[0,0];updMapWalk(sdt);updRef(sdt);return;}
  // this step's inputs: from the network / replay tape if there is one, otherwise from the controls and CPU
  let inp=G.stepInp?[unpackInp(G.stepInp[0]),unpackInp(G.stepInp[1])]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
@@ -208,14 +209,41 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
 const MAPZONE={ranch:{x0:480,x1:600,z1:168},secret:{x0:548,x1:600,z1:174}};
 const MAPOK=new Set(['idle','walk','run','punch','kick','stomp','hit','block','grab','grapple','grabbed','held','whiff','dazed']);
 function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
-function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance)return;
+function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance||G.mapWalk)return;
  const both=G.f.every(inMapZone);
  if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
  if(!G.mapArm)return;
  G.mapT+=dt;if(G.mapT<1.0)return;
- const toSecret=G.map!=='secret';G.map=toSecret?'secret':'ranch';G.mapT=0;G.mapArm=false;G.mapFade=0.6;G.co.n=0;G.co.t=0;
- G.f.forEach((f,i)=>{f.x=toSecret?560-i*24:520-i*24;f.z=164;f.vx=f.vz=0;});
- if(toSecret){if(!G.secretFound){G.secretFound=true;callout('SECRET MAP DISCOVERED!','#ffd35a',2.4);}else callout('INTO THE BARN!','#ffd35a',1.6);
-  say(`They've taken this fight into the barn! Nobody's supposed to be back here!`);sfx('roar');}
- else{callout('BACK OUTSIDE!','#ffd35a',1.6);say('And they spill back out to the BMF Ranch!');sfx('roar');}
- heat(0.25);irpMark('big');}
+ // both wrestlers walk through the doorway together: into the dark, a moment of black, then out the other side
+ const toSecret=G.map!=='secret';G.mapT=0;G.mapArm=false;G.co.n=0;G.co.t=0;
+ const lead=G.f[0].x>=G.f[1].x?0:1; // whoever is nearer the door goes first
+ G.mapWalk={to:toSecret?'secret':'ranch',phase:'out',t:0,lead};
+ G.f.forEach((f,i)=>{setState(f,'walk');f.vx=f.vz=0;f.y=0;f.mwA=1;f.mwK=0;f.mwD=(i===lead?0:0.7);f.mwOff=(i===lead?5:-5);});
+ irpMark('big');}
+// door spots on each map (map x, depth z): walk to the threshold, then through it while fading
+const MW_DOOR={ranch:{door:[533,158],through:[533,139],out:[[512,164],[484,166]]},
+ secret:{door:[588,170],through:[628,162],out:[[532,170],[502,172]]}};
+function mwMove(f,tx,tz,dt,sp=62){const dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);if(d<1){f.x=tx;f.z=tz;return true;}
+ const s=Math.min(d,sp*dt);f.x+=dx/d*s;f.z+=dz/d*s;if(Math.abs(dx)>0.5)f.dir=dx>0?1:-1;f.walkPh+=dt*11;f.state='walk';return false;}
+function updMapWalk(dt){const M=G.mapWalk;M.t+=dt;
+ if(M.phase==='out'){const D=MW_DOOR[G.map==='secret'?'secret':'ranch'];let gone=0;
+  for(const f of G.f){if(M.t<f.mwD){f.state='idle';continue;}
+   if(f.mwK===0){if(mwMove(f,D.door[0]+f.mwOff,D.door[1],dt))f.mwK=1;}
+   else{const sx=D.door[0]+f.mwOff,tx=D.through[0]+f.mwOff,arrived=mwMove(f,tx,D.through[1],dt,48);
+    const tot=Math.hypot(tx-sx,D.through[1]-D.door[1]),left=Math.hypot(tx-f.x,D.through[1]-f.z);f.mwA=clamp(left/tot,0,1);if(arrived){f.mwA=0;gone++;}}}
+  if(gone===G.f.length||M.t>6){M.phase='black';M.t=0;for(const f of G.f){f.mwA=0;f.hidden=true;}}}
+ else if(M.phase==='black'){G.mapFade=0.7;
+  if(M.t>=0.45){const toSecret=M.to==='secret';G.map=M.to;M.phase='in';M.t=0;const D=MW_DOOR[M.to];
+   G.f.forEach((f,i)=>{f.hidden=false;f.mwA=0;f.mwK=0;f.x=D.through[0]+f.mwOff;f.z=D.through[1];f.mwD=(i===M.lead?0:0.7);});
+   G.cam=clamp(D.door[0]-230,0,MAPW-W);
+   if(toSecret){if(!G.secretFound){G.secretFound=true;callout('SECRET MAP DISCOVERED!','#ffd35a',2.4);}else callout('INTO THE BARN!','#ffd35a',1.6);
+    say(`They've taken this fight into the barn! Nobody's supposed to be back here!`);}
+   else{callout('BACK OUTSIDE!','#ffd35a',1.6);say('And they spill back out to the BMF Ranch!');}
+   sfx('roar');heat(0.25);}}
+ else{const D=MW_DOOR[G.map];let done=0;
+  G.f.forEach((f,i)=>{if(M.t<f.mwD){f.mwA=0;return;}
+   if(f.mwK===0){const sx=D.through[0]+f.mwOff;const ok=mwMove(f,D.door[0]+f.mwOff,D.door[1],dt,48);
+    const tot=Math.hypot(D.door[0]-D.through[0],D.door[1]-D.through[1]);f.mwA=clamp(1-Math.hypot(D.door[0]+f.mwOff-f.x,D.door[1]-f.z)/tot,0,1);if(ok){f.mwK=1;f.mwA=1;}}
+   else if(f.mwK===1){if(mwMove(f,D.out[i===M.lead?0:1][0],D.out[i===M.lead?0:1][1],dt))f.mwK=2;}
+   else done++;});
+  if(done===G.f.length){G.mapWalk=null;const[a,b]=G.f;for(const f of G.f){f.mwA=1;setState(f,'idle');}a.dir=b.x>a.x?1:-1;b.dir=-a.dir;}}}
