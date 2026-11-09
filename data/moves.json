@@ -91,13 +91,14 @@
    "coolHot": 0.16
   },
   "dodge": {
-   "_readme": "5-by-5s: range = how far away a runner can be when you dodge; leapVy = leapfrog height; dropTime = seconds flat on a drop down; chainGap = seconds between dodges that still count as a streak; cpu = chance the CPU dodges; cpuAt = how close the CPU lets him get",
+   "_readme": "5-by-5s: range = how far away a runner can be when you dodge; leapVy = leapfrog height; dropTime = seconds flat on a drop down; chainGap = seconds between dodges that still count as a streak; cpu = chance the CPU dodges; cpuAt = how close the CPU lets him get; dropDy = how far down the drop-down pose is drawn (the pin pose normally sits on top of a body)",
    "range": 150,
    "leapVy": 330,
    "dropTime": 0.6,
    "chainGap": 3.5,
    "cpu": 0.45,
-   "cpuAt": 115
+   "cpuAt": 115,
+   "dropDy": 25
   },
   "perch": {
    "_readme": "Height (world px) a wrestler stands at on the top turnbuckle: back corners are further away so they sit lower on screen",

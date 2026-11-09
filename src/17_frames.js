@@ -13,7 +13,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'block':return 'grap0';
  case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
  case 'elim':return 'fall';
- case 'dropdown':return f.t<CTR.dodge.dropTime-0.15?'down':'getup';
+ case 'dropdown':return f.t<CTR.dodge.dropTime-0.15?'pinning':'getup'; // flat on the stomach (the pin cover pose)
  case 'wswing':return t<0.18?'grap0':'punch1';
  case 'lclimb':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
  case 'ltop':return 'perch'+blink;
