@@ -39,7 +39,7 @@ function aiInput(f,o,dt){
     else mv({x:o.x<RING_R?1:-1,z:o.z<186?1:0});
     if(arand()<0.5)return inp;}}
   if(f.out&&(!o.out||G.co.n>=5)){a.goal=null;
-   if(f.z<186){mv({x:0,z:1});return inp;}
+   if(f.z<194){mv({x:0,z:1});return inp;} // clear the front corner of the ring before walking along the apron
    const tx=clamp(f.x,70,240);if(Math.abs(tx-f.x)>4){mv({x:Math.sign(tx-f.x),z:0});return inp;}
    inp.up=true;inp.jumpP=true;return inp;}
   if(!f.out&&o.out){a.goal=null;if(a.chase===undefined)a.chase=arand()<(G.rollInOn?0.85:0.45);

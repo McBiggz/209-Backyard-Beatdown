@@ -101,9 +101,13 @@
    "dropDy": 25
   },
   "perch": {
-   "_readme": "Height (world px) a wrestler stands at on the top turnbuckle: back corners are further away so they sit lower on screen",
+   "_readme": "Height (world px) a wrestler stands at on the top turnbuckle: back corners are further away so they sit lower on screen; secret = the same heights on the Secret Map (the barn ring is drawn taller)",
    "back": 37,
-   "front": 63
+   "front": 63,
+   "secret": {
+    "back": 63,
+    "front": 72
+   }
   }
  },
  "group": {

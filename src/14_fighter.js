@@ -17,7 +17,7 @@ function updFighter(f,o,inp,dt){
   const nearBody=Math.abs(bodyX(o)-f.x)<36&&Math.abs(o.z-f.z)<12;
   if(inp.jumpP&&runnerComing(f,o)){startDodge(f,o,inp.down);break;}
   if(inp.jumpP){
-   if(atCorner(f,mx)){setState(f,'perch');if(wide()){const bk=f.z<140;f.x=mx<0?(bk?84:44):(bk?225:269);f.z=bk?121:157;f.y=f.perchY=bk?CTR.perch.back:CTR.perch.front;}else{f.x=mx<0?-(RX-2):(RX-2);f.z=f.z<32?RZB+1:RZF-1;f.y=f.perchY=26;}f.vx=f.vz=0;f.dir=mx<0?1:-1;sfx('whoosh');line('perch',f,o);G.hype=Math.min(1,G.hype+0.15);}
+   if(atCorner(f,mx)){setState(f,'perch');if(wide()){const bk=f.z<140;f.x=mx<0?(bk?84:44):(bk?225:269);f.z=bk?121:157;const PH=(G.map==='secret'&&CTR.perch.secret)||CTR.perch;f.y=f.perchY=bk?PH.back:PH.front;}else{f.x=mx<0?-(RX-2):(RX-2);f.z=f.z<32?RZB+1:RZF-1;f.y=f.perchY=26;}f.vx=f.vz=0;f.dir=mx<0?1:-1;sfx('whoosh');line('perch',f,o);G.hype=Math.min(1,G.hype+0.15);}
    else if(tryRoll(f,mx,mz)){}
    else{setState(f,'jump');f.vy=280;f.vx=mx*95*f.ch.spd;f.vz=mz*55*f.ch.spd;f.y=0.5;}}
   else if(inp.finP)tryFin(f,o);
