@@ -26,9 +26,11 @@
  "src/20d_cage.js",
  "src/21_loading.js",
  "src/21_net.js",
+ "src/21b_party.js",
  "src/21_replay.js",
  "src/21_tutorial.js",
  "src/23_universe.js",
  "src/23b_social.js",
+ "src/23c_matchsetup.js",
  "src/22_loop.js"
 ]

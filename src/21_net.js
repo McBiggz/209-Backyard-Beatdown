@@ -127,7 +127,7 @@ function netToSelect(){if(!NET.conn)return;NET.myPick=NET.theirPick=null;NET.st=
  G.sel={c:[NET.lastPicks?NET.lastPicks[NET.me]:0,0],stage:0,picks:[null,null]};}
 
 // ---- online overlay drawn on top of the fight
-function drawNetHUD(){
+function drawNetHUD(){if(PARTY.st!=='off'){PARTY.hud();return;}
  if(NET.st==='lost'){R(0,0,W,H,'rgba(6,2,3,0.8)');T('OPPONENT DISCONNECTED',192,90,2,'#ff4a3a','center','#000');T(coarse?'TAP TO RETURN':'PRESS ENTER',192,112,1,'#e9dcc6','center',null);return;}
  if(!G.net)return;
  const r=Math.round(NET.rtt);if(G.scene==='fight'&&!G.entrance)T('ONLINE • '+r+'MS',192,30,1,r<90?'#5fe07a':r<160?'#ffd35a':'#ff4a3a','center','#000');

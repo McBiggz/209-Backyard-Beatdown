@@ -22,16 +22,22 @@ function ghostFor(f){const g=G.ghost;g.x=f.x<157?262:52;g.z=140;return g;}
 // ---------- starting a group match ----------
 function startGroup(cfg){G.mm=null;G.mmCfg=cfg;const seed=G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
  G.stage=3;XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;G.dodgeOn=TEST_MODES;
- G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const f=makeFighter(ch,110,140,1,i!==0||cfg.cpuAll,i);f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
+ G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const ctl=cfg.ctl?cfg.ctl[i]:(i!==0||cfg.cpuAll?'cpu':0);const f=makeFighter(ch,110,140,1,ctl==='cpu',i);f.ctl=ctl;f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
+ G.me=cfg.me!=null?cfg.me:0;G.map=cfg.map||'ranch';G.mapT=0;G.mapArm=false;G.mapFade=0;G.secretOn=false;G.hc=G.cage=false;G.props=[];
  G.ghost=makeFighter(G.f[0].ch,300,150,1,true,-1);G.ghost.ghost=true;G.ghost.hidden=true;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4);G.rec={v:1,seed,group:cfg.type,ids:cfg.ids,inp:[]};G.fstep=0;G.co={t:0,n:0};G.entrance=null;
- G.ref={x:157,z:127,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false,hidden:cfg.type==='rumble'};
+ G.ref={x:157,z:127,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false,hidden:cfg.type==='rumble'};G.rec.ctl=cfg.ctl;G.rec.elim=cfg.elim;G.rec.order=cfg.order;
  G.pin=null;G.over=null;G.parts=[];G.pops=[];G.hype=0.45;G.crowdHot=false;G.paused=false;G.slow=1;G.slowT=0;G.hitStop=0;G.cam=60;
- const mm={type:cfg.type,pins:cfg.type==='tag',elim:cfg.type==='rumble',order:[],elimOrder:[],entered:0,nextT:0,ff:false,p1Out:0};G.mm=mm;
+ const mm={type:cfg.type,pinElim:!!cfg.elim,pins:cfg.type==='tag'||cfg.type==='multi',elim:cfg.type==='rumble',order:[],elimOrder:[],entered:0,nextT:0,ff:false,p1Out:0};G.mm=mm;
  for(const f of G.f){f.wait=true;f.hidden=true;}
  if(cfg.type==='rumble'){mm.order=cfg.order;mm.interval=GM().rumbleInterval||20;mm.nextT=mm.interval;
   for(let k=0;k<2;k++){const f=G.f[mm.order[k]];f.wait=false;f.hidden=false;f.x=k?205:110;f.z=140;f.dir=k?-1:1;mm.entered++;}
   callout('ROYAL RUMBLE!','#ffd35a',1.6);say(`Over the top rope to eliminate! Whip worn-down wrestlers into the ropes to throw them out!`);}
+ else if(cfg.type==='multi'){// triple threat / fatal 4-way: everyone in at once, every man for himself
+  const spots=[[110,132,1],[205,132,-1],[205,150,-1],[110,150,1]];
+  G.f.forEach((f,i)=>{f.wait=false;f.hidden=false;[f.x,f.z,f.dir]=spots[i];});
+  const nm=G.f.length===3?'TRIPLE THREAT':'FATAL 4-WAY';callout(nm+(mm.pinElim?' ELIMINATION!':'!'),'#ffd35a',1.8);
+  say(mm.pinElim?'Every pin eliminates someone. Last one standing wins!':'First pinfall wins! Anyone can break up a pin!');}
  else{// tag: team 0 = wrestlers 0,1 (left corner), team 1 = 2,3 (right corner)
   G.f.forEach((f,i)=>{f.team=i<2?0:1;f.wait=false;f.hidden=false;});mm.legal=[0,2];
   for(const f of G.f){if(f.idx===0||f.idx===2){f.legal=true;f.x=f.team?205:110;f.z=140;f.dir=f.team?-1:1;}else{f.legal=false;toApron(f);}}
@@ -51,16 +57,19 @@ function startTag(pick){const others=ROSTER.filter(c=>c.id!==ROSTER[pick].id&&c.
 
 // ---------- the group match loop (runs instead of the one-on-one loop) ----------
 function updGroupFight(dt){const mm=G.mm;
- if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
+ if(G.net&&!G.over)G.net.updFightMeta();
+ else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
  if(hit(['KeyM']))toggleMute();
  if(G.over){G.over.t+=dt;if(G.over.t>1.8){mm.ff=false;
-  if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0]))){G.forceSeed=null;G.mmCfg.type==='rumble'?startRumble(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0])):startTag(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0]));return;}
+  if(G.net){G.net.updFightMeta();return;}
+  if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0]))){G.forceSeed=null;if(G.mmCfg.fromSetup){startGroup(Object.assign({},G.mmCfg));return;}G.mmCfg.type==='rumble'?startRumble(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0])):startTag(ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0]));return;}
+  else if((hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1])))&&G.mmCfg.fromSetup){G.scene='msel';return;}
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[ROSTER.findIndex(c=>c.id===G.mmCfg.ids[0]),0],stage:0,picks:[null,null]};return;}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2]))){G.scene='title';return;}}}
- else if(mm.p1Out&&!mm.ff&&(confirmP()||clickQ)){mm.ff=true;callout('FAST FORWARD','#fff',0.8);}
+ else if(mm.p1Out&&!mm.ff&&!G.net&&(confirmP()||clickQ)){mm.ff=true;callout('FAST FORWARD','#fff',0.8);}
  // camera: follow you; if you're out, follow the action
- {const me=G.f[0],act=G.f.filter(isActive);let fx=157;if(isActive(me))fx=me.x;else if(act.length)fx=act.reduce((s,f)=>s+f.x,0)/act.length;
+ {const me=G.f[G.me||0],act=G.f.filter(isActive);let fx=157;if(isActive(me))fx=me.x;else if(act.length)fx=act.reduce((s,f)=>s+f.x,0)/act.length;
   const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*4));}
  if(G.hitStop>0){G.hitStop-=dt;return;}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
@@ -71,12 +80,13 @@ function updGroupFight(dt){const mm=G.mm;
  for(const f of G.f)if(isActive(f))retarget(f);
  // this step's inputs (recorded so the instant replay can play the whole ring back)
  const n=G.f.length;let inp;
- if(G.stepInp)inp=G.f.map((f,i)=>unpackInp(G.stepInp[i]||0));
- else inp=G.f.map((f,i)=>{if(!G.over&&!f.cpu&&f.state==='apron'&&!f.saving)return humanInput(0);if(!isActive(f)||G.over)return blank();const o=tgtOf(f)||ghostFor(f);
-  if(mm.type==='tag'&&f.cpu&&wantsTag(f))return walkToTag(f);
-  return f.cpu?aiInput(f,o,sdt):humanInput(0);});
+ const cpuIn=(f)=>{if(!isActive(f)||G.over)return blank();const o=tgtOf(f)||ghostFor(f);if(mm.type==='tag'&&wantsTag(f))return walkToTag(f);return aiInput(f,o,sdt);};
+ if(G.stepInp)inp=G.f.map((f,i)=>(G.net&&f.cpu)?cpuIn(f):unpackInp(G.stepInp[i]||0)); // online: CPUs are worked out the same way on every device
+ else inp=G.f.map((f,i)=>{const hi=humanInput(f.ctl===1?1:0);if(!G.over&&!f.cpu&&f.state==='apron'&&!f.saving)return hi;if(!isActive(f)||G.over)return blank();
+  return f.cpu?cpuIn(f):hi;});
  G.curInp=inp.map(packInp);G.f.forEach((f,i)=>f.inp=inp[i]);
- if(G.pin){updPin(sdt,inp);if(mm.type==='tag')tagSaveCheck();}
+ if(G.pin){updPin(sdt,inp);if(mm.type==='tag')tagSaveCheck();if(mm.type==='multi'&&G.pin)multiBreak(sdt);}
+ for(const f of G.f)if(f.elimT>0){f.elimT-=sdt;if(f.elimT<=0)f.hidden=true;}
  if(G.scene!=='fight'||G.mm!==mm)return;
  for(const f of G.f){if(!isActive(f))continue;const o=tgtOf(f)||ghostFor(f);
   if(mm.type==='tag'&&f.legal&&f.inp.grabP&&FREE.has(f.state)&&tryTag(f))continue;
@@ -84,12 +94,13 @@ function updGroupFight(dt){const mm=G.mm;
  const act=G.f.filter(isActive);for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++)if(act[i].out===act[j].out)separate(act[i],act[j]);
  for(const f of G.f)if(f.toss)updToss(f,sdt);
  if(mm.type==='tag'){const[a,b]=[G.f[mm.legal[0]],G.f[mm.legal[1]]];updRef(sdt,a,b);}
+ if(mm.type==='multi'){const P=G.pin,ac=G.f.filter(isActive);const a=P?P.a:ac[0]||G.f[0],b=P?P.d:ac[1]||ac[0]||G.f[1];updRef(sdt,a,b);}
  // crowd
  {const hs=act.length?act.reduce((s,f)=>s+f.hp,0)/act.length:100,floor=0.2+Math.min(0.25,G.fstep/12000)+clamp((100-hs)/100,0,1)*0.2;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
  // a winner?
  if(!G.over&&mm.type==='rumble'&&mm.entered>=G.f.length){const left=G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown'&&!f.wait);
   if(left.length===1){const w=left[0];G.over={w,l:null,t:0,how:'ROYAL RUMBLE WINNER'};setState(w,'win');sfx('bell');sfx('roar');heat(0.4);callout(w.ch.short+' WINS THE RUMBLE!','#ffd35a',2.2);say(`${w.ch.name} has won the Royal Rumble!`);}}
- if(!G.f[0].elim&&!mm.p1Out&&(G.f[0].state==='elim')){mm.p1Out=1+G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown').length;}}
+ if(!G.f[G.me||0].elim&&!mm.p1Out&&(G.f[G.me||0].state==='elim')){mm.p1Out=1+G.f.filter(f=>!f.elim&&f.state!=='elim'&&f.state!=='elimdown').length;}}
 
 // ---------- Royal Rumble pieces ----------
 function rumbleClock(dt){const mm=G.mm;mm.sinceElim=(mm.sinceElim||0)+dt;if(G.over||mm.entered>=G.f.length)return;mm.nextT-=dt;
@@ -198,10 +209,31 @@ function drawGroupHUD(){const mm=G.mm;
   const msg=mm.entered<G.f.length?'NEXT ENTRANT 0:'+String(Math.ceil(mm.nextT)).padStart(2,'0')+'  •  '+left+' IN THE RING':'ALL IN! LAST ONE STANDING  •  '+left+' LEFT';
   BOX(110,194,164,11,'#140a0c','#ffd35a');T(msg,192,197,1,'#fff','center',null);
   if(mm.p1Out){BOX(92,90,200,34,'#140a0c','#ff4a3a');T("YOU'RE ELIMINATED!",192,95,2,'#ff4a3a','center',null);T('YOU FINISHED #'+mm.p1Out+' OF '+G.f.length,192,108,1,'#e9dcc6','center',null);T(mm.ff?'FAST FORWARDING...':(coarse?'TAP TO FAST FORWARD':'ENTER TO FAST FORWARD'),192,116,1,'#ffd35a','center',null);}}}
-function drawGroupMarkers(){const me=G.f[0];drawTossBars();drawTossHints(me);
+function drawGroupMarkers(){const me=G.f[G.me||0];drawTossBars();drawTossHints(me);
  if(G.mm.type==='tag'&&me.legal&&isActive(me)&&FREE.has(me.state)&&!me.out){const p=partnerOf(me),c=cornerSpot(me.team);
   if(p&&p.state==='apron'&&Math.abs(me.x-c.x)<60&&Math.abs(me.z-c.z)<24){const x=clamp(PX(me.x,me.z),70,W-70),y=PY(me.z)-me.y-100*(me.ch.size||1);
    TossT(Math.abs(me.x-c.x)<=26&&Math.abs(me.z-c.z)<=14?(coarse?'TAP GRAB TO TAG!':'PRESS GRAB TO TAG!'):'GET TO YOUR CORNER',x,y,1,Math.floor(G.t*8)%2?'#5fe07a':'#fff');}}
  if(G.mm.type==='tag'&&me.state==='apron'&&!me.saving&&G.pin&&G.pin.d.team===me.team){const x=clamp(PX(me.x,me.z),70,W-70),y=PY(me.z)-me.y-84;
   TossT(coarse?'TAP GRAB TO SAVE HIM!':'PRESS GRAB TO SAVE HIM!',x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff');}if(!isActive(me)&&!me.entering)return;const x=PX(me.x,me.z),y=PY(me.z)-me.y-74*(me.ch.size||1);
  const b=Math.floor(G.t*4)%2;R(x-1,y-6+b,3,4,'#ffd35a');R(x-3,y-3+b,7,1,'#ffd35a');R(x-2,y-2+b,5,1,'#ffd35a');R(x-1,y-1+b,3,1,'#ffd35a');T('YOU',x,y-13+b,1,'#ffd35a','center','#000');}
+
+// ---------- Triple Threat / Fatal 4-Way ----------
+// a pin in a multi-man match: first pin wins, or (elimination) knocks that wrestler out until one is left
+function multiPin(w,l){const mm=G.mm;G.pin=null;G.ref.mode='idle';
+ if(!mm.pinElim){G.over={w,l,t:0,how:'PINFALL'};l.downDur=999;setState(w,'getup');G.ref.mode='raise';sfx('bell');sfx('roar');crowdReact(w,true);
+  callout(w.ch.short+' WINS!','#ffd35a',2.2);say(`${w.ch.name} pins ${l.ch.name} and wins it!`);return;}
+ l.elim=true;l.elimT=1.6;mm.elimOrder.push(l.idx);setState(w,'getup');sfx('bell');heat(0.25);
+ callout(l.ch.short+' ELIMINATED!','#ff4a3a',1.8);say(`${l.ch.name} has been eliminated by ${w.ch.name}!`);
+ const left=G.f.filter(f=>!f.elim);
+ if(left.length===1){const W=left[0];G.over={w:W,l,t:0,how:'LAST ONE STANDING'};G.ref.mode='raise';sfx('roar');crowdReact(W,true);
+  callout(W.ch.short+' WINS!','#ffd35a',2.4);say(`${W.ch.name} is the last one standing!`);}
+ if(l.idx===(G.me||0)&&left.length>1&&!G.net)mm.p1Out=left.length+1;}
+// anyone not in the pin can break it up: hit the man on top. CPUs decide once per pin (sim RNG, so replays and online agree)
+function multiBreak(dt){const P=G.pin;if(!P)return;P.br=P.br||{};
+ for(const f of G.f){if(!isActive(f)||f===P.a||f===P.d||!FREE.has(f.state)&&!['punch','kick','stomp'].includes(f.state))continue;
+  if(f.cpu){if(P.br[f.idx]==null)P.br[f.idx]=schance(G.f.filter(isActive).length>3?0.4:0.55)?0.5+srnd()*1.2:-1;
+   if(P.br[f.idx]>=0&&P.t>=P.br[f.idx]){const dx=P.a.x-f.x,dz=P.a.z-f.z,I=blank();
+    if(Math.abs(dx)>24)I[dx>0?'right':'left']=true;if(Math.abs(dz)>6)I[dz>0?'down':'up']=true;if(Math.abs(dx)<32&&Math.abs(dz)<12)I.punchP=true;f.inp=I;}}
+  const near=Math.abs(P.a.x-f.x)<34*f.ch.size&&Math.abs(P.a.z-f.z)<12,att=f.inp&&(f.inp.punchP||f.inp.kickP||f.inp.grabP);
+  if(near&&att){const a=P.a,d=P.d;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;damage(a,6,f);knock(a,(a.x>=f.x?1:-1)*120,90);link(f,a);
+   callout('BROKEN UP!','#ffd35a',1.1);say(`${f.ch.short} breaks up the pin!`);sfx('slam');heat(0.15);irpMark('big');return;}}}

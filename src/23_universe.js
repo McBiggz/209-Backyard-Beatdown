@@ -81,7 +81,7 @@ function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
  else{BOX(198,28,176,56,'#140a0c','#ffd35a');T(U.champ?'DEN CHAMPION!':'SEASON COMPLETE',286,44,2,'#ffd35a','center','#5a0608');T('FINAL RECORD '+U.rec.w+' - '+U.rec.l,286,66,1,'#fff','center',null);}
  uniItems().forEach(([s],i)=>{const r=UNI_BTN(i),on=U.sel===i;BOX(...r,on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,r[0]+r[2]/2,r[1]+3,1,on?'#fff':'#bfae98','center',null);});
  const rv=Object.entries(U.riv||{}).slice(0,2);if(rv.length)T('RIVALRIES',124,160,1,'#ff4a3a','left',null);
- rv.forEach(([id,r],i)=>{const c=ROSTER.find(x=>x.id===id);T(`${c?c.short.toUpperCase():id} ${r.score[0]}-${r.score[1]}  WK ${r.week}: ${r.stage==='blowoff'?(r.kind==='cage'?'CAGE':'HARDCORE'):'REMATCH'}`,124,170+i*10,1,'#ff8a7a','left',null);});
+ rv.forEach(([id,r],i)=>{const c=ROSTER.find(x=>x.id===id);T(`${c?c.short.toUpperCase():id} ${r.score[0]}-${r.score[1]}`,124,170+i*16,1,'#ff8a7a','left',null);T(`WK ${r.week}: ${r.stage==='blowoff'?(r.kind==='cage'?'CAGE':'HARDCORE'):'REMATCH'}`,124,177+i*16,1,'#ff8a7a','left',null);});
  U.log.forEach((l,i)=>T(l,124,118+i*10,1,'#8a7a6a','left',null));
  if(U.flashT>0)T(U.flash,192,196,1,Math.floor(G.t*6)%2?'#ffd35a':'#fff','center','#000');
  else T(coarse?'TAP AN OPTION':'W/S TO PICK • ENTER TO CHOOSE • ESC: MENU',192,200,1,'#6a5a4a','center',null);}
@@ -93,7 +93,7 @@ const gymImg=(k,x,y)=>{const im=GYM[k];if(im.complete&&im.naturalWidth)ctx.drawI
 // bench layout (world px): bench drawn with its left edge at BX, standing on the floor; the lifter lies on the pad
 const BX=150,BW=84,BH=67,PAD_Y=TR_FLOOR-BH+34,BAR_TOP=TR_FLOOR-BH+2,BAR_CHEST=PAD_Y-4;
 function trainStart(k){const d=UNI_DRILLS.find(x=>x.k===k);G.trn={k,d,t:0,phase:'intro',score:0,max:1,lines:[],msg:'',msgT:0,
- lift:0,reps:0,fatigue:0, n:0,cx:-40,cdir:1,pose:null,poseT:0,judged:false, round:0,want:null,win:0,res:null,resT:0};
+ lift:0,reps:0,fatigue:0, n:0,cx:62,cdir:1,pose:null,poseT:0,judged:false, round:0,want:null,win:0,res:null,resT:0};
  G.scene='train';sfx('roar');}
 function trSay(s,c='#fff'){const T=G.trn;T.msg=s;T.msgC=c;T.msgT=1.1;}
 const TR_BTNS=['punchP','kickP','grabP','jumpP'],TR_BTN_LBL=k=>({punchP:coarse?'PUNCH':'F',kickP:coarse?'KICK':'G',grabP:coarse?'GRAB':'H',jumpP:coarse?'JUMP':'SPACE'})[k];
@@ -111,14 +111,15 @@ function trBench(T,inp,dt){T.max=8;const m=inp.punchP||inp.kickP||inp.grabP||inp
  if(T.lift>=1){T.reps++;T.score=T.reps;T.lift=0;T.fatigue++;sfx('slam');shake(3);trSay(['GOOD!','LOCK IT OUT!','ONE MORE!','THAT\'S POWER!','KEEP GOING!'][T.reps%5],'#ffd35a');}
  if(T.t>20)trDone(T);}
 // --- 5-BY-5s: CJ runs across 10 times. First 5: LEAPFROG (JUMP). Last 5: DROP DOWN (DOWN + JUMP). Time it as he gets close.
-function trFive(T,inp,dt){T.max=10;const px=192,sp=150+T.n*8;if(T.poseT>0)T.poseT-=dt;
+const TR5={px:157,z:146,cz:152,ropeL:62,ropeR:252}; // in-ring spots (Barn ring, camera at 0)
+function trFive(T,inp,dt){T.max=10;const px=TR5.px,sp=125+T.n*7;if(T.cx<0){T.cx=TR5.ropeL;}if(T.poseT>0)T.poseT-=dt;
  if(T.n>=10){if(T.poseT<=0)trDone(T);return;}
  T.cx+=T.cdir*sp*dt;const d=(px-T.cx)*T.cdir,drop=T.n>=5;
  if(!T.judged&&inp.jumpP&&d>0){T.judged=true;const ok=d<=46&&d>=6&&(drop?inp.down:!inp.down);
   T.pose=drop?'drop':'leap';T.poseT=0.55;
   if(ok){T.score++;trSay(d>=14&&d<=32?'PERFECT!':'GOOD!','#5fe07a');sfx('whoosh');}else trSay(d>46?'TOO EARLY!':drop?'DOWN + JUMP!':'JUST JUMP!','#ff4a3a');}
  if(!T.judged&&d<4){T.judged=true;trSay('OOF! TOO LATE!','#ff4a3a');sfx('hit');shake(4);T.pose='hit';T.poseT=0.4;}
- if((T.cdir>0&&T.cx>W+40)||(T.cdir<0&&T.cx<-40)){T.cdir*=-1;T.n++;T.judged=false;if(T.n===5)trSay('NOW DROP DOWN!','#ffd35a');}}
+ if((T.cdir>0&&T.cx>TR5.ropeR)||(T.cdir<0&&T.cx<TR5.ropeL)){T.cdir*=-1;shake(1);sfx('whoosh');T.n++;T.judged=false;if(T.n===5)trSay('NOW DROP DOWN!','#ffd35a');}}
 // --- CHAIN SPARRING: Hayashi puts a hold on; hit the button shown before the bar runs out to reverse it. 8 rounds, faster each time.
 const HOLDS=['HEADLOCK','WRISTLOCK','HAMMERLOCK','CHIN LOCK','HEADLOCK','WRISTLOCK','HAMMERLOCK','SNAPMARE'];
 function trChain(T,inp,dt){T.max=8;
@@ -129,7 +130,8 @@ function trChain(T,inp,dt){T.max=8;
  if(pressed){if(pressed===T.want){T.score++;T.res='win';sfx('slam');trSay('REVERSED!','#5fe07a');}else{T.res='lose';sfx('hit');trSay('WRONG MOVE!','#ff4a3a');}T.resT=0.7;}
  else if(T.left<=0){T.res='lose';T.resT=0.7;sfx('hit');trSay('TOO SLOW!','#ff4a3a');}}
 function drawTrain(){const T=G.trn,me=G.uni.me,coach=T.d.coach,cs=SETS[coach],ms=SETS[me];
- if(SECRET.complete)ctx.drawImage(SECRET,-250,0,MAPW,H);R(0,0,W,H,'rgba(0,0,0,0.25)');
+ if(T.k==='fivex5'){if(SECRET.complete)ctx.drawImage(SECRET,0,0,MAPW,H);R(0,0,W,H,'rgba(0,0,0,0.15)');}
+ else{if(SECRET.complete)ctx.drawImage(SECRET,-250,0,MAPW,H);R(0,0,W,H,'rgba(0,0,0,0.25)');}
  if(T.k==='bench'){if(T.pose>0)T.pose-=STEP;
   // Hayashi spotting behind the rack, the lifter lying on the bench, the bar going up and down over his chest
   drawSpr(cs,'idle0',BX-34,TR_FLOOR-10,1,0.92);
@@ -139,9 +141,10 @@ function drawTrain(){const T=G.trn,me=G.uni.me,coach=T.d.coach,cs=SETS[coach],ms
   gymImg('bar',BX+BW*0.33-bw/2,by);
   R(30,40,8,100,'#1a1012');R(30,40+100-Math.round(100*T.lift),8,Math.round(100*T.lift),'#ff4a3a');
   UT('REPS '+T.reps,192,30,2,'#fff');UT('TIME '+Math.max(0,Math.ceil(20-T.t)),330,30,1,'#bfae98');}
- else if(T.k==='fivex5'){let f='idle0',y=TR_FLOOR;
+ else if(T.k==='fivex5'){let f='idle0',y=TR5.z;
   if(T.poseT>0){if(T.pose==='leap'){f='jump';y-=Math.round(Math.sin((1-T.poseT/0.55)*Math.PI)*40);}else if(T.pose==='drop'){f='pinning';y+=CTR.dodge.dropDy;}else f='hit';}
-  drawSpr(ms,f,192,y,1,1);if(T.n<10)drawSpr(cs,'walk'+(Math.floor(T.t*10)%4),T.cx,TR_FLOOR+6,T.cdir,1);
+  ELL(TR5.px,TR5.z,12,3,'rgba(0,0,0,0.3)');drawSpr(ms,f,TR5.px,y,1,1);if(T.n<10){ELL(T.cx,TR5.cz,12,3,'rgba(0,0,0,0.3)');drawSpr(cs,'walk'+(Math.floor(T.t*10)%4),T.cx,TR5.cz,T.cdir,1);}
+  {const p=SPOSTS.F;if(p&&p.img.complete)ctx.drawImage(p.img,p.x,p.y,p.w,p.h);} // front ropes in front of you
   UT((T.n<5?'LEAPFROG ':'DROP DOWN ')+Math.min(10,T.n+1)+' / 10',192,30,1,'#fff');UT('HITS '+T.score,330,30,1,'#5fe07a');
   UT(T.n<5?(coarse?'TAP JUMP AS HE GETS CLOSE':'PRESS SPACE AS HE GETS CLOSE'):(coarse?'HOLD DOWN + TAP JUMP':'HOLD S + PRESS SPACE'),192,44,1,'#bfae98');}
  else{const r=T.res;drawSpr(ms,r==='win'?'grap1':r==='lose'?'grabbed':'grap0',176,TR_FLOOR,1,1);drawSpr(cs,r==='win'?'grabbed':r==='lose'?'grap1':'grap0',214,TR_FLOOR,-1,1);

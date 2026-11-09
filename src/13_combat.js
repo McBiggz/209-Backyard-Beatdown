@@ -114,7 +114,7 @@ function bodySpan(f,frame){const e=(f.set&&f.set[frame+'_ext'])||(frame==='pinni
 function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out);if(!live.length)return;const z=live[0][0].z,[a0,b0]=ringX(z),a=a0-6,b=b0+6;
  let lo=1e9,hi=-1e9;for(const[f,fr]of live){const[s0,s1]=bodySpan(f,fr);lo=Math.min(lo,s0);hi=Math.max(hi,s1);}
  let sh=0;if(hi-lo>b-a)sh=(a+b)/2-(lo+hi)/2;else if(lo<a)sh=a-lo;else if(hi>b)sh=b-hi;if(sh)for(const[f]of live)f.x+=sh;}
-function startPin(f,o){if(o.ghost||(G.mm&&!G.mm.pins)){setState(f,'whiff');return;}link(f,o);tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
+function startPin(f,o){if(o.ghost||(G.mm&&!G.mm.pins)||G.pin){setState(f,'whiff');return;}link(f,o);tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6};G.ref.mode='pin';sfx('grab');line('pin',f,o);}
 function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
@@ -139,5 +139,5 @@ function updPin(dt,inp){
   P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);heat(CTR.crowd.pinCount);
   if(P.count===3)endMatch(P.a,P.d);}
 }
-function endMatch(w,l){G.pin=null;G.over={w,l,t:0,how:'PINFALL'};l.downDur=999;setState(w,'getup');G.ref.mode='raise';setTimeout(()=>sfx('bell'),250);sfx('roar');crowdReact(w,true);say(`Here is your winner... ${w.ch.name}!`);}
+function endMatch(w,l){if(G.mm&&G.mm.type==='multi'){multiPin(w,l);return;}G.pin=null;G.over={w,l,t:0,how:'PINFALL'};l.downDur=999;setState(w,'getup');G.ref.mode='raise';setTimeout(()=>sfx('bell'),250);sfx('roar');crowdReact(w,true);say(`Here is your winner... ${w.ch.name}!`);}
 

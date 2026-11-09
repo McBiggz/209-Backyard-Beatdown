@@ -2,7 +2,9 @@
 const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearchParams(location.search));
 // ================= SCENES =================
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
-const TITLE_ITEMS=[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]].concat(TEST_MODES?[['ROYAL RUMBLE (TEST)',4],['TAG TEAM (TEST)',5],['HARDCORE MATCH (TEST)',0,'hc'],['STEEL CAGE (TEST)',0,'cage'],['UNIVERSE MODE (TEST)',6]]:[]);
+// the test link gets the new menu: every match type is set up on one screen, and online takes up to 4 players
+const TITLE_ITEMS=TEST_MODES?[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party'],['UNIVERSE MODE',6],['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]
+ :[['1 PLAYER VS CPU',0],['2 PLAYERS (SAME SCREEN)',1],['PLAY ONLINE','online'],['TUTORIAL & PRACTICE',3]];
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
@@ -27,7 +29,10 @@ function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.me
  if(G.menu!==menuLast){menuLast=G.menu;if(G.menu<menuSTarget)menuSTarget=G.menu;if(G.menu>menuSTarget+MENU_VIS-1)menuSTarget=G.menu-MENU_VIS+1;}
  if(!menuDrag)menuS+=(menuSTarget-menuS)*0.35;if(Math.abs(menuS-menuSTarget)<0.01)menuS=menuSTarget;
  const it=TITLE_ITEMS[G.menu];
+ G.fromSetup=false;G.mapPick=null;
  if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
+ if(go&&it[1]==='setup'){msOpen(false);sfx('punch');return;}
+ if(go&&it[1]==='party'){G.scene='lobby';partyUI.show(true);sfx('punch');return;}
  if(go){G.mode=it[1];G.hc=it[2]==='hc';G.cage=it[2]==='cage';if(G.hc||G.cage)G.stage=3;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}
 function drawTitle(){drawArena();drawRingBack();
  if(!TITLE_F){TITLE_F=[makeFighter(ROSTER[0],-120,40,1,false,0),makeFighter(ROSTER.find(c=>c.id==='papi'),120,40,-1,false,1)];TITLE_F.forEach(f=>{f.set=SETS[f.ch.id];f.state='win';});}
@@ -101,8 +106,8 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
- G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map='ranch';G.mapT=0;G.mapArm=true;G.mapFade=0; // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
- G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,inp:[]};G.fstep=0;
+ G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0; // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
+ G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,map:G.map,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;f.wpn=-1;f.lad=-1;f.ladDive=null;f.esc=0;f.escKind=null;}
  G.props=G.hc?hcProps():null;
@@ -132,6 +137,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.tut){tutMeta();tutStep(dt);}
  if(G.over){G.over.t+=dt;if(G.uniMatch){if(G.over.t>1.8&&(confirmP()||clickQ||hit(['Escape'])))uniAfterMatch();return;}if(G.over.t>1.8&&!G.net){
   if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0])))beginFight();
+  else if((hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1])))&&G.fromSetup)mselOpen();
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[G.sel.picks[0],G.sel.picks[1]],stage:0,picks:[null,null]};}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2])))G.scene='title';}}
  if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*(E?3:5)));}
