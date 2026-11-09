@@ -14,7 +14,8 @@ function musInit(){if(!AC||MUS.g)return;MUS.g=AC.createGain();MUS.g.gain.value=0
  MUS.echo=AC.createGain();MUS.echo.connect(d);d.connect(lp).connect(fb).connect(d);lp.connect(wet).connect(MUS.g);
  const pw=(duty)=>{const n=32,re=new Float32Array(n),im=new Float32Array(n);for(let k=1;k<n;k++)im[k]=2/(k*Math.PI)*Math.sin(k*Math.PI*duty);return AC.createPeriodicWave(re,im);};
  MUS.waves={pulse:pw(0.25),thin:pw(0.125)};}
-const themeOf=id=>{const M=DATA.music||{};return M.themes&&(M.themes[id]||M.themes[M.fallback])||null;};
+// a theme can have a '<id>_test' version that only plays on the test link (?test=1) while it's being tried out
+const themeOf=id=>{const M=DATA.music||{},th=M.themes||{};const t=(typeof TEST_MODES!=='undefined'&&TEST_MODES&&th[id+'_test'])||th[id];return t||th[M.fallback]||null;};
 // turn a theme into one bar list of note events per voice
 function musBuild(T,mode){const sc=SCALES[T.scale]||SCALES.major,root=60+(NOTE_IX[T.key]||0)+(T.octave||0)*12;
  const deg=d=>{const n=sc.length,o=Math.floor(d/n);return root+sc[((d%n)+n)%n]+12*o;};

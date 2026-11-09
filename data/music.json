@@ -402,6 +402,28 @@
     "4:2 5:2 7:2 5:2 4:4 2:4",
     "7:2 8:2 7:2 5:2 4:4 0:4"
    ]
+  },
+  "viral_test": {
+   "name": "Loudest in the 209 (new)",
+   "bpm": 108,
+   "key": "A",
+   "scale": "mixolydian",
+   "lead": "square",
+   "drums": "rock",
+   "bass": "drive",
+   "pad": true,
+   "prog": [
+    0,
+    6,
+    3,
+    0
+   ],
+   "phrases": [
+    "0:2 .:1 0:1 2:2 0:2 3:3 2:1 0:2 -1:2",
+    "-1:2 .:1 -1:1 1:2 -1:2 3:4 1:2 -1:2",
+    "2:2 4:2 7:4 .:2 0:1 0:1 2:2 0:2"
+   ],
+   "_note": "Built from the hook of the full-length chiptune 'Loudest in the 209' (original melody, matched to the feel of his entrance song: 108 BPM, bluesy A rock)."
   }
  }
 }
