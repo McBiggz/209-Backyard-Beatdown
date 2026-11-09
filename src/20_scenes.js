@@ -193,7 +193,8 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
 // Both wrestlers walk out to the entrance together and the fight moves inside the barn.
 // Inside, both walking to the barn door takes it back outside.
 const MAPZONE={ranch:{x0:480,x1:600,z1:168},secret:{x0:548,x1:600,z1:174}};
-function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&FREE.has(f.state)&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
+const MAPOK=new Set(['idle','walk','run','punch','kick','stomp','hit','block','grab','grapple','grabbed','held','whiff','dazed']);
+function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
 function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance)return;
  const both=G.f.every(inMapZone);
  if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
