@@ -194,7 +194,8 @@ function drawParty(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.84)');const P=PARTY,L=P
  T('ONLINE LOBBY',192,6,2,'#ffd35a','center','#5a0608');
  if(!L){T('CONNECTING...',192,100,1,'#fff','center',null);return;}
  // room code, big, so it can be read out or screenshotted
- BOX(14,30,124,40,'#140a0c','#ffd35a');T('ROOM CODE',76,34,1,'#bfae98','center',null);T(P.code,76,46,3,'#ffd35a','center','#5a0608');
+ BOX(14,30,124,40,'#140a0c','#ffd35a');T('ROOM CODE',76,34,1,'#bfae98','center',null);{ctx.save();ctx.font='900 23px "Arial Black","Segoe UI",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  const cx=76,cy=56,gap=26,ch=P.code.split('');ch.forEach((c,i)=>{const x=cx+(i-1.5)*gap;ctx.lineWidth=5;ctx.strokeStyle='#5a0608';ctx.strokeText(c,x,cy);ctx.fillStyle='#ffd35a';ctx.fillText(c,x,cy);});ctx.restore();} // a real font: the pixel font's M/H/N/W/K/X look too alike
  if(P.err)T(P.err,76,74,1,'#ff8a7a','center',null);
  // match settings (only the host can change them)
  const c=L.cfg,host=P.role==='host';plRows().forEach((k,i)=>{const[x,y,w,h]=PL_ROWS[i],on=host&&G.plRow===i;
