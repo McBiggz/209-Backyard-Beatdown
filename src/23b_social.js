@@ -24,6 +24,7 @@ function promoStart(){const U=smFix(G.uni);if(U.posted)return;const opp=smTarget
 function promoScore(P){const U=G.uni,tones=P.pick.map(p=>p.t),n=k=>tones.filter(t=>t===k).length;
  const same=Math.max(n('hype'),n('trash'),n('respect')),rival=!!(U.riv&&U.riv[P.opp.id]);
  let base=60+Math.round(U.fol*0.04);base*=same===3?1.8:same===2?1.35:1;if(n('trash'))base*=1+0.25*n('trash');if(rival)base*=1.5;
+ if(U.champ||(U.sm&&U.sm.champ))base*=1.25;
  base*=0.8+Math.random()*0.45;const fol=Math.round(base),likes=Math.round(fol*(6+Math.random()*4));
  const heat=n('trash')>=2,bad=n('trash')>=1&&n('respect')>=1; // mixed signals land flat
  return{fol:bad?Math.round(fol*0.6):fol,likes:bad?Math.round(likes*0.6):likes,heat,rival,same};}
@@ -49,6 +50,7 @@ function drawPromo(){const P=G.pr,U=G.uni;if(SECRET.complete)ctx.drawImage(SECRE
  T('CUT A PROMO',12,8,2,'#ffd35a','left','#5a0608');T('TARGET: '+P.opp.name,12,30,1,'#bfae98','left',null);T('FOLLOWERS '+smFmt(U.fol),12,40,1,'#fff','left',null);
  const px=132,py=8,pw=180,ph=84;drawPhone(px,py,pw,ph);
  T(P.me.short.toUpperCase().replace(/\s/g,''),px+6,py+5,1,'#1a1a1a','left',null);
+ {const k=U.champ?'hw':(U.sm&&U.sm.champ)?'sm':null;if(k){drawBeltIcon(px+pw-30,py+3,k);T(k==='hw'?'DEN CHAMP':'SM CHAMP',px+pw-56,py+5,1,'#c4161c','right',null);}}
  const body=P.pick.map(p=>p.s).join(' ');wrapTxt(body||'...',42).slice(0,6).forEach((l,i)=>T(l,px+6,py+16+i*9,1,body?'#1a1a1a':'#9a9a9a','left',null));
  if(P.phase==='write'){T('LINE '+(P.pick.length+1)+' OF 3',W-8,8,1,'#bfae98','right',null);
   P.slots[P.pick.length].forEach((o,i)=>{const r=PR_OPT(i),on=P.sel===i;BOX(...r,on?'#2a1416':'#140a0c',on?TONE_COL[o.t]:'#5a4a40');
@@ -70,8 +72,18 @@ function smAfterMatch(U,won,opId){smFix(U);let msg='';
  if(U.heat===opId){if(won){const b=Math.round(150+U.fol*0.08);U.fol+=b;msg=`BACKED UP THE TRASH TALK! +${b} FOLLOWERS`;}
   else{const l=Math.round(U.fol*0.12);U.fol=Math.max(0,U.fol-l);msg=`RATIO'D! -${l} FOLLOWERS`;}}
  else if(won)U.fol+=40;
+ U.vic=won?uniOpp().id:null;
  if(U.kind[U.week-1]==='smtitle'&&won){U.sm.champ=true;msg='SOCIAL MEDIA CHAMPION!';}
  U.heat=null;U.posted=false;return msg;}
 function smCheckTitle(U){smFix(U);if(U.sm.champ||U.sm.shot||U.fol<SM_TITLE_AT)return;
  if(!U.sm.holder){const pool=ROSTER.filter(c=>c.id!==U.me&&!/^kliq|^mainevent/.test(c.id));U.sm.holder=pool[Math.floor(Math.random()*pool.length)].id;}
  const w=uniBook(U,U.sm.holder,'smtitle',U.week+1);if(w){U.sm.shot=w;U.flash=`${smFmt(U.fol)} FOLLOWERS! SOCIAL MEDIA TITLE SHOT WEEK ${w}`;U.flashT=4;}}
+
+// free post after a win: bigger if it was a rivalry, a title, or you backed up trash talk
+function smVictory(U){const op=ROSTER.find(c=>c.id===U.vic)||uniOpp(),nm=op.short.toUpperCase();const b=Math.round(80+U.fol*0.05);
+ U.fol+=b;U.feed.unshift(`ANOTHER W AT THE DEN. ${nm}, GOOD MATCH. WHO'S NEXT?`);U.feed=U.feed.slice(0,3);U.vic=null;
+ U.flash=`VICTORY POST: +${b} FOLLOWERS`;U.flashT=3;sfx('roar');smCheckTitle(U);uniSave();}
+// 3. champions post with the belt: a little pixel belt on the phone (swapped for the real art once it's in)
+function drawBeltIcon(x,y,kind){const strap=kind==='sm'?'#c4161c':'#141414',plate=kind==='sm'?'#c8c8d4':'#e8b830',hi=kind==='sm'?'#ffffff':'#fff2a0';
+ R(x-22,y+3,44,8,'#000');R(x-21,y+4,42,6,strap);R(x-9,y,18,14,'#000');R(x-8,y+1,16,12,plate);R(x-6,y+2,4,2,hi);R(x-4,y+6,8,2,kind==='sm'?'#c4161c':'#c4161c');
+ R(x-17,y+5,4,4,plate);R(x+13,y+5,4,4,plate);}

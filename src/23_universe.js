@@ -28,8 +28,9 @@ function uniRivalAfter(U,opId,won){const r=U.riv[opId],nm=(ROSTER.find(c=>c.id==
    delete U.riv[opId];return '';}
   if(r.stage==='blowoff'){r.done=true;r.stage='over';r.week=0;U.rivDone=(U.rivDone||[]).concat([{id:opId,score:r.score,won}]);delete U.riv[opId];
    return won?`YOU ENDED THE RIVALRY WITH ${nm}!`:`${nm} GETS THE LAST WORD...`;}}
- if(!won&&!U.riv[opId]&&U.week<UNI_WEEKS&&!(U.rivDone||[]).some(x=>x.id===opId)){const w=uniBook(U,opId,'rematch',U.week+RIV_GAP);
-  if(w){U.riv[opId]={stage:'rematch',week:w,score:[0,1]};return `RIVALRY! YOU WANT PAYBACK ON ${nm}. REMATCH WEEK ${w}`;}}
+ const talked=U.heat===opId;
+ if((!won||talked)&&!U.riv[opId]&&U.week<UNI_WEEKS&&!(U.rivDone||[]).some(x=>x.id===opId)){const w=uniBook(U,opId,'rematch',U.week+RIV_GAP);
+  if(w){U.riv[opId]={stage:'rematch',week:w,score:won?[1,0]:[0,1]};return won?`${nm} DIDN'T LIKE THAT POST. HE WANTS A REMATCH WEEK ${w}`:`RIVALRY! YOU WANT PAYBACK ON ${nm}. REMATCH WEEK ${w}`;}}
  return '';}
 const KIND_LBL={smtitle:'SOCIAL MEDIA TITLE',single:'SINGLES',rematch:'RIVALRY REMATCH',hardcore:'BLOW-OFF: HARDCORE',cage:'BLOW-OFF: STEEL CAGE'};
 function uniStart(pick){const old=uniLoad();G.uni=old&&old.me===ROSTER[pick].id&&old.week<=UNI_WEEKS?uniFix(old):uniNew(pick);uniSave();G.scene='uni';G.uni.sel=G.uni.trained?uniMatchIdx():0;}
@@ -45,12 +46,12 @@ function uniMatch(){const U=G.uni,me=ROSTER.findIndex(c=>c.id===U.me),op=ROSTER.
 function uniAfterMatch(){const U=G.uni,won=G.over&&G.over.w===G.f[0];G.uniMatch=false;
  if(won)U.rec.w++;else U.rec.l++;const title=U.week===UNI_WEEKS;
  U.log.unshift(`${U.week}. ${won?'W':'L'} ${uniOpp().short.toUpperCase().slice(0,9)}`);U.log=U.log.slice(0,4);
- if(title&&won)U.champ=true;const smsg=smAfterMatch(U,won,uniOpp().id),rmsg=[uniRivalAfter(U,uniOpp().id,won),smsg].filter(Boolean).join(' • ');G.hc=G.cage=false;
+ if(title&&won)U.champ=true;const rv0=uniRivalAfter(U,uniOpp().id,won),smsg=smAfterMatch(U,won,uniOpp().id),rmsg=[rv0,smsg].filter(Boolean).join(' • ');G.hc=G.cage=false;
  U.week++;U.trained=false;U.posted=false;U.sel=0;smCheckTitle(U);uniSave();G.scene='uni';G.over=null;
  U.flash=title?(won?'YOU ARE THE DEN CHAMPION!':'SO CLOSE. THE SEASON IS OVER.'):rmsg||(won?'WIN! +1 ON YOUR RECORD':'LOSS. GET BACK IN THE GYM.');U.flashT=rmsg?4:2.5;}
 // ---------- hub ----------
 function uniItems(){const U=G.uni;if(U.week>UNI_WEEKS)return[['NEW SEASON','new'],['MAIN MENU','quit']];
- return[...UNI_DRILLS.map(d=>[U.trained?'(TRAINED THIS WEEK)':'TRAIN: '+d.name,'train:'+d.k]),[U.posted?'(POSTED THIS WEEK)':'CUT A PROMO / POST','promo'],[U.week===UNI_WEEKS?'WRESTLE: TITLE MATCH':U.kind[U.week-1]==='smtitle'?'WRESTLE: SOCIAL MEDIA TITLE':'WRESTLE THIS WEEK','match'],['MAIN MENU','quit']];}
+ return[...UNI_DRILLS.map(d=>[U.trained?'(TRAINED THIS WEEK)':'TRAIN: '+d.name,'train:'+d.k]),[U.posted?'(POSTED THIS WEEK)':'CUT A PROMO / POST','promo'],...(U.vic?[['VICTORY POST (FREE)','vic']]:[]),[U.week===UNI_WEEKS?'WRESTLE: TITLE MATCH':U.kind[U.week-1]==='smtitle'?'WRESTLE: SOCIAL MEDIA TITLE':'WRESTLE THIS WEEK','match'],['MAIN MENU','quit']];}
 const uniMatchIdx=()=>uniItems().findIndex(x=>x[1]==='match');
 const UNI_BTN=i=>[198,92+i*15,176,13];
 function updUni(){const U=G.uni,it=uniItems();G.pops.length=0;if(U.flashT>0)U.flashT-=STEP;
@@ -61,6 +62,7 @@ function updUni(){const U=G.uni,it=uniItems();G.pops.length=0;if(U.flashT>0)U.fl
  if(a==='quit'){G.scene='title';return;}
  if(a==='new'){G.uni=uniNew(ROSTER.findIndex(c=>c.id===U.me));uniSave();return;}
  if(a==='match'){uniMatch();return;}
+ if(a==='vic'){smVictory(U);return;}
  if(a==='promo'){if(U.posted){sfx('hit');return;}promoStart();return;}
  if(a.startsWith('train:')){if(U.trained){sfx('hit');return;}trainStart(a.slice(6));}}
 function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
