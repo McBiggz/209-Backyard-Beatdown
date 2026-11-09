@@ -12,21 +12,41 @@ function uniLoad(){try{const s=localStorage.getItem(UNI_KEY);return s?JSON.parse
 function uniSave(){try{localStorage.setItem(UNI_KEY,JSON.stringify(G.uni));}catch(e){}}
 function uniNew(pick){const me=ROSTER[pick].id,others=ROSTER.map(c=>c.id).filter(id=>id!==me&&!/^kliq|^mainevent/.test(id));
  for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
- return{me,week:1,stats:{pow:10,spd:10,tec:10},rec:{w:0,l:0},sched:others.slice(0,UNI_WEEKS),trained:false,champ:false,log:[],sel:0};}
-function uniStart(pick){const old=uniLoad();G.uni=old&&old.me===ROSTER[pick].id&&old.week<=UNI_WEEKS?old:uniNew(pick);uniSave();G.scene='uni';G.uni.sel=G.uni.trained?3:0;}
+ return uniFix({me,week:1,stats:{pow:10,spd:10,tec:10},rec:{w:0,l:0},sched:others.slice(0,UNI_WEEKS),trained:false,champ:false,log:[],sel:0});}
+// older saves: add the rivalry fields
+function uniFix(U){if(!U.kind)U.kind=Array(UNI_WEEKS).fill('single');if(!U.riv)U.riv={};return U;}
+// ---------- RIVALRIES ----------
+// Lose to someone -> he's your rival. Two weeks later: a singles REMATCH. Two weeks after that: the BLOW-OFF,
+// a Hardcore or Steel Cage match, whoever won the rematch. Then it's over. Gimmick matches only ever happen as blow-offs.
+const RIV_GAP=2;
+function uniBook(U,id,kind,from){for(let w=from;w<UNI_WEEKS;w++){ // never on title week (week 10)
+  if(U.kind[w-1]==='single'&&!Object.values(U.riv).some(r=>r.week===w)){U.sched[w-1]=id;U.kind[w-1]=kind;return w;}}return 0;}
+function uniRivalAfter(U,opId,won){const r=U.riv[opId],nm=(ROSTER.find(c=>c.id===opId)||{short:opId}).short.toUpperCase();
+ if(r&&r.week===U.week){r.score[won?0:1]++;
+  if(r.stage==='rematch'){const kind=Math.random()<0.5?'hardcore':'cage',w=uniBook(U,opId,kind,U.week+RIV_GAP);
+   if(w){r.stage='blowoff';r.week=w;r.kind=kind;return `${won?'EVEN AT 1-1! ':''}TIME TO END IT WITH ${nm}. WEEK ${w}: ${kind==='cage'?'STEEL CAGE':'HARDCORE'}!`;}
+   delete U.riv[opId];return '';}
+  if(r.stage==='blowoff'){r.done=true;r.stage='over';r.week=0;U.rivDone=(U.rivDone||[]).concat([{id:opId,score:r.score,won}]);delete U.riv[opId];
+   return won?`YOU ENDED THE RIVALRY WITH ${nm}!`:`${nm} GETS THE LAST WORD...`;}}
+ if(!won&&!U.riv[opId]&&U.week<UNI_WEEKS&&!(U.rivDone||[]).some(x=>x.id===opId)){const w=uniBook(U,opId,'rematch',U.week+RIV_GAP);
+  if(w){U.riv[opId]={stage:'rematch',week:w,score:[0,1]};return `RIVALRY! YOU WANT PAYBACK ON ${nm}. REMATCH WEEK ${w}`;}}
+ return '';}
+const KIND_LBL={single:'SINGLES',rematch:'RIVALRY REMATCH',hardcore:'BLOW-OFF: HARDCORE',cage:'BLOW-OFF: STEEL CAGE'};
+function uniStart(pick){const old=uniLoad();G.uni=old&&old.me===ROSTER[pick].id&&old.week<=UNI_WEEKS?uniFix(old):uniNew(pick);uniSave();G.scene='uni';G.uni.sel=G.uni.trained?3:0;}
 function uniOpp(){const U=G.uni;return ROSTER.find(c=>c.id===U.sched[(U.week-1)%U.sched.length])||ROSTER[1];}
 // stats -> match boost. Power: damage dealt, Speed: movement, Technique: damage taken (up to ~20% each at 100)
 function uniBoost(ch){const s=G.uni.stats;return Object.assign({},ch,{pow:ch.pow*(1+0.2*s.pow/100),spd:ch.spd*(1+0.12*s.spd/100)});}
 function uniDef(){return 1-0.15*G.uni.stats.tec/100;}
 function uniMatch(){const U=G.uni,me=ROSTER.findIndex(c=>c.id===U.me),op=ROSTER.indexOf(uniOpp());
- G.mode=0;G.hc=G.cage=false;G.stage=3;G.sel={c:[me,op],stage:2,picks:[me,op]};startIntro();
- G.f[0].ch=uniBoost(G.f[0].ch);G.f[0].uniDef=uniDef();G.uniMatch=true;}
+ const k=U.kind[U.week-1];G.mode=0;G.hc=k==='hardcore';G.cage=k==='cage';G.stage=3;G.sel={c:[me,op],stage:2,picks:[me,op]};startIntro();
+ G.f[0].ch=uniBoost(G.f[0].ch);G.f[0].uniDef=uniDef();G.uniMatch=true;
+ const r=U.riv[U.sched[U.week-1]];if(r&&r.week===U.week)G.uniHype=k==='rematch'?`REMATCH! ${ROSTER[me].short} wants payback on ${uniOpp().short}!`:`It ends tonight! A ${k==='cage'?'steel cage':'hardcore'} match to settle this rivalry!`;else G.uniHype=null;}
 function uniAfterMatch(){const U=G.uni,won=G.over&&G.over.w===G.f[0];G.uniMatch=false;
  if(won)U.rec.w++;else U.rec.l++;const title=U.week===UNI_WEEKS;
- U.log.unshift(`WK ${U.week}: ${won?'BEAT':'LOST TO'} ${uniOpp().short.toUpperCase()}`);U.log=U.log.slice(0,4);
- if(title&&won)U.champ=true;
+ U.log.unshift(`${U.week}. ${won?'W':'L'} ${uniOpp().short.toUpperCase().slice(0,9)}`);U.log=U.log.slice(0,4);
+ if(title&&won)U.champ=true;const rmsg=uniRivalAfter(U,uniOpp().id,won);G.hc=G.cage=false;
  U.week++;U.trained=false;U.sel=0;uniSave();G.scene='uni';G.over=null;
- U.flash=title?(won?'YOU ARE THE DEN CHAMPION!':'SO CLOSE. THE SEASON IS OVER.'):won?'WIN! +1 ON YOUR RECORD':'LOSS. GET BACK IN THE GYM.';U.flashT=2.5;}
+ U.flash=title?(won?'YOU ARE THE DEN CHAMPION!':'SO CLOSE. THE SEASON IS OVER.'):rmsg||(won?'WIN! +1 ON YOUR RECORD':'LOSS. GET BACK IN THE GYM.');U.flashT=rmsg?4:2.5;}
 // ---------- hub ----------
 function uniItems(){const U=G.uni;if(U.week>UNI_WEEKS)return[['NEW SEASON','new'],['MAIN MENU','quit']];
  return[...UNI_DRILLS.map(d=>[U.trained?'(TRAINED THIS WEEK)':'TRAIN: '+d.name,'train:'+d.k]),[U.week===UNI_WEEKS?'WRESTLE: TITLE MATCH':'WRESTLE THIS WEEK','match'],['MAIN MENU','quit']];}
@@ -48,11 +68,14 @@ function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
  T(me.name,12,28,1,'#fff','left',null);T('RECORD  '+U.rec.w+' - '+U.rec.l,12,40,1,'#bfae98','left',null);
  let y=52;for(const k of ['pow','spd','tec']){T(STAT_LBL[k],124,y,1,'#e9dcc6','left',null);R(124,y+9,64,4,'#2a1a1c');R(124,y+9,Math.round(64*U.stats[k]/100),4,k==='pow'?'#ff4a3a':k==='spd'?'#3a8bff':'#5fe07a');T(''+U.stats[k],190,y+6,1,'#fff','left',null);y+=20;}
  if(U.week<=UNI_WEEKS){const op=uniOpp(),title=U.week===UNI_WEEKS;BOX(198,28,176,56,'#140a0c',title?'#ffd35a':'#5a4a40');
-  T(title?'THIS WEEK: DEN CHAMPIONSHIP':'THIS WEEK AT THE DEN',286,32,1,title?'#ffd35a':'#bfae98','center',null);
+  const kd=U.kind[U.week-1],hot=kd!=='single';
+  T(title?'THIS WEEK: DEN CHAMPIONSHIP':hot?'THIS WEEK: '+KIND_LBL[kd]:'THIS WEEK AT THE DEN',286,32,1,title||hot?'#ffd35a':'#bfae98','center',null);
   T('VS '+op.name,286,44,1,'#fff','center',null);drawSpr(SETS[op.id],'idle0',350,82,-1,0.32);
   T(U.trained?'TRAINED: READY TO WRESTLE':'TRAIN FIRST, THEN WRESTLE',286,70,1,U.trained?'#5fe07a':'#bfae98','center',null);}
  else{BOX(198,28,176,56,'#140a0c','#ffd35a');T(U.champ?'DEN CHAMPION!':'SEASON COMPLETE',286,44,2,'#ffd35a','center','#5a0608');T('FINAL RECORD '+U.rec.w+' - '+U.rec.l,286,66,1,'#fff','center',null);}
  uniItems().forEach(([s],i)=>{const r=UNI_BTN(i),on=U.sel===i;BOX(...r,on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T((on?'> ':'')+s,r[0]+r[2]/2,r[1]+3,1,on?'#fff':'#bfae98','center',null);});
+ const rv=Object.entries(U.riv||{}).slice(0,2);if(rv.length)T('RIVALRIES',124,160,1,'#ff4a3a','left',null);
+ rv.forEach(([id,r],i)=>{const c=ROSTER.find(x=>x.id===id);T(`${c?c.short.toUpperCase():id} ${r.score[0]}-${r.score[1]}  WK ${r.week}: ${r.stage==='blowoff'?(r.kind==='cage'?'CAGE':'HARDCORE'):'REMATCH'}`,124,170+i*10,1,'#ff8a7a','left',null);});
  U.log.forEach((l,i)=>T(l,124,118+i*10,1,'#8a7a6a','left',null));
  if(U.flashT>0)T(U.flash,192,196,1,Math.floor(G.t*6)%2?'#ffd35a':'#fff','center','#000');
  else T(coarse?'TAP AN OPTION':'W/S TO PICK • ENTER TO CHOOSE • ESC: MENU',192,200,1,'#6a5a4a','center',null);}
