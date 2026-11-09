@@ -16,7 +16,7 @@ function drawFighters(){
  ents.sort((p,q)=>p.z-q.z);
  if(G.cage&&wide())drawCageBack();
  const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide();
- const drawPosts=()=>{postsDone=true;for(const k in POSTS){const p=POSTS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
+ const drawPosts=()=>{postsDone=true;const PS=G.map==='secret'?SPOSTS:POSTS;for(const k in PS){const p=PS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
   const f=e.f,ds=depthS(f.z);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),f.dir*(f.turn||1),ds*(f.ch.drawScale||1));if(G.props&&f.wpn>=0)drawHeld(f);}
 }

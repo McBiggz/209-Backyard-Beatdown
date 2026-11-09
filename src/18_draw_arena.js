@@ -15,7 +15,7 @@ function drawBarricade(dark){const top=60,bot=94;R(0,top,W,bot-top,dark?'#0a0710
  for(let x=1;x<W;x+=3)R(x,top+3,1,bot-top-3,dark?'#4a4a5a':'#6a6a74');
  [top,top+16,bot-3].forEach(y=>{R(0,y,W,3,'#a8a8b8');R(0,y,W,1,'#e8e8f0');R(0,y+2,W,1,'#5a5a68');});
  for(let x=12;x<W;x+=60){R(x,top,4,bot-top,'#8a8a98');R(x,top,1,bot-top,'#d8d8e4');R(x+3,top,1,bot-top,'#4a4a56');}}
-function drawArena(){if(G.stage===3){ctx.drawImage(PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
+function drawArena(){if(G.stage===3){ctx.drawImage(G.map==='secret'&&SECRET.complete&&SECRET.naturalWidth?SECRET:PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
  R(0,0,W,H,'#0c0710');for(let y=0;y<60;y+=4)R(0,y,W,1,'rgba(255,255,255,0.015)');
  drawCrowd();drawBarricade(true);R(0,94,W,H-94,'#0a0610');}
 function drawOutdoor(){

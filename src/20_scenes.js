@@ -100,8 +100,9 @@ function beginFight(){G.mm=null;const[a,b]=G.f;if(G.hc||G.cage)G.stage=3;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
- G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net); // 5-by-5s: test link only while it's being cleaned up
- G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,inp:[]};G.fstep=0;
+ G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
+ G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.map='ranch';G.mapT=0;G.mapArm=true;G.mapFade=0; // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
+ G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;f.wpn=-1;f.lad=-1;f.ladDive=null;f.esc=0;f.escKind=null;}
  G.props=G.hc?hcProps():null;
@@ -150,7 +151,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.cage)cagePre(inp,sdt);
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
- updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);if(G.hc&&G.props)hcPost(sdt);if(G.cage)cagePost(sdt);updRef(sdt);
+ updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);if(G.hc&&G.props)hcPost(sdt);if(G.cage)cagePost(sdt);secretCheck(sdt);updRef(sdt);
  // the crowd gets hotter as the match goes on and the wrestlers wear down
  {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
  if(!G.crowdHot&&G.hype>=CTR.crowd.hot&&!G.entrance&&!G.over){G.crowdHot=true;say('Listen to this crowd! The Ranch is ON FIRE!');sfx('roar');}else if(G.crowdHot&&G.hype<CTR.crowd.hot-0.15)G.crowdHot=false;
@@ -169,7 +170,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3; // the crowd settles in at th
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
@@ -187,3 +188,20 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
   [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.flash>0){R(0,0,W,H,`rgba(255,250,235,${G.flash.toFixed(2)})`);}}
 
+
+// ================= SECRET MAP =================
+// Both wrestlers walk out to the entrance together and the fight moves inside the barn.
+// Inside, both walking to the barn door takes it back outside.
+const MAPZONE={ranch:{x0:480,x1:600,z1:168},secret:{x0:548,x1:600,z1:174}};
+function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&FREE.has(f.state)&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
+function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance)return;
+ const both=G.f.every(inMapZone);
+ if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
+ if(!G.mapArm)return;
+ G.mapT+=dt;if(G.mapT<1.0)return;
+ const toSecret=G.map!=='secret';G.map=toSecret?'secret':'ranch';G.mapT=0;G.mapArm=false;G.mapFade=0.6;G.co.n=0;G.co.t=0;
+ G.f.forEach((f,i)=>{f.x=toSecret?560-i*24:520-i*24;f.z=164;f.vx=f.vz=0;});
+ if(toSecret){if(!G.secretFound){G.secretFound=true;callout('SECRET MAP DISCOVERED!','#ffd35a',2.4);}else callout('INTO THE BARN!','#ffd35a',1.6);
+  say(`They've taken this fight into the barn! Nobody's supposed to be back here!`);sfx('roar');}
+ else{callout('BACK OUTSIDE!','#ffd35a',1.6);say('And they spill back out to the BMF Ranch!');sfx('roar');}
+ heat(0.25);irpMark('big');}
