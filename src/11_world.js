@@ -18,6 +18,7 @@ function wbounds(f){if(!wide())return[XMIN,XMAX];return ringX(f.z);}
 function startRoll(f,x1,z1,outAfter){setState(f,'roll');f.rx0=f.x;f.rz0=f.z;f.rx1=x1;f.rz1=z1;f.rollOut=outAfter;f.vx=f.vz=0;if(Math.abs(x1-f.x)>2)f.dir=x1>f.x?1:-1;sfx('whoosh');}
 function updRoll(f,dt){const p=clamp(f.t/0.5,0,1);f.x=lerp(f.rx0,f.rx1,p);f.z=lerp(f.rz0,f.rz1,p);f.y=Math.sin(p*Math.PI)*14;if(p>=1){f.y=0;f.out=f.rollOut;setState(f,'idle');if(!f.out)dust(sx_(f),PY(f.z));}}
 function tryRoll(f,mx,mz){
+ if(G.cage)return false; // locked in the cage
  if(!wide())return false;
  if(!f.out){const[a,b]=ringX(f.z);
   if(f.z>=ZMAX-2&&mz>0){startRoll(f,f.x,196,true);return true;}

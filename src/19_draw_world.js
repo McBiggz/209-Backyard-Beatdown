@@ -14,6 +14,7 @@ function drawFighters(){
  if(G.props&&wide())for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});
  for(const e of ents)if(e.f)shadowOf(e.f,e.ref?0.9:e.f.ch.size);
  ents.sort((p,q)=>p.z-q.z);
+ if(G.cage&&wide())drawCageBack();
  const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide();
  const drawPosts=()=>{postsDone=true;for(const k in POSTS){const p=POSTS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}

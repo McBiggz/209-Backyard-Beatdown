@@ -125,5 +125,22 @@
   "tableDmg": 12,
   "ladderBonus": 8,
   "cpuWeapon": 0.35
+ },
+ "cage": {
+  "_readme": "Steel cage: height = cage height (world px); climbTime / doorTime = seconds to escape with no mashing; mash = progress per button press; topY = how high a climber goes; fallDmg + fallDmgTop = damage when pulled off (more the higher he was); doorDmg = door slammed on you; cpuTry = chance the CPU tries to escape when you are down; cpuReact = how fast the CPU grabs an escaper; doorW = door width; frontAlpha = see-through amount of the front wall; cpuOppHp = the CPU only tries to escape once you are below this health",
+  "height": 112,
+  "climbTime": 7,
+  "doorTime": 6,
+  "mash": 0.012,
+  "topY": 96,
+  "fallDmg": 4,
+  "fallDmgTop": 9,
+  "doorDmg": 7,
+  "cpuTry": 0.3,
+  "cpuReact": 2.5,
+  "cpuMash": 7,
+  "doorW": 58,
+  "frontAlpha": 0.5,
+  "cpuOppHp": 65
  }
 }
