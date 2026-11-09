@@ -5,7 +5,7 @@ const POSTS={"L": {"src": "__ASSET(maps/post_L.png)__", "x": 28.6416, "y": 82.94
 const PANO=new Image();PANO.src="__ASSET(maps/bmfranch_full.webp)__";
 // the Secret Map: inside the barn. Same ring layout, its own front posts
 const SECRET=new Image();SECRET.src="__ASSET(maps/secret_full.webp)__";
-const SPOSTS={L:{src:"__ASSET(maps/secret_post_L.png)__",x:30,y:76,w:28,h:126.5},R:{src:"__ASSET(maps/secret_post_R.png)__",x:251,y:76,w:33,h:126.5}};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
+const SPOSTS={L:{src:"__ASSET(maps/secret_post_L.png)__",x:30,y:76,w:28,h:112},R:{src:"__ASSET(maps/secret_post_R.png)__",x:251,y:76,w:33,h:112}};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
 const HDKEYS=Object.keys(HD).filter(k=>k!=='arena');const HDIMG={};for(const k of HDKEYS){HDIMG[k]=new Image();HDIMG[k].src=HD[k].src;}
 let hdWait=0;function hdReady(){if(hdWait>600)return true;return ARENA_IMG.complete&&ARENA_IMG.naturalWidth&&PANO.complete&&PANO.naturalWidth&&ENT.complete&&ENT.naturalWidth&&HDKEYS.every(k=>HDIMG[k].complete&&HDIMG[k].naturalWidth);}
 function buildHD(k){const im=HDIMG[k],d=HD[k],set={};if(!im.complete||!im.naturalWidth)return;try{d.names.forEach((n,i)=>{const c=mk(320,224);const g=c.getContext('2d');g.drawImage(im,(i%d.cols)*320,Math.floor(i/d.cols)*224,320,224,0,0,320,224);set[n]=c;
