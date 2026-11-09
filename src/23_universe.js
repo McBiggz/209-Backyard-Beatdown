@@ -82,6 +82,10 @@ function drawUni(){const U=G.uni,me=ROSTER.find(c=>c.id===U.me);
 
 // ================= TRAINING MINIGAMES =================
 const TR_FLOOR=172;
+const GYM={};for(const[k,src] of [['bench',"__ASSET(props/gym_bench.png)__"],['bar',"__ASSET(props/gym_bar.png)__"]]){GYM[k]=new Image();GYM[k].src=src;}
+const gymImg=(k,x,y)=>{const im=GYM[k];if(im.complete&&im.naturalWidth)ctx.drawImage(im,Math.round(x),Math.round(y),im.naturalWidth/2,im.naturalHeight/2);};
+// bench layout (world px): bench drawn with its left edge at BX, standing on the floor; the lifter lies on the pad
+const BX=150,BW=84,BH=67,PAD_Y=TR_FLOOR-BH+34,BAR_TOP=TR_FLOOR-BH+2,BAR_CHEST=PAD_Y-4;
 function trainStart(k){const d=UNI_DRILLS.find(x=>x.k===k);G.trn={k,d,t:0,phase:'intro',score:0,max:1,lines:[],msg:'',msgT:0,
  lift:0,reps:0,fatigue:0, n:0,cx:-40,cdir:1,pose:null,poseT:0,judged:false, round:0,want:null,win:0,res:null,resT:0};
  G.scene='train';sfx('roar');}
@@ -120,10 +124,13 @@ function trChain(T,inp,dt){T.max=8;
  else if(T.left<=0){T.res='lose';T.resT=0.7;sfx('hit');trSay('TOO SLOW!','#ff4a3a');}}
 function drawTrain(){const T=G.trn,me=G.uni.me,coach=T.d.coach,cs=SETS[coach],ms=SETS[me];
  if(SECRET.complete)ctx.drawImage(SECRET,-250,0,MAPW,H);R(0,0,W,H,'rgba(0,0,0,0.25)');
- if(T.k==='bench'){const lifted=T.lift>0.5||T.pose>0;if(T.pose>0)T.pose-=STEP;
-  drawSpr(ms,lifted?'win0':'grap0',170,TR_FLOOR,1,1);const by=TR_FLOOR-70-Math.round(T.lift*34);
-  R(120,by,100,3,'#c8c8d4');R(114,by-8,8,19,'#2a2a30');R(218,by-8,8,19,'#2a2a30');R(110,by-6,4,15,'#3a3a44');R(226,by-6,4,15,'#3a3a44');
-  drawSpr(cs,'idle0',300,TR_FLOOR,-1,1);
+ if(T.k==='bench'){if(T.pose>0)T.pose-=STEP;
+  // Hayashi spotting behind the rack, the lifter lying on the bench, the bar going up and down over his chest
+  drawSpr(cs,'idle0',BX-34,TR_FLOOR-10,1,0.92);
+  gymImg('bench',BX,TR_FLOOR-BH);
+  drawSpr(ms,'down',BX+BW*0.58+GYMLIFT.dx,PAD_Y+GYMLIFT.dy,GYMLIFT.dir,0.92);
+  const im=GYM.bar,bw=im.naturalWidth/2||90,bh=im.naturalHeight/2||25,by=lerp(BAR_CHEST,BAR_TOP,clamp(T.lift,0,1))-bh/2;
+  gymImg('bar',BX+BW*0.33-bw/2,by);
   R(30,40,8,100,'#1a1012');R(30,40+100-Math.round(100*T.lift),8,Math.round(100*T.lift),'#ff4a3a');
   UT('REPS '+T.reps,192,30,2,'#fff');UT('TIME '+Math.max(0,Math.ceil(20-T.t)),330,30,1,'#bfae98');}
  else if(T.k==='fivex5'){let f='idle0',y=TR_FLOOR;
@@ -141,4 +148,5 @@ function drawTrain(){const T=G.trn,me=G.uni.me,coach=T.d.coach,cs=SETS[coach],ms
  if(T.phase==='done'){R(0,0,W,H,'rgba(6,2,3,0.75)');const p=clamp(T.score/T.max,0,1),gain=Math.round(3+9*p);
   UT(p>=0.8?'GREAT SESSION!':p>=0.5?'SOLID WORK':'KEEP AT IT',192,62,2,'#ffd35a');UT('SCORE '+T.score+' / '+T.max,192,90,1,'#fff');
   UT(T.d.label+' +'+gain,192,104,2,'#5fe07a');if(T.t>1.2)UT(coarse?'TAP TO CONTINUE':'PRESS ENTER',192,140,1,'#bfae98');}}
+const GYMLIFT={dx:10,dy:10,dir:1};
 const UT=(s,x,y,sc,c)=>T(s,x,y,sc,c,'center','#000');
