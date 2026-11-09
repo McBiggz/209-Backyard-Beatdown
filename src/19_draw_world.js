@@ -21,7 +21,13 @@ function drawFighters(){
  let entDone=!(wide()&&G.stage===3&&G.map!=='secret'&&G.scene==='fight');
  const drawEnt=()=>{entDone=true;const E=ENTFRONT;if(E.img.complete&&E.img.naturalWidth)ctx.drawImage(E.img,E.x-G.cam,E.y,E.w,E.h);};
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(!entDone&&(e===null||e.z>=ENTFRONT.z))drawEnt();if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
-  const f=e.f,ds=depthS(f.z);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);drawSpr(f.set,frameOf(f),PX(f.x,f.z),PY(f.z)-f.y*ds+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),f.dir*(f.turn||1),ds*(f.ch.drawScale||1));ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
+  const f=e.f,ds=depthS(f.z);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);
+  let jx=0,jy=0;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
+   const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
+  const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
+  drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc);
+  if(TEST_MODES&&G.t-(f.hitAt||-9)<0.08){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc);ctx.restore();} // white flash on impact
+  ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}

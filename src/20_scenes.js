@@ -110,8 +110,10 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
+ G.windOn=G.replay?!!G.replay.wind:(TEST_MODES&&!G.net); // wind-up beat before strikes (test link)
+ G.entFx=TEST_MODES&&!G.net&&!G.replay;                    // fog + lights + pose entrance (test link)
  G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0;G.mapWalk=null;G.f.forEach(f=>f.mwA=1); // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
- G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,map:G.map,inp:[]};G.fstep=0;
+ G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,map:G.map,wind:G.windOn,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
  for(const f of [a,b]){const ch=f.ch,set=f.set;Object.assign(f,makeFighter(ch,f.idx===0?-40:40,32,f.idx===0?1:-1,f.cpu,f.idx));f.set=set;f.out=false;f.wpn=-1;f.lad=-1;f.ladDive=null;f.esc=0;f.escKind=null;}
  G.props=G.hc?hcProps():null;
@@ -172,18 +174,24 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
  const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
  if(E.t>0.3&&skip){finishEntrance();return;}
- if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;musPlay(f.ch.id.replace('_alt',''),'theme');}if(E.t>1.8){E.phase='walk';E.t=0;f.hidden=false;f.out=true;f.x=513;f.z=160;f.dir=-1;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}
+ if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;musPlay(f.ch.id.replace('_alt',''),'theme');}if(E.t>1.8){E.t=0;f.hidden=false;f.out=true;f.dir=-1;
+   if(G.entFx&&G.map!=='secret'){E.phase='emerge';f.x=533;f.z=139;f.mwA=0;setState(f,'walk');entFog.burst=1;} // test link: out of the tunnel through the fog
+   else{E.phase='walk';f.x=513;f.z=160;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}}
+ else if(E.phase==='emerge'){f.state='walk';f.walkPh+=dt*8;f.dir=1;f.z=Math.min(158,f.z+dt*16);f.mwA=clamp((f.z-139)/12,0,1);
+  if(f.z>=158){f.mwA=1;f.dir=-1;f.state='entpose';f.t=0;E.phase='pose';E.t=0;sfx('roar');shake(3);heat(0.15);entFog.burst=1;
+   pop(PX(533,158),92,pick(['2-0-9! 2-0-9!','LET\'S GO!','DEN! DEN!']),'#f1e6d0');}}
+ else if(E.phase==='pose'){f.state='entpose';if(E.t>1.5){E.phase='walk';E.t=0;setState(f,'walk');}}
  else if(E.phase==='walk'){const tx=296,tz=168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*11;f.state='walk';f.dir=dx<0?-1:1;
   if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*120*dt;f.z+=dz/d*120*dt;}}
  else if(E.phase==='roll'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll')E.phase='place';}
  else if(E.phase==='place'){const tx=order[E.i]===0?110:205,tz=140,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);
   if(d<2){f.dir=order[E.i]===0?1:-1;setState(f,'win');E.i++;E.t=0;if(E.i>=2){finishEntrance();}else E.phase='show';}
   else{f.state='walk';f.walkPh+=dt*11;f.dir=dx<0?-1:1;f.x+=dx/d*90*dt;f.z+=dz/d*90*dt;}}}
-function finishEntrance(){musStop(1.2);G.hype=0.3; // the crowd settles in at the bell
+function finishEntrance(){musStop(1.2);G.hype=0.3;for(const f of G.f)f.mwA=1; // the crowd settles in at the bell
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}drawArena();drawRingBack();drawFighters();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters();if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
@@ -248,3 +256,25 @@ function updMapWalk(dt){const M=G.mapWalk;M.t+=dt;
    else if(f.mwK===1){if(mwMove(f,D.out[i===M.lead?0:1][0],D.out[i===M.lead?0:1][1],dt))f.mwK=2;}
    else done++;});
   if(done===G.f.length){G.mapWalk=null;const[a,b]=G.f;for(const f of G.f){f.mwA=1;setState(f,'idle');}a.dir=b.x>a.x?1:-1;b.dir=-a.dir;}}}
+
+// ================= ENTRANCE FOG + LIGHTS (test link) =================
+// The yard dims, the four truss lamps throw beams down onto the stage, fog rolls out of the tunnel,
+// and the lights strobe while the wrestler hits his pose.
+const entFog={p:[],burst:0};
+function entK(){const E=G.entrance,ph=E.phase;return ph==='emerge'?clamp(E.t/0.4,0,1):ph==='pose'?1:ph==='walk'?clamp(1-E.t/1.2,0,1):0.6;}
+function drawEntFx(){const E=G.entrance,ph=E.phase,cx=533-G.cam,pose=ph==='pose';
+ const k=entK(); // (the yard is darkened before the wrestlers are drawn, so they stay bright)
+ // light beams from the lamps (map x 512-558, y 52) down to the stage floor
+ ctx.save();ctx.globalCompositeOperation='lighter';
+ [512,527,543,558].forEach((lx,i)=>{const on=pose?(Math.floor(G.t*10+i)%2?1:0.35):0.7;const a=0.16*k*on;if(a<=0.01)return;
+  const x=lx-G.cam,g=ctx.createLinearGradient(0,54,0,165);g.addColorStop(0,`rgba(235,200,255,${a*1.6})`);g.addColorStop(1,'rgba(160,80,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-2,54);ctx.lineTo(x+2,54);ctx.lineTo(cx+(lx-535)*0.6+16,165);ctx.lineTo(cx+(lx-535)*0.6-16,165);ctx.closePath();ctx.fill();});
+ if(k>0.05){const g=ctx.createRadialGradient(cx,158,2,cx,158,46);g.addColorStop(0,`rgba(255,230,255,${0.35*k})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(cx-50,140,100,36);}
+ ctx.restore();
+ // fog: soft puffs that drift out of the tunnel and spread across the stage
+ const want=pose||ph==='emerge'?40:ph==='walk'?24:12;if(entFog.burst){entFog.burst=0;for(let i=0;i<14;i++)entFog.p.push(newFog(true));}
+ while(entFog.p.length<want)entFog.p.push(newFog(false));
+ ctx.save();for(const p of entFog.p){p.t+=1/60;p.x+=p.vx/60;p.y+=p.vy/60;p.r+=4/60;const life=p.t/p.life,a=Math.sin(Math.min(1,life)*Math.PI)*p.a*Math.max(k,0.35);
+  if(a<=0.005)continue;const g=ctx.createRadialGradient(p.x-G.cam,p.y,0,p.x-G.cam,p.y,p.r);g.addColorStop(0,`rgba(${p.c},${a})`);g.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=g;ctx.fillRect(p.x-G.cam-p.r,p.y-p.r,p.r*2,p.r*2);}
+ ctx.restore();entFog.p=entFog.p.filter(p=>p.t<p.life);}
+function newFog(burst){return{x:533+rnd(-22,22),y:rnd(146,166),vx:rnd(-16,16)*(burst?2:1),vy:rnd(-2,3),r:rnd(9,16),t:0,life:rnd(1.6,3.2),a:rnd(0.18,0.32),c:pick(['220,200,255','190,150,255','240,235,255'])};}

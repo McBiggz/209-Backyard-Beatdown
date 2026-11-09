@@ -26,12 +26,12 @@ function updFighter(f,o,inp,dt){
   else if(inp.punchP)setState(f,(o.state==='down'&&nearBody)?'stomp':'punch');
   else if(inp.kickP)setState(f,(o.state==='down'&&nearBody)?'stomp':'kick');
   break;}
- case 'punch':case 'kick':case 'stomp':{const A=ATK[S];f.vx=(S==='kick'&&f.t<0.15)?f.dir*30:0;f.vz=0;
-  if(!f.hitDone&&f.t>=A.act[0]&&f.t<=A.act[1])tryHit(f,o,A);if(f.t>=A.dur)setState(f,'idle');break;}
+ case 'punch':case 'kick':case 'stomp':{const A=ATK[S];f.vx=(S==='kick'&&f.t>=windOf(S)&&f.t<0.15+windOf(S))?f.dir*30:0;f.vz=0;
+  const w=windOf(S);if(!f.hitDone&&f.t>=A.act[0]+w&&f.t<=A.act[1]+w)tryHit(f,o,A);if(f.t>=A.dur+w)setState(f,'idle');break;}
  case 'jump':case 'dropkick':{f.vy-=GRAV*dt;f.y+=f.vy*dt;
   if(S==='jump'&&(inp.kickP||inp.punchP)){f.state='dropkick';f.hitDone=false;}
   if(f.state==='dropkick'&&!f.hitDone)tryHit(f,o,ATK.dropkick);
-  if(f.y<=0){f.y=0;f.vx=f.vz=0;if(f.state==='dropkick'){setState(f,'down');f.downDur=0.5;sfx('slam');}else setState(f,'idle');dust(sx_(f),PY(f.z));}
+  if(f.y<=0){f.y=0;f.vx=f.vz=0;if(f.state==='dropkick'){setState(f,'down');f.downDur=0.5;sfx('slam');}else setState(f,'idle');dust(sx_(f),PY(f.z),TEST_MODES);if(TEST_MODES)f.landAt=G.t;}
   break;}
  case 'hit':f.vx*=Math.pow(0.02,dt);if(f.t>=f.stun)setState(f,'idle');break;
  case 'block':f.vx*=Math.pow(0.02,dt);f.vz=0;if(holdsAway(f,o,inp)&&incoming(f,o))f.blockStun=Math.max(f.blockStun,f.t+0.12);if(f.t>=f.blockStun)setState(f,'idle');break;
@@ -50,7 +50,7 @@ function updFighter(f,o,inp,dt){
    if(inp.punchP){f.runWin=0;setState(f,'runline');sfx('whoosh');tutEv('ropeattack',f);break;}
    if(inp.kickP||inp.jumpP){f.runWin=0;setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('ropeattack',f);break;}}
   f.walkPh+=dt*22;if(f.t>1.9+CTR.whipReverse){f.vx=0;setState(f,'idle');}break;}
- case 'run':{const mxh=(inp.right?1:0)-(inp.left?1:0);f.walkPh+=dt*20;f.vz=((inp.down?1:0)-(inp.up?1:0))*40*f.ch.spd;f.vx=f.runDir*CTR.run.speed*f.ch.spd;f.dir=f.runDir;
+ case 'run':{const mxh=(inp.right?1:0)-(inp.left?1:0);f.walkPh+=dt*20;if(TEST_MODES&&Math.floor(f.walkPh/Math.PI)!==f.puff){f.puff=Math.floor(f.walkPh/Math.PI);runPuff(f);}f.vz=((inp.down?1:0)-(inp.up?1:0))*40*f.ch.spd;f.vx=f.runDir*CTR.run.speed*f.ch.spd;f.dir=f.runDir;
   if(inp.punchP){setState(f,'runline');sfx('whoosh');tutEv('runattack',f);break;}
   if(inp.kickP||inp.jumpP){setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('runattack',f);break;}
   if(inp.grabP){f.vx=f.vz=0;setState(f,'idle');break;}
@@ -60,7 +60,7 @@ function updFighter(f,o,inp,dt){
  case 'dropdown':f.vx=f.vz=0;if(f.t>CTR.dodge.dropTime)setState(f,'idle');break;
  case 'runline':f.walkPh+=dt*22;if(!f.hitDone)tryHit(f,o,ATK.runline);else f.vx*=Math.pow(0.05,dt);
   if(f.t>0.55){f.vx=0;setState(f,'idle');}break;
- case 'fall':f.vy-=GRAV*dt;f.y+=f.vy*dt;if(!f.out){const[r0,r1]=wbounds(f),nx=f.x+f.vx*dt;if((nx>r1&&f.vx>0)||(nx<r0&&f.vx<0)){f.vx=-f.vx*0.35;G.rope={side:nx>r1?1:-1,t:0};ropeSfx();shake(2);}}if(f.y<=0&&f.vy<0){f.y=0;f.vx=f.vz=0;setState(f,'down');sfx('slam');shake(4);dust(PX(bodyX(f),f.z),PY(f.z),true);}break;
+ case 'fall':f.vy-=GRAV*dt;f.y+=f.vy*dt;if(!f.out){const[r0,r1]=wbounds(f),nx=f.x+f.vx*dt;if((nx>r1&&f.vx>0)||(nx<r0&&f.vx<0)){f.vx=-f.vx*0.35;G.rope={side:nx>r1?1:-1,t:0};ropeSfx();shake(2);}}if(f.y<=0&&f.vy<0){f.y=0;f.vx=f.vz=0;setState(f,'down');sfx('slam');shake(4);dust(PX(bodyX(f),f.z),PY(f.z),true);f.landAt=G.t;if(TEST_MODES){shake(6);impactRing(PX(bodyX(f),f.z),PY(f.z));}}break;
  case 'down':f.vx=f.vz=0;f.y=0;if(f.t>=f.downDur)setState(f,'getup');break;
  case 'getup':f.vx=f.vz=0;if(f.t>=0.5){setState(f,'idle');if(G.over&&G.over.w===f)setState(f,'win');}break;
  case 'grapple':updGrapple(f,o);break;

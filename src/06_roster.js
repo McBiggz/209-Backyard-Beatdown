@@ -9,6 +9,7 @@ const CARDNAME=DATA.roster.cardNames;
 const cardName=ch=>(CARDNAME[ch.id]||ch.short||ch.name).toUpperCase();
 
 const ATK=DATA.moves.strikes;
+const WIND={punch:0.04,kick:0.07,stomp:0.06};const windOf=s=>G.windOn?(WIND[s]||0):0;
 const CTR=DATA.moves.counters;
 const HITTABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp','jump','dropkick','perch','whipped','whip','runline','block','run']);
 const GRABBABLE=new Set(['idle','walk','punch','kick','hit','whiff','stomp','block']);
