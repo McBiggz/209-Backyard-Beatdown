@@ -395,6 +395,25 @@
    "belly": true
   },
   {
+   "id": "ghoulie",
+   "name": "GHOULIE",
+   "short": "Ghoulie",
+   "align": "heel",
+   "skin": "#e0a777",
+   "trunks": "#141414",
+   "boots": "#141414",
+   "accent": "#d42a2a",
+   "hair": "bald",
+   "hairC": "#1a1414",
+   "beard": true,
+   "size": 1.08,
+   "pow": 1.12,
+   "spd": 0.96,
+   "fin": "THE GRAVEDIGGER",
+   "finType": "slam",
+   "tag": "Oliver Addams"
+  },
+  {
    "id": "kliq",
    "name": "209 KLIQ ENFORCER",
    "short": "Kliq Enforcer",
@@ -437,6 +456,7 @@
   "necrosis": "NECROSIS",
   "kliq": "KLIQ ENFORCER",
   "spektro": "SPEKTRO BLACK",
-  "jojo": "JOJO SAVAGE"
+  "jojo": "JOJO SAVAGE",
+  "ghoulie": "GHOULIE"
  }
 }
