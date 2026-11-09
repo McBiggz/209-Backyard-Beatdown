@@ -21,6 +21,7 @@ function updFighter(f,o,inp,dt){
    else if(tryRoll(f,mx,mz)){}
    else{setState(f,'jump');f.vy=280;f.vx=mx*95*f.ch.spd;f.vz=mz*55*f.ch.spd;f.y=0.5;}}
   else if(inp.finP)tryFin(f,o);
+  else if(inp.grabP&&rollInDir(f,o)&&(inp.up?-1:inp.left?1:0)===rollInDir(f,o)){rollIn(f,o);}
   else if(inp.grabP){if(o.state==='down'&&nearBody&&!G.over&&!(wide()&&(f.out||o.out)))startPin(f,o);else tryGrab(f,o,mx);}
   else if(inp.punchP)setState(f,(o.state==='down'&&nearBody)?'stomp':'punch');
   else if(inp.kickP)setState(f,(o.state==='down'&&nearBody)?'stomp':'kick');

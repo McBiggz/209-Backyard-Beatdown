@@ -35,6 +35,17 @@ function tryHit(f,o,A){if(o.ghost)return;
 // Irish whip: a short wind-up first. That wind-up is the victim's counter window (GRAB reverses it).
 function startWhip(f,o,mx,canRev){link(f,o);setState(f,'whip');setState(o,'whipped');o.whipDir=mx;o.vx=0;o.vz=0;o.dir=-mx;o.z=f.z;
  o.ctrWin=CTR.whipReverse;o.canRev=canRev;o.bounced=false;o.runWin=0;o.whipId=G.fstep;sfx('grab');}
+// ---- Roll him back in: both outside, opponent next to the ring. GRAB while pushing toward the ring (UP at the front, LEFT on the right side)
+// shoves him under the bottom rope. Test link only for now.
+function rollInDir(f,o){if(!G.rollInOn||!wide()||G.mm||!f.out||!o.out||G.over||G.pin)return 0;
+ if(Math.abs(o.x-f.x)>36*f.ch.size||Math.abs(o.z-f.z)>12||o.y>2||!(GRABBABLE.has(o.state)||o.state==='down'))return 0;
+ if(o.z>=186&&o.x>40&&o.x<260)return -1;           // front apron: push UP
+ if(o.z<190&&o.x>=RING_R-4&&o.x<=RING_R+30)return 1; // right side: push LEFT
+ return 0;}
+function rollIn(f,o){const front=o.z>=186;link(f,o);
+ if(front)startRoll(o,clamp(o.x,ringX(ZMAX)[0]+6,ringX(ZMAX)[1]-6),ZMAX-3,false);else startRoll(o,ringX(o.z)[1]-8,clamp(o.z,ZMIN+4,ZMAX-4),false);
+ setState(f,'whip');f.t=0.25;damage(o,3,f);sfx('grab');heat(0.06);
+ callout('BACK IN THE RING!','#ffd35a',1.0);say(`${f.ch.short} rolls ${o.ch.short} back into the ring!`);}
 function tryGrab(f,o,mx){if(o.ghost){setState(f,'whiff');return;}
  if(wide()&&f.out)mx=0;
  if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*f.ch.size&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){

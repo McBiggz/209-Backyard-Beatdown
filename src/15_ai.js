@@ -25,11 +25,21 @@ function aiInput(f,o,dt){
  if(['punch','kick','runline'].includes(o.state)&&ad<70&&az<12){if(a.blkSid!==o.sid){a.blkSid=o.sid;a.blkDo=arand()<0.4;}
   if(a.blkDo){if(dx>0)inp.left=true;else inp.right=true;return inp;}}
  if(wide()){
+  // both outside: go get him and roll him back in (test link)
+  if(f.out&&o.out)a.outT=(a.outT||0)+dt;else a.outT=0;
+  if(G.rollInOn&&f.out&&o.out&&G.co.n<6&&!G.mm&&(a.outT>2.2||o.state==='down'||G.co.n>=3)){a.goal=null;const d=rollInDir(f,o);
+   if(d){inp.grabP=true;if(d<0)inp.up=true;else inp.left=true;return inp;}
+   if(ad<34&&az<10&&(GRABBABLE.has(o.state)||o.state==='down')){
+    // line up between him and the crowd so the push goes toward the ring
+    if(o.z>=180){if(f.z<o.z+3)mv({x:0,z:1});else if(o.x<44||o.x>256)mv({x:Math.sign(150-o.x),z:0});}
+    else if(o.x>=RING_R-6){if(f.x<o.x+12)mv({x:1,z:0});}
+    else mv({x:o.x<RING_R?1:-1,z:o.z<186?1:0});
+    if(arand()<0.5)return inp;}}
   if(f.out&&(!o.out||G.co.n>=5)){a.goal=null;
    if(f.z<186){mv({x:0,z:1});return inp;}
    const tx=clamp(f.x,70,240);if(Math.abs(tx-f.x)>4){mv({x:Math.sign(tx-f.x),z:0});return inp;}
    inp.up=true;inp.jumpP=true;return inp;}
-  if(!f.out&&o.out){a.goal=null;if(a.chase===undefined)a.chase=arand()<0.45;
+  if(!f.out&&o.out){a.goal=null;if(a.chase===undefined)a.chase=arand()<(G.rollInOn?0.85:0.45);
    if(!a.chase||G.co.n>=6)return inp;
    if(f.z<ZMAX-1){mv({x:0,z:1});return inp;}inp.down=true;inp.jumpP=true;return inp;}
   if(!o.out)a.chase=undefined;
