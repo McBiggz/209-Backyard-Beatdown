@@ -76,6 +76,8 @@ function updFighter(f,o,inp,dt){
  f.pmx=(inp.right?1:0)-(inp.left?1:0);
  if(!['grappled','finished','perch','pinned','pinning','roll'].includes(f.state)){f.x+=f.vx*dt;f.z+=f.vz*dt;}
  if(!['perch','dive','roll'].includes(f.state))clampPos(f);
+ // lying down outside, beside the ring: the body stretches away from the ring, not back over the ropes
+ if(wide()&&f.out&&f.z<192&&['down','downW','fall'].includes(f.state)){if(f.x>=RING_R-6)f.dir=-1;else if(f.x<70)f.dir=1;}
  if(f.dodge)checkDodge(f,o);if(f.leap&&f.state!=='jump')f.leap=false;
  if(wide()&&f.state==='down'&&f.y<1)keepInRing([[f,'down']]);
  if(!wide()&&['down','pinned'].includes(f.state)&&f.y<1){const tip=f.x-f.dir*48*f.ch.size;if(tip<XMIN-8)f.x+=XMIN-8-tip;else if(tip>XMAX+8)f.x-=tip-(XMAX+8);}
