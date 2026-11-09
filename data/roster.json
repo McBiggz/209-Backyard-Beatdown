@@ -406,12 +406,13 @@
    "hair": "bald",
    "hairC": "#1a1414",
    "beard": true,
-   "size": 1.08,
+   "size": 1.0,
    "pow": 1.12,
    "spd": 0.96,
    "fin": "THE GRAVEDIGGER",
    "finType": "slam",
-   "tag": "Oliver Addams"
+   "tag": "Oliver Addams",
+   "drawScale": 0.9
   },
   {
    "id": "kliq",
