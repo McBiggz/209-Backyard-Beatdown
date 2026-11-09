@@ -191,10 +191,10 @@ function drawParty(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.84)');const P=PARTY,L=P
  if(!host)T('THE HOST PICKS THE MATCH',260,80,1,'#8a7a66','center',null);
  // players
  const n=msSlots(c.type),h=P.humans();
- for(let k=0;k<4;k++){const s=L.seats[k],x=14+k*90,y=96;BOX(x,y,84,66,'#140a0c',k===P.seat?'#ffd35a':'#5a4a40');
+ for(let k=0;k<4;k++){const s=L.seats[k],x=14+k*90,y=92;BOX(x,y,84,71,'#140a0c',k===P.seat?'#ffd35a':'#5a4a40');
   if(!s){T(k<n&&h.length<=k?'CPU':'OPEN',x+42,y+28,1,'#5a4a40','center',null);continue;}
   T((k===0?'HOST':'PLAYER '+(k+1))+(k===P.seat?' (YOU)':''),x+42,y+3,1,k===P.seat?'#ffd35a':'#bfae98','center',null);
-  if(s.pick!=null){const ch=ROSTER[s.pick],st=SETS[ch.id];ctx.save();ctx.beginPath();ctx.rect(x+1,y+11,82,46);ctx.clip();drawSpr(st,'idle'+(Math.floor(G.t*1.6+k)%2),x+42,y+56,1,0.8);ctx.restore();T(ch.short.toUpperCase(),x+42,y+58,1,'#fff','center',null);}
+  if(s.pick!=null){const ch=ROSTER[s.pick],st=SETS[ch.id];ctx.save();ctx.beginPath();ctx.rect(x+1,y+10,82,50);ctx.clip();ELL(x+42,y+59,11,2,'rgba(0,0,0,0.4)');drawSpr(st,'idle'+(Math.floor(G.t*1.6+k)%2),x+42,y+59,1,0.6*(ch.drawScale||1));ctx.restore();T(ch.short.toUpperCase(),x+42,y+62,1,'#fff','center',null);}
   else T('PICKING...',x+42,y+30,1,'#8a7a66','center',null);}
  const cpus=Math.max(0,MS_TYPES[c.type][2]-h.length);T(h.length+' PLAYER'+(h.length>1?'S':'')+(cpus?' + '+cpus+' CPU':''),192,166,1,'#bfae98','center',null);
  BOX(...PL_PICK,'#140a0c','#ffd35a');T('PICK WRESTLER',PL_PICK[0]+55,PL_PICK[1]+6,1,'#fff','center',null);
