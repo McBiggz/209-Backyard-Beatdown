@@ -26,7 +26,6 @@ function drawFighters(){
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
   const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
   drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc);
-  if(TEST_MODES&&G.t-(f.hitAt||-9)<0.08){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.55;drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc);ctx.restore();} // white flash on impact
   ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
