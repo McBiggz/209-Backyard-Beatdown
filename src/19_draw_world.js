@@ -6,6 +6,9 @@ function drawCtrIcon(f){if(f.cpu)return; if(f.state!=='whipped')return;let lbl=n
  else if(f.runWin>0){lbl=coarse?'PUNCH/KICK':(f.idx?'J/K':'F/G');pct=f.runWin/CTR.ropeAttack;}
  if(!lbl)return;const x=sx_(f),y=sy_(f)-76*f.ch.size,w=TW(lbl)+8,on=Math.floor(G.t*16)%2;
  BOX(x-w/2,y,w,11,'#140a0c',on?'#ffd35a':'#ff4a3a');T(lbl,x,y+3,1,'#fff','center',null);R(x-w/2+1,y+9,Math.round((w-2)*pct),1,'#ffd35a');}
+function drawDodgeHint(){if(G.mm||G.over)return;const me=G.f[0],o=G.f[1];if(!me||me.cpu||!['idle','walk'].includes(me.state)||!runnerComing(me,o))return;
+ const x=clamp(PX(me.x,me.z),80,W-80),y=PY(me.z)-me.y-86*(me.ch.size||1);
+ T(coarse?'JUMP: LEAPFROG · DOWN+JUMP: DROP DOWN':'SPACE: LEAPFROG · S+SPACE: DROP DOWN',x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff','center','#000');}
 function drawFighters(){
  const R0=G.ref,ents=G.f.filter(f=>!f.hidden).map(f=>({f,z:f.z+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden)ents.push({f:R0,z:R0.z,ref:true});
  if(G.props&&wide())for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});

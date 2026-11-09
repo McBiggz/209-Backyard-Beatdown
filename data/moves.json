@@ -89,6 +89,15 @@
    "kickout": 0.07,
    "nearFall": 0.16,
    "coolHot": 0.16
+  },
+  "dodge": {
+   "_readme": "5-by-5s: range = how far away a runner can be when you dodge; leapVy = leapfrog height; dropTime = seconds flat on a drop down; chainGap = seconds between dodges that still count as a streak; cpu = chance the CPU dodges; cpuAt = how close the CPU lets him get",
+   "range": 150,
+   "leapVy": 330,
+   "dropTime": 0.6,
+   "chainGap": 3.5,
+   "cpu": 0.45,
+   "cpuAt": 115
   }
  },
  "group": {
