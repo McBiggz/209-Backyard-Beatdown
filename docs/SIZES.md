@@ -7,7 +7,9 @@ Real heights from Liam (Nov 9 2026). The Viral Voice is 6'0" and is drawn 72.6 p
 |---|---|---|
 | The Viral Voice | 6'0" | 72.6 |
 | CJ Dirt | 5'10" | 70.6 (drawScale 0.929) |
-| J Cruise (not in game yet) | 5'10" | when added: about 70.6 |
+| The Maverick (J Cruise) | 5'10" | 70.6 (drawScale 0.974) |
+| The Samoan Reaper | ~6'2"-6'3" | 75.1 (drawScale 0.868) |
+| Ghoulie | ~5'7"-5'8" | 68.1 (drawScale 0.896) |
 | Asesino | ~5'7"-5'8" (confirmed) | 67.2 |
 | Big MF | ~6'0" | 72.6 (drawScale 0.885) |
 | C.Diddy | ~6'0" | 72.6 (drawScale 0.943) |
@@ -17,4 +19,4 @@ Real heights from Liam (Nov 9 2026). The Viral Voice is 6'0" and is drawn 72.6 p
 | Skinny Omega (ref) | 5'5", 140 lb | 65.5 (ref scale 0.923) |
 
 From the photos only (not confirmed): Punjabi Papi ~5'9" (69.5), JoJo ~5'9" (71.7), Matsunaga ~5'5" (65.5).
-Still unknown: Michael Sean, Spektro Black, Necrosis Black, The Maverick, The Samoan Reaper, Ghoulie, 209 Kliq Enforcer.
+Still unknown: Michael Sean, Spektro Black, Necrosis Black, 209 Kliq Enforcer.

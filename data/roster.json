@@ -362,7 +362,8 @@
    "spd": 1.15,
    "fin": "DANGER ZONE",
    "finType": "spin",
-   "tag": "J Cruise"
+   "tag": "J Cruise",
+   "drawScale": 0.974
   },
   {
    "id": "matsunaga",
@@ -401,7 +402,8 @@
    "fin": "REAPER DROP",
    "finType": "slam",
    "tag": "Zeke Taylor",
-   "belly": true
+   "belly": true,
+   "drawScale": 0.868
   },
   {
    "id": "ghoulie",
@@ -421,7 +423,7 @@
    "fin": "THE GRAVEDIGGER",
    "finType": "slam",
    "tag": "Oliver Addams",
-   "drawScale": 0.85
+   "drawScale": 0.896
   },
   {
    "id": "kliq",
