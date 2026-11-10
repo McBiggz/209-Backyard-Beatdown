@@ -283,7 +283,7 @@ function newFog(burst){return{x:533+rnd(-22,22),y:rnd(146,166),vx:rnd(-16,16)*(b
 
 // ---------- the entrance close-up (test link): out through the curtains, into the light, hit the pose ----------
 const ENT_POSE=1.3,ENT_SHOW=3.3,ENT_LAMPS=[137,168,196,224,251],ENT_GAP=[150,70,222,182],ENT_SPOT=[205,192];
-function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=f.idx===1?-1:1,ds=f.ch.drawScale||1;
+function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.drawScale||1;
  ctx.drawImage(ENT,0,0,W,H);
  const lit=clamp((t-0.1)/0.5,0,1);
  R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`); // the yard dims, the stage takes the light
