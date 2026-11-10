@@ -36,8 +36,13 @@ const balOf=f=>G.styleOn&&AI_BAL[f.ch.id.replace('_alt','')]||1;
 const powOf=f=>f.ch.pow*balOf(f);
 const spdOf=f=>f.ch.spd;
 const aspdOf=f=>G.styleOn?1+(f.ch.spd-1)*0.6:1;
-function aiProfile(f){if(!G.styleOn)return AI_DEF;if(f.aiP)return f.aiP;const w=AI_WHO[f.ch.id.replace('_alt','')]||['brawler',{}];
- return f.aiP=Object.assign({},AI_DEF,AI_STYLES[w[0]],w[1],{style:w[0]});}
+// ---- CPU difficulty: 0 Easy, 1 Normal, 2 Hard (Hard = the original CPU). Scales how fast it reacts and how often it blocks/reverses/dodges.
+const AI_DIFF=[{react:1.7,block:0.4,rev:0.35,dodge:0.55,ropes:0.6,dmg:0.85},{react:1.3,block:0.7,rev:0.65,dodge:0.8,ropes:0.85,dmg:1},{react:1,block:1,rev:1,dodge:1,ropes:1,dmg:1}];
+const DIFF_NAMES=['EASY','NORMAL','HARD'];
+let savedDiff=1;try{const v=+localStorage.getItem('bb_diff');if(v>=0&&v<=2&&localStorage.getItem('bb_diff')!==null)savedDiff=v;}catch(e){}
+function aiProfile(f){if(f.aiP)return f.aiP;const D=AI_DIFF[G.diff!=null?G.diff:2];
+ let P;if(!G.styleOn)P=Object.assign({},AI_DEF);else{const w=AI_WHO[f.ch.id.replace('_alt','')]||['brawler',{}];P=Object.assign({},AI_DEF,AI_STYLES[w[0]],w[1],{style:w[0]});}
+ P.react*=D.react;P.block*=D.block;P.rev*=D.rev;P.dodge*=D.dodge;P.ropes*=D.ropes;P.dmg=D.dmg;return f.aiP=P;}
 function aiInput(f,o,dt){
  const inp=blank(),a=f.ai,P=aiProfile(f);a.t-=dt;
  const dx=o.x-f.x,dz=o.z-f.z,ad=Math.abs(dx),az=Math.abs(dz);

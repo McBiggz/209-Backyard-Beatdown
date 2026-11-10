@@ -3,7 +3,7 @@ const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'
 // CROWD METER: G.hype (0-1). When the crowd is hot, both finisher meters fill faster.
 const crowdMul=()=>G.hype>=CTR.crowd.hot?1+CTR.crowd.meterBonus:1;
 const heat=v=>{G.hype=Math.min(1,G.hype+v);};
-function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(G.styleOn)dmg/=balOf(o);/* balance: a tuned-down wrestler also takes a bit more */if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
+function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(G.styleOn)dmg/=balOf(o);if(f&&f.cpu&&G.diff===0)dmg*=AI_DIFF[0].dmg;/* balance: a tuned-down wrestler also takes a bit more */if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}

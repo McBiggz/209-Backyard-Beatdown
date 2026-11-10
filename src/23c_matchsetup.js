@@ -12,14 +12,15 @@ const msSlots=(t=G.ms.type)=>Math.min(4,msCount(t));
 function msSlotName(i){const t=MS_TYPES[G.ms.type][1];
  if(t==='tag')return (i<2?'TEAM A':'TEAM B')+' #'+(i%2+1);if(t==='rumble')return 'ENTRANT '+(i+1);return 'WRESTLER '+(i+1);}
 function msRows(){const ms=G.ms,t=MS_TYPES[ms.type][1],rows=[{k:'type'}];
- if(t==='single'&&TEST_MODES)rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});
+ if(t==='single'&&TEST_MODES)rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});rows.push({k:'diff'});
  for(let i=0;i<msSlots();i++)rows.push({k:'slot',i});rows.push({k:'start'});return rows;}
 function msVal(r){const ms=G.ms;
  if(r.k==='type')return['MATCH',MS_TYPES[ms.type][0]];if(r.k==='rules')return['RULES',MS_RULES[ms.rules][0]];
  if(r.k==='elim')return['ELIMINATION',ms.elim?'ON - LAST ONE STANDING':'OFF - FIRST PIN WINS'];
- if(r.k==='map')return['ARENA',MS_MAPS[ms.map][0]];if(r.k==='slot')return[msSlotName(r.i),MS_CTL[ms.ctl[r.i]]];return['',''];}
+ if(r.k==='map')return['ARENA',MS_MAPS[ms.map][0]];if(r.k==='diff')return['CPU DIFFICULTY',DIFF_NAMES[savedDiff]];if(r.k==='slot')return[msSlotName(r.i),MS_CTL[ms.ctl[r.i]]];return['',''];}
 function msChange(r,d){const ms=G.ms;sfx('punch');
  if(r.k==='type'){ms.type=(ms.type+d+MS_TYPES.length)%MS_TYPES.length;ms.row=Math.min(ms.row,msRows().length-1);}
+ else if(r.k==='diff'){savedDiff=(savedDiff+d+3)%3;try{localStorage.setItem('bb_diff',savedDiff);}catch(e){}}
  else if(r.k==='rules')ms.rules=(ms.rules+d+3)%3;else if(r.k==='elim')ms.elim=ms.elim?0:1;else if(r.k==='map')ms.map=(ms.map+d+2)%2;
  else if(r.k==='slot'){const c=(ms.ctl[r.i]+d+3)%3;
   // P1 and P2 are one wrestler each: taking P1 here makes the old P1 slot a CPU
@@ -100,7 +101,7 @@ function msRandomIds(have,count){const pool=ROSTER.filter(c=>c.id!=='kliq'&&c.id
 function msBuildCfg(typeIdx,picks,ctl,elim,map){const ty=MS_TYPES[typeIdx],ids=picks.map(p=>ROSTER[p].id);let order;
  if(ty[1]==='rumble'){ids.push(...msRandomIds(ids,8-ids.length));while(ctl.length<8)ctl.push('cpu');
   order=[...Array(8).keys()];for(let i=7;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}}
- return{type:ty[1]==='single'?'multi':ty[1],ids,ctl,elim:ty[1]==='multi'&&!!elim,map,order,fromSetup:true,testFx:TEST_MODES};}
+ return{type:ty[1]==='single'?'multi':ty[1],ids,ctl,elim:ty[1]==='multi'&&!!elim,map,order,fromSetup:true,testFx:TEST_MODES,diff:savedDiff};}
 function startFromSetup(){const ms=G.ms,ty=MS_TYPES[ms.type],picks=G.msel.picks.slice(),ctl=ms.ctl.slice(0,picks.length).map(c=>c===2?'cpu':c);
  G.mapPick=MS_MAPS[ms.map][1];G.fromSetup=true;
  // 1 on 1 with a human runs on the classic engine (it has hardcore, cage, entrances and the Secret Map)
