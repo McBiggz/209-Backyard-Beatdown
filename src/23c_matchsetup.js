@@ -1,8 +1,8 @@
 // ================= MATCH SETUP (test link) =================
 // One screen to set up any match: type, rules, elimination, arena and who controls each wrestler.
 // Works with keys (arrows/WASD to move and change, Enter to start) and with taps (big rows, < > arrows, START).
-// live game: every match type. Hardcore/Cage rules and The Barn are test-link only for now.
-const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4],['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]];
+// live game: 1 on 1, Triple Threat, Fatal 4-Way. Tag, Rumble, Hardcore/Cage rules and The Barn are test-link only for now.
+const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4]].concat(TEST_MODES?[['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]]:[]);
 const MS_RULES=[['NORMAL',''],['HARDCORE','hc'],['STEEL CAGE','cage']];
 const MS_MAPS=[['BMF RANCH','ranch'],['THE BARN','secret']];
 const MS_CTL=['P1','P2','CPU'],MS_CTLCOL=['#ff4a3a','#3a8bff','#8a7a66'];
