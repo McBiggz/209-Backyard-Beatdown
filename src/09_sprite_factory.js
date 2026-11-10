@@ -65,7 +65,9 @@ function buildRef(){const defs=[['ridle',refPoseOf('stand')],['rkneel',refPoseOf
  for(let k=0;k<4;k++)defs.push(['rwalk'+k,refPoseOf('walk',k*Math.PI/2)]);SETS.ref=buildSet(REF,defs.map(d=>[d[0],d[1],0]),12);}
 function variantSetKey(ch){return ch.vid||ch.id;}
 const depthS=z=>wide()?clamp(1+(z-154)*0.0036,0.9,1.15):1;
-function drawSpr(set,name,sx,sy,dir,scale=1){const c=set&&set[name];if(!c)return;sx=Math.round(sx);sy=Math.round(sy);
- if(dir>=0)ctx.drawImage(c,sx-AX*scale,sy-AY*scale,SW*scale,SH*scale);
- else{ctx.save();ctx.translate(sx,0);ctx.scale(-1,1);ctx.drawImage(c,-AX*scale,sy-AY*scale,SW*scale,SH*scale);ctx.restore();}}
+// ky: squash (<1) / stretch (>1) from the feet up; width changes the other way so the body keeps its bulk
+function drawSpr(set,name,sx,sy,dir,scale=1,ky=1){const c=set&&set[name];if(!c)return;sx=Math.round(sx);sy=Math.round(sy);
+ const sh=scale*ky,sw=scale/Math.sqrt(ky);
+ if(dir>=0)ctx.drawImage(c,sx-AX*sw,sy-AY*sh,SW*sw,SH*sh);
+ else{ctx.save();ctx.translate(sx,0);ctx.scale(-1,1);ctx.drawImage(c,-AX*sw,sy-AY*sh,SW*sw,SH*sh);ctx.restore();}}
 

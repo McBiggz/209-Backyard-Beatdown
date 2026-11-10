@@ -22,10 +22,15 @@ function drawFighters(){
  const drawEnt=()=>{entDone=true;const E=ENTFRONT;if(E.img.complete&&E.img.naturalWidth)ctx.drawImage(E.img,E.x-G.cam,E.y,E.w,E.h);};
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(!entDone&&(e===null||e.z>=ENTFRONT.z))drawEnt();if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z));continue;}
   const f=e.f,ds=depthS(f.z);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);
-  let jx=0,jy=0;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
+  let jx=0,jy=0,ky=1;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
+   if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);                                                                        // squash as it lands
+   if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
   const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
-  drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc);
+  // speed blur: fading copies trail behind a dropkick / dive
+  if(TEST_MODES&&(f.state==='dropkick'||f.state==='dive')&&Math.abs(f.vx)>60){const vx=f.vx*ds,vy=f.vy*ds;
+   for(const[k,a]of[[0.045,0.28],[0.085,0.14],[0.125,0.07]]){ctx.globalAlpha=a*(f.mwA??1);drawSpr(f.set,fr,fx_-vx*k,fy_+vy*k,f.dir*(f.turn||1),dsc,ky);}ctx.globalAlpha=f.mwA!=null&&f.mwA<1?Math.max(0,f.mwA):1;}
+  drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc,ky);
   ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;

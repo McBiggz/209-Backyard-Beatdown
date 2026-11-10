@@ -111,7 +111,7 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
  G.windOn=G.replay?!!G.replay.wind:(TEST_MODES&&!G.net); // wind-up beat before strikes (test link)
- G.entFx=!G.net&&!G.replay;                                // fog + lights + pose entrance (live; online keeps the classic timing so both sides match)
+ G.entFx=!G.replay;                                        // fog + lights + pose entrance (online too: skipping goes through both players' buttons)
  G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0;G.mapWalk=null;G.f.forEach(f=>f.mwA=1); // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
  G.rec={v:1,seed,p:[a.ch.id,b.ch.id],cpu:[a.cpu,b.cpu],wide:wide(),hc:!!G.hc,cage:!!G.cage,dodge:G.dodgeOn,secret:G.secretOn,rollin:G.rollInOn,map:G.map,wind:G.windOn,inp:[]};G.fstep=0;
  if(wide()){XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;}else{XMIN=-160;XMAX=160;ZMIN=3;ZMAX=61;}
@@ -292,11 +292,16 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  // walking out: from deep in the tunnel (small, in shadow) to the spotlight
  const k=clamp((t-0.3)/(ENT_POSE-0.3),0,1),e=k*k*(3-2*k);
  const x=lerp(194,ENT_SPOT[0],e),y=lerp(170,ENT_SPOT[1]+4,e),sc=lerp(0.95,1.5,e)*ds,inside=k<0.55;
- if(t>0.3){ctx.globalAlpha=clamp(k*2.2,0,1);
+ // he comes through the powder: invisible at first, fading in as the cloud blooms around him
+ if(t>0.3){ctx.globalAlpha=clamp((t-0.42)/0.6,0,1);
   drawSpr(f.set,pose?'win0':'walk'+(Math.floor(t*9)%4),x,y,dir,sc);ctx.globalAlpha=1;
   // while he's still in the tunnel, the curtains and banners are in front of him
   if(inside){ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(ENT_GAP[0],ENT_GAP[1],ENT_GAP[2]-ENT_GAP[0],ENT_GAP[3]-ENT_GAP[1]);ctx.clip('evenodd');ctx.drawImage(ENT,0,0,W,H);
    R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`);ctx.restore();}}
+ // the powder burst in the middle of the entrance, in front of him while he steps through it
+ {const P=POWDER,pt=t-0.12;if(pt>0&&P.img.complete&&P.img.naturalWidth){const i=Math.min(P.n-1,Math.floor(pt*15)),a=i<22?1:clamp(1-(i-22)/14,0,1);
+  if(a>0.01){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=a;ctx.imageSmoothingEnabled=true;
+   ctx.drawImage(P.img,(i%P.cols)*P.w,Math.floor(i/P.cols)*P.h,P.w,P.h,58,42,256,144);ctx.restore();}}}
  // light beams from the five lamps onto the spotlight; they strobe when he hits the pose
  ctx.save();ctx.globalCompositeOperation='lighter';
  ENT_LAMPS.forEach((lx,i)=>{const on=pose?(Math.floor(G.t*10+i)%2?1:0.4):0.75,a=0.15*lit*on;if(a<0.01)return;

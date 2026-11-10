@@ -8,6 +8,8 @@ const PANO=new Image();PANO.src="__ASSET(maps/bmfranch_full.webp)__";
 const ENTFRONT={img:new Image(),x:486,y:18,w:128,h:140,z:151};ENTFRONT.img.src="__ASSET(maps/ranch_ent_front.png)__";
 // real fog footage (Liam's clip), shrunk + tinted lavender, 60-frame seamless loop at 12 fps; drawn with 'screen' so black = clear
 const FOGV={img:new Image(),n:60,cols:10,w:256,h:144,fps:12};FOGV.img.src="__ASSET(maps/fog_loop.webp)__";
+// powder burst (Liam's clip): 48 frames at 12 fps, black = clear (drawn with 'screen'); goes off in the tunnel mouth
+const POWDER={img:new Image(),n:48,cols:8,w:224,h:126};POWDER.img.src="__ASSET(maps/powder_burst.webp)__";
 const SECRET=new Image();SECRET.src="__ASSET(maps/secret_full.webp)__";
 const SPOSTS={F:{src:"__ASSET(maps/secret_front.png)__",x:30,y:76,w:254,h:112}};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
 const HDKEYS=Object.keys(HD).filter(k=>k!=='arena');const HDIMG={};for(const k of HDKEYS){HDIMG[k]=new Image();HDIMG[k].src=HD[k].src;}

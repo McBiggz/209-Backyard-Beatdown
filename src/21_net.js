@@ -1,3 +1,5 @@
+// online version: both players must be running the same build or the matches drift apart (bump when match rules change)
+const NET_VER=2,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
 // ================= ONLINE PLAY =================
 // Lockstep over a WebRTC data channel (PeerJS). Both games run the same deterministic simulation.
 // Each player sends their packed buttons for step (now + DELAY); a step only runs once both are in.
@@ -40,7 +42,7 @@ const NET={
   this.peer.on('open',()=>{if(!this.conn)this.tryJoin();});},
  tryJoin(){if(this.st!=='joining'||!this.peer||this.peer.destroyed)return;if(this.peer.disconnected){this.reconnect();setTimeout(()=>this.tryJoin(),1500);return;}
   const c=this.peer.connect(NET_PREFIX+this.code,{reliable:true});this.bind(c);},
- bind(c){this.conn=c;c.on('open',()=>{this.lastRecv=performance.now();this.st='connected';this.err='';this.send({t:'hi',v:1});this.ping();netUI.update();onNetConnected();});
+ bind(c){this.conn=c;c.on('open',()=>{this.lastRecv=performance.now();this.st='connected';this.err='';this.send({t:'hi',v:NET_VER});this.ping();netUI.update();onNetConnected();});
   c.on('data',d=>{this.lastRecv=performance.now();if(this.lag)setTimeout(()=>this.recv(d),this.lag);else this.recv(d);});
   // a failed attempt while still looking for the room isn't a disconnect; only a real, opened link counts
   c.on('close',()=>{if(c===this.conn&&c._was)this.drop();});c.on('error',()=>{if(c===this.conn&&c._was)this.drop();});c.on('open',()=>{c._was=true;});},
@@ -56,6 +58,7 @@ const NET={
  // ---- messages
  recv(d){if(!d||!d.t)return;
   switch(d.t){
+  case 'hi':if(d.v!==NET_VER){this.fail(NET_OLD);try{this.conn.close();}catch(e){}}break;
   case 'p':this.send({t:'q',ts:d.ts});break;
   case 'q':{const r=performance.now()-d.ts;this.rtt=this.rtt?this.rtt*0.7+r*0.3:r;
    // my input delay follows the connection: enough steps to cover one-way travel plus a little jitter
