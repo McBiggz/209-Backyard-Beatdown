@@ -100,7 +100,8 @@
     "line": "#ff4fb0",
     "flames": true
    },
-   "bigTape": true
+   "bigTape": true,
+   "drawScale": 0.892
   },
   {
    "id": "razzle",
@@ -215,7 +216,8 @@
     "trim": "#e8e8e8",
     "long": true,
     "star": true
-   }
+   },
+   "drawScale": 0.96
   },
   {
    "id": "jojo",
@@ -317,7 +319,8 @@
    "tag": "Lucha libre",
    "jeans": "#5c6a62",
    "noRip": true,
-   "wrist": "#d6283a"
+   "wrist": "#d6283a",
+   "drawScale": 0.96
   },
   {
    "id": "firebelly",
@@ -441,7 +444,8 @@
    "spd": 0.95,
    "fin": "KLIQ KRUSHER",
    "finType": "slam",
-   "tag": "Hometown heels"
+   "tag": "Hometown heels",
+   "drawScale": 0.915
   }
  ],
  "referee": {

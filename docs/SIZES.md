@@ -19,4 +19,4 @@ Real heights from Liam (Nov 9 2026). The Viral Voice is 6'0" and is drawn 72.6 p
 | Skinny Omega (ref) | 5'5", 140 lb | 65.5 (ref scale 0.923) |
 
 From the photos only (not confirmed): Punjabi Papi ~5'9" (69.5), JoJo ~5'9" (71.7), Matsunaga ~5'5" (65.5).
-Still unknown: Michael Sean, Spektro Black, Necrosis Black, 209 Kliq Enforcer.
+Michael Sean, Spektro Black, Necrosis Black and the 209 Kliq Enforcer: "about the same as the others" -> set to 5'9" (69.6 drawn).
