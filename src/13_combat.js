@@ -3,7 +3,7 @@ const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'
 // CROWD METER: G.hype (0-1). When the crowd is hot, both finisher meters fill faster.
 const crowdMul=()=>G.hype>=CTR.crowd.hot?1+CTR.crowd.meterBonus:1;
 const heat=v=>{G.hype=Math.min(1,G.hype+v);};
-function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(G.styleOn)dmg/=balOf(o);if(f&&f.cpu&&G.diff===0)dmg*=AI_DIFF[0].dmg;/* balance: a tuned-down wrestler also takes a bit more */if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
+function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(f&&f.cpu&&G.diff===0)dmg*=AI_DIFF[0].dmg;if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg/(G.styleOn?balOf(o):1));/* balance changes health only, never how fast the finisher meter fills */f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
@@ -106,7 +106,7 @@ function landDive(f,o){
   setState(f,'down');f.downDur=0.45;sfx('slam');shake(7);G.hitStop=0.1;dust(sx_(f),PY(f.z),true);callout('SPLASH!!','#ffd35a',1.0);crowdReact(f,true);}
  else{damage(f,7,o);setState(f,'down');f.downDur=1.7;sfx('slam');shake(5);dust(sx_(f),PY(f.z),true);popOn(f,'CRASH!','#ff5a5a');line('crash',f,o);crowdReact(o,false);}
 }
-function nearRopes(o){if(wide()&&o.out)return false;const s=o.ch.size,pts=[o.x,o.x-o.dir*52*s];
+function nearRopes(o){if(wide()&&o.out)return false;const s=reachOf(o),/* big men don't get extra rope reach (balance) */pts=[o.x,o.x-o.dir*52*s];
  for(const x of pts){const[a,b]=wbounds(o);if(x<a+6||x>b-6)return true;}return o.z<=ZMIN+4||o.z>=ZMAX-4;}
 function ropeBreak(){const{a,d}=G.pin;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;d.wiggle=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
  callout('ROPE BREAK!','#ffd35a',1.2);say(`${d.ch.short} gets a foot on the ropes! The ref breaks the count!`);sfx('count');G.hype=Math.min(1,G.hype+0.2);}
@@ -135,8 +135,8 @@ function updPin(dt,inp){
  if(P.ropes&&!P.d.cpu&&(di.left||di.right||di.up||di.down)&&P.t>0.3){ropeBreak();return;}
  if(!P.d.cpu&&P.presses>=P.need){kickout();return;}
  if(P.t>=P.nextAt){
-  if(P.ropes&&P.d.cpu&&P.count>=1&&schance(0.8)){ropeBreak();return;}
-  if(P.d.cpu&&P.count===2&&P.d.meter>=100&&!P.d.usedSW&&schance(0.85)){secondWind();return;}
+  if(P.ropes&&P.d.cpu&&P.count>=1&&schance(cpuPinEsc('rope'))){ropeBreak();return;}
+  if(P.d.cpu&&P.count===2&&P.d.meter>=100&&!P.d.usedSW&&schance(cpuPinEsc('sw'))){secondWind();return;}
   if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(schance(P.count===1?p*0.4:p)){kickout();return;}}
   P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);heat(CTR.crowd.pinCount);
   if(P.count===3)endMatch(P.a,P.d);}

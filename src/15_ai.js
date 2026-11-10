@@ -37,12 +37,15 @@ const powOf=f=>f.ch.pow*balOf(f);
 const spdOf=f=>f.ch.spd;
 const aspdOf=f=>G.styleOn?1+(f.ch.spd-1)*0.6:1;
 // ---- CPU difficulty: 0 Easy, 1 Normal, 2 Hard (Hard = the original CPU). Scales how fast it reacts and how often it blocks/reverses/dodges.
-const AI_DIFF=[{react:1.7,block:0.4,rev:0.35,dodge:0.55,ropes:0.6,dmg:0.85},{react:1.3,block:0.7,rev:0.65,dodge:0.8,ropes:0.85,dmg:1},{react:1,block:1,rev:1,dodge:1,ropes:1,dmg:1}];
+// finC: chance the CPU takes its finisher when ready and in position; finWait: seconds it holds off first
+const AI_DIFF=[{react:1.7,block:0.4,rev:0.35,dodge:0.55,ropes:0.6,dmg:0.85,finC:0.15,finWait:4},{react:1.3,block:0.7,rev:0.65,dodge:0.8,ropes:0.85,dmg:1,finC:0.35,finWait:2},{react:1,block:1,rev:1,dodge:1,ropes:1,dmg:1,finC:1,finWait:0}];
 const DIFF_NAMES=['EASY','NORMAL','HARD'];
+// how often a pinned CPU grabs the ropes / uses its second wind (Hard = the original 80% / 85%)
+const cpuPinEsc=k=>{const d=G.diff!=null?G.diff:2;return k==='rope'?[0.35,0.55,0.8][d]:[0.3,0.5,0.85][d];};
 let savedDiff=1;try{const v=+localStorage.getItem('bb_diff');if(v>=0&&v<=2&&localStorage.getItem('bb_diff')!==null)savedDiff=v;}catch(e){}
 function aiProfile(f){if(f.aiP)return f.aiP;const D=AI_DIFF[G.diff!=null?G.diff:2];
  let P;if(!G.styleOn)P=Object.assign({},AI_DEF);else{const w=AI_WHO[f.ch.id.replace('_alt','')]||['brawler',{}];P=Object.assign({},AI_DEF,AI_STYLES[w[0]],w[1],{style:w[0]});}
- P.react*=D.react;P.block*=D.block;P.rev*=D.rev;P.dodge*=D.dodge;P.ropes*=D.ropes;P.dmg=D.dmg;return f.aiP=P;}
+ P.react*=D.react;P.block*=D.block;P.rev*=D.rev;P.dodge*=D.dodge;P.ropes*=D.ropes;P.dmg=D.dmg;P.finC=D.finC;P.finWait=D.finWait;return f.aiP=P;}
 function aiInput(f,o,dt){
  const inp=blank(),a=f.ai,P=aiProfile(f);a.t-=dt;
  const dx=o.x-f.x,dz=o.z-f.z,ad=Math.abs(dx),az=Math.abs(dz);
@@ -105,7 +108,10 @@ function aiInput(f,o,dt){
   if(Math.abs(cdx)>26||az>8){a.mv={x:Math.abs(cdx)>20?Math.sign(cdx):0,z:az>6?Math.sign(dz):0};return inp;}
   if(o.hp<48||arand()<P.ground)inp.grabP=true;else inp.punchP=true;return inp;}
  if(!HITTABLE.has(o.state)&&o.state!=='getup'){a.mv=arand()<0.5?{x:-Math.sign(dx),z:0}:null;return inp;}
- if(f.meter>=100&&ad<40&&az<9&&GRABBABLE.has(o.state)){inp.finP=true;return inp;}
+ // easier CPUs don't fire the finisher the instant they can: they hold off a moment, then only sometimes take the chance
+ if(f.meter<100)a.finAt=null;
+ else if(ad<40&&az<9&&GRABBABLE.has(o.state)){if(a.finAt==null)a.finAt=G.fstep+Math.round((P.finWait||0)*60);
+  if(G.fstep>=a.finAt){if((P.finC==null?1:P.finC)>=1||arand()<P.finC){inp.finP=true;a.finAt=null;return inp;}a.finAt=G.fstep+60;}}
  if(az>6||ad>32){a.mv={x:ad>28?Math.sign(dx):0,z:az>4?Math.sign(dz):0};if(arand()<0.04&&ad<90&&az<8)inp.jumpP=true;return inp;}
  if(['punch','kick'].includes(o.state)&&arand()<P.evade){a.mv={x:-Math.sign(dx),z:arand()<0.5?1:-1};return inp;}
  const r=arand(),M=P.mix,c1=M[0],c2=c1+M[1],c3=c2+M[2],c4=c3+M[3],c5=c4+M[4];
