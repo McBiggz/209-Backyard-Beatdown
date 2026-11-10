@@ -10,7 +10,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
 canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
 #tc{position:fixed;inset:0;display:none;pointer-events:none}
-#tc.on{display:block}
+#tc.on{display:block}body.pad #tc.on{display:none}
 #dpad{position:absolute;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));width:150px;height:150px;border-radius:50%;background:rgba(20,8,10,.35);border:2px solid rgba(255,211,90,.55);pointer-events:auto;touch-action:none}
 #dpad i{position:absolute;width:0;height:0;border:12px solid transparent;opacity:.75}
 #dpad .du{left:63px;top:8px;border-bottom-color:#ffd35a}#dpad .dd{left:63px;bottom:8px;border-top-color:#ffd35a}#dpad .dl{top:63px;left:8px;border-right-color:#ffd35a}#dpad .dr{top:63px;right:8px;border-left-color:#ffd35a}

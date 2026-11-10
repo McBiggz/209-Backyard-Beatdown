@@ -30,7 +30,7 @@ function simStep(){
 }
 function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
  try{
-  let n=0;if(G.net&&G.net.catchUp)G.net.catchUp();if(G.irp){irpFrame();acc=0;}
+  padPoll();let n=0;if(G.net&&G.net.catchUp)G.net.catchUp();if(G.irp){irpFrame();acc=0;}
   else if(G.mm&&G.mm.ff&&G.scene==='fight'&&!G.over){for(let k=0;k<8&&!G.over;k++)simStep();acc=0;}
   else while(acc>=STEP&&n<MAX_STEPS&&!G.irp){if(simStep()===false){acc=Math.min(acc,STEP*2);break;}acc-=STEP;n++;}
   if(n===MAX_STEPS)acc=G.net?Math.min(acc,STEP*8):0; // tab was asleep: don't fast-forward (online: catch up a little)

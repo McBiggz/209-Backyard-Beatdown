@@ -47,3 +47,23 @@ let clickQ=null;
 cv.addEventListener('pointerdown',e=>{initAudio();const r=cv.getBoundingClientRect();clickQ={x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};});
 const inRect=(p,r)=>p&&p.x>=r[0]&&p.x<=r[0]+r[2]&&p.y>=r[1]&&p.y<=r[1]+r[3];
 
+
+// ---- Controllers (Xbox / PlayStation / Switch Pro, wired or Bluetooth). Each pad "presses" the same keys as a player:
+// pad 1 = Player 1's keys, pad 2 = Player 2's, so every screen and menu works with no extra code.
+// Stick or d-pad: move. A/Cross: jump. X/Square: punch. Y/Triangle: kick. B/Circle: grab. Any shoulder/trigger: finisher.
+// Start: pause (and P1 confirms in menus with A). Back/Select/Share: back / pause menu.
+const PAD_BTN={0:'jump',2:'punch',3:'kick',1:'grab',4:'fin',5:'fin',6:'fin',7:'fin'};
+const padPrev=[{},{}];let padOn=false;
+function padSet(p,code,down){const was=!!padPrev[p][code];if(down===was)return;padPrev[p][code]=down;
+ if(down){if(!keys[code])pressed[code]=true;keys[code]=true;}else keys[code]=false;}
+function padPoll(){if(!navigator.getGamepads||!TEST_MODES)return; // test link only for now
+ let list;try{list=[...navigator.getGamepads()].filter(g=>g&&g.connected);}catch(e){return;}
+ if(list.length&&!padOn){padOn=true;document.body.classList.add('pad');}
+ list.slice(0,2).forEach((g,p)=>{const m=MAP[p],b=i=>!!(g.buttons[i]&&(g.buttons[i].pressed||g.buttons[i].value>0.5)),ax=i=>g.axes[i]||0,DZ=0.45;
+  const st={left:b(14)||ax(0)<-DZ,right:b(15)||ax(0)>DZ,up:b(12)||ax(1)<-DZ,down:b(13)||ax(1)>DZ};
+  for(const k in st)padSet(p,m[k][0],st[k]);
+  const want={};for(const i in PAD_BTN){const k=PAD_BTN[i];want[k]=want[k]||b(+i);}for(const k in want)padSet(p,m[k][0],want[k]);
+  padSet(p,'KeyP',b(9));padSet(p,'Escape',b(8));
+  if(p===0)padSet(p,'Enter',b(9)&&G.scene!=='fight');});}
+addEventListener('gamepadconnected',()=>{padOn=true;document.body.classList.add('pad');});
+addEventListener('gamepaddisconnected',()=>{if(!navigator.getGamepads||![...navigator.getGamepads()].some(g=>g&&g.connected)){padOn=false;document.body.classList.remove('pad');}});
