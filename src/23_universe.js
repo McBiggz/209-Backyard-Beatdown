@@ -42,8 +42,10 @@ function uniMatch(){const U=G.uni,me=ROSTER.findIndex(c=>c.id===U.me),op=ROSTER.
  const k=U.kind[U.week-1];G.mode=0;G.hc=k==='hardcore';G.cage=k==='cage';G.stage=3;G.sel={c:[me,op],stage:2,picks:[me,op]};startIntro();
  G.f[0].ch=uniBoost(G.f[0].ch);G.f[0].uniDef=uniDef();G.uniMatch=true;
  const r=U.riv[U.sched[U.week-1]];if(r&&r.week===U.week)G.uniHype=k==='rematch'?`REMATCH! ${ROSTER[me].short} wants payback on ${uniOpp().short}!`:`It ends tonight! A ${k==='cage'?'steel cage':'hardcore'} match to settle this rivalry!`;else G.uniHype=null;
- if(k==='smtitle')G.uniHype=`The Social Media Championship is on the line! ${uniOpp().short} defends against ${ROSTER[me].short}!`;}
-function uniAfterMatch(){const U=G.uni,won=G.over&&G.over.w===G.f[0];G.uniMatch=false;
+ if(k==='smtitle')G.uniHype=`The Social Media Championship is on the line! ${uniOpp().short} defends against ${ROSTER[me].short}!`;
+ // title bouts: who walks in holding the belt (index into G.f: 0 = you, 1 = the opponent)
+ G.titleBout=U.week===UNI_WEEKS?{name:'BMF WORLD HEAVYWEIGHT',champ:U.champ?0:1}:k==='smtitle'?{name:'SOCIAL MEDIA',champ:1}:null;}
+function uniAfterMatch(){const U=G.uni,won=G.over&&G.over.w===G.f[0];G.uniMatch=false;G.titleBout=null;
  if(won)U.rec.w++;else U.rec.l++;const title=U.week===UNI_WEEKS;
  U.log.unshift(`${U.week}. ${won?'W':'L'} ${uniOpp().short.toUpperCase().slice(0,9)}`);U.log=U.log.slice(0,4);
  const wasChamp=U.champ;if(title&&won){if(!U.champ)U.car.titles++;U.champ=true;}if(title&&!won)U.champ=false;const rv0=uniRivalAfter(U,uniOpp().id,won),smsg=smAfterMatch(U,won,uniOpp().id),rmsg=[rv0,smsg].filter(Boolean).join(' • ');G.hc=G.cage=false;

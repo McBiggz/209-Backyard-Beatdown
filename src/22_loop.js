@@ -38,7 +38,7 @@ function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
   const sx=G.shake?Math.round(rnd(-1,1)*G.shake):0,sy=G.shake?Math.round(rnd(-1,1)*G.shake):0;
   ctx.save();ctx.translate(sx,sy);
   if(G.scene==='loading')drawLoading();else if(G.scene==='title'||G.scene==='lobby')drawTitle();else if(G.scene==='select')drawSelect();else if(G.scene==='setup')drawSetup();else if(G.scene==='msel')drawMsel();else if(G.scene==='party')drawParty();else if(G.scene==='uni')drawUni();else if(G.scene==='train')drawTrain();else if(G.scene==='promo')drawPromo();else if(G.scene==='intro')drawIntro();else drawFight();
-  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawIRP();drawTut();drawNetHUD();musFrame();
+  ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawIRP();drawTut();drawNetHUD();drawTitleBanner();musFrame();
  }catch(e){console.error(e);}
  {const me=G.net?G.net.me:0,f=G.scene==='fight'&&G.f&&G.f[me];FINBTN.classList.toggle('hide',!(f&&f.meter>=100));}
  fsUI();tc.classList.toggle('on',coarse&&(G.scene==='fight'||G.scene==='train')&&!G.paused&&!(G.over&&G.over.t>1.8));
