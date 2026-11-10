@@ -47,7 +47,8 @@
    "spd": 1,
    "fin": "DRAGON'S FURY",
    "finType": "kick",
-   "tag": "Head trainer"
+   "tag": "Head trainer",
+   "drawScale": 0.953
   },
   {
    "id": "papi",
@@ -131,7 +132,8 @@
     "vest": true,
     "fringe": true,
     "tie": true
-   }
+   },
+   "drawScale": 0.973
   },
   {
    "id": "bigmf",
@@ -157,7 +159,8 @@
     "c": "#2338c8",
     "trim": "#d9a650",
     "spots": true
-   }
+   },
+   "drawScale": 0.885
   },
   {
    "id": "asesino",
@@ -237,7 +240,9 @@
    "knee": "#141414",
    "armSleeve": true,
    "smile": true,
-   "belly": true, "drawScale": 0.88},
+   "belly": true,
+   "drawScale": 0.88
+  },
   {
    "id": "cdiddy",
    "name": "C.DIDDY",
@@ -264,7 +269,8 @@
     "c": "#ff7a1f",
     "trim": "#e0661a",
     "long": true
-   }
+   },
+   "drawScale": 0.943
   },
   {
    "id": "cjdirt",
@@ -289,7 +295,9 @@
    "tag": "BMF Entertainment",
    "wrist": "#141414",
    "gloves": true,
-   "belly": true, "drawScale": 0.929},
+   "belly": true,
+   "drawScale": 0.929
+  },
   {
    "id": "necrosis",
    "name": "NECROSIS BLACK",
@@ -335,7 +343,8 @@
    "gigaTop": true,
    "beads": true,
    "armWrap": true,
-   "longShorts": true
+   "longShorts": true,
+   "drawScale": 0.854
   },
   {
    "id": "maverick",
@@ -371,7 +380,9 @@
    "spd": 1.32,
    "fin": "FIRESTARTER",
    "finType": "spin",
-   "tag": "Fiery underdog", "drawScale": 0.985},
+   "tag": "Fiery underdog",
+   "drawScale": 0.985
+  },
   {
    "id": "zeke",
    "name": "THE SAMOAN REAPER",
