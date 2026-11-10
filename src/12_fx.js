@@ -37,3 +37,10 @@ LINES.clothes=['CLOTHESLINE! {a} turns {d} inside out!','{a} meets {d} with a bi
 // ---- extra impact (test link): rings of dust on big landings, little puffs behind running feet
 function impactRing(x,y){for(let i=0;i<18;i++){const a=(i/18)*Math.PI*2,sp=rnd(60,110);part(x+Math.cos(a)*6,y,Math.cos(a)*sp,Math.sin(a)*sp*0.25-15,rnd(0.3,0.55),pick(['#d8cfbf','#bdb3a2','#a89a86']),pick([2,3]),'dust');}}
 function runPuff(f){const x=sx_(f)-f.dir*8,y=PY(f.z);for(let i=0;i<3;i++)part(x+rnd(-3,3),y-rnd(0,2),-f.dir*rnd(10,40),rnd(-30,-8),rnd(0.2,0.4),pick(['#d8cfbf','#bdb3a2']),2,'dust');}
+
+// draw the fog footage into a box (cosmetic: runs off the clock, not the match)
+function drawFogV(x,y,w,h,alpha,flip,off=0){const F=FOGV;if(!F.img.complete||!F.img.naturalWidth||alpha<=0.01)return;
+ const i=(Math.floor(performance.now()/1000*F.fps)+off)%F.n,sx=(i%F.cols)*F.w,sy=Math.floor(i/F.cols)*F.h;
+ ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=Math.min(1,alpha);ctx.imageSmoothingEnabled=true;
+ if(flip){ctx.translate(x+w,y);ctx.scale(-1,1);ctx.drawImage(F.img,sx,sy,F.w,F.h,0,0,w,h);}else ctx.drawImage(F.img,sx,sy,F.w,F.h,x,y,w,h);
+ ctx.restore();}

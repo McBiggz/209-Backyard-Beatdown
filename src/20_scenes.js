@@ -273,6 +273,8 @@ function drawEntFx(){const E=G.entrance,ph=E.phase,cx=533-G.cam,pose=ph==='pose'
   ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-2,54);ctx.lineTo(x+2,54);ctx.lineTo(cx+(lx-535)*0.6+16,165);ctx.lineTo(cx+(lx-535)*0.6-16,165);ctx.closePath();ctx.fill();});
  if(k>0.05){const g=ctx.createRadialGradient(cx,158,2,cx,158,46);g.addColorStop(0,`rgba(255,230,255,${0.35*k})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(cx-50,140,100,36);}
  ctx.restore();
+ // fog footage hanging around the entrance in the yard shot
+ drawFogV(cx-110,96,220,90,0.55*Math.max(k,0.35),true,17);
  // fog: soft puffs that drift out of the tunnel and spread across the stage
  const want=pose||ph==='emerge'?40:ph==='walk'?24:12;if(entFog.burst){entFog.burst=0;for(let i=0;i<14;i++)entFog.p.push(newFog(true));}
  while(entFog.p.length<want)entFog.p.push(newFog(false));
@@ -304,8 +306,10 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  g.addColorStop(0,`rgba(255,235,255,${glow})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(ENT_SPOT[0]-75,ENT_SPOT[1]-40,150,70);
  if(pose&&t<ENT_POSE+0.12){ctx.fillStyle=`rgba(255,240,255,${(0.5*(1-(t-ENT_POSE)/0.12)).toFixed(2)})`;ctx.fillRect(0,0,W,H);} // flash as he hits it
  ctx.restore();
+ // the fog footage: a haze over the whole stage, and a thick bank rolling along the floor (mirrored + offset so it doesn't repeat)
+ const fa=lit*(pose?1:0.75);drawFogV(-30,20,W+60,H,0.6*fa,false,0);drawFogV(-20,110,W+40,120,0.95*fa,true,23);drawFogV(110,80,190,140,(pose?0.9:0.6)*lit,false,41);
  // fog rolling out of the tunnel and across the stage floor
- const want=pose?46:28;if(entFog.burst){entFog.burst=0;for(let i=0;i<18;i++)entFog.p.push(newFog2(true));}
+ const want=pose?30:18;if(entFog.burst){entFog.burst=0;for(let i=0;i<18;i++)entFog.p.push(newFog2(true));}
  while(entFog.p.length<want)entFog.p.push(newFog2(false));
  for(const p of entFog.p){p.t+=1/60;p.x+=p.vx/60;p.y+=p.vy/60;p.r+=5/60;const a=Math.sin(Math.min(1,p.t/p.life)*Math.PI)*p.a;if(a<=0.005)continue;
   const fg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);fg.addColorStop(0,`rgba(${p.c},${a})`);fg.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=fg;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2);}
