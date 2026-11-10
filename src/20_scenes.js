@@ -271,7 +271,7 @@ function drawEntFx(){const E=G.entrance,ph=E.phase,cx=533-G.cam,pose=ph==='pose'
  [512,527,543,558].forEach((lx,i)=>{const on=pose?(Math.floor(G.t*10+i)%2?1:0.35):0.7;const a=0.16*k*on;if(a<=0.01)return;
   const x=lx-G.cam,g=ctx.createLinearGradient(0,54,0,165);g.addColorStop(0,`rgba(235,200,255,${a*1.6})`);g.addColorStop(1,'rgba(160,80,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-2,54);ctx.lineTo(x+2,54);ctx.lineTo(cx+(lx-535)*0.6+16,165);ctx.lineTo(cx+(lx-535)*0.6-16,165);ctx.closePath();ctx.fill();});
- if(k>0.05){const g=ctx.createRadialGradient(cx,158,2,cx,158,46);g.addColorStop(0,`rgba(255,230,255,${0.35*k})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(cx-50,140,100,36);}
+ if(k>0.05){const g=ctx.createRadialGradient(cx,158,2,cx,158,46);g.addColorStop(0,`rgba(255,230,255,${0.35*k})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(cx-47,111,94,94);}
  ctx.restore();
  // fog footage hanging around the entrance in the yard shot
  drawFogV(cx-110,96,220,90,0.55*Math.max(k,0.35),true,17);
@@ -303,7 +303,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
   const tx=ENT_SPOT[0]+(lx-196)*0.55,g=ctx.createLinearGradient(0,56,0,196);g.addColorStop(0,`rgba(240,205,255,${a*1.7})`);g.addColorStop(1,'rgba(170,80,255,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(lx-3,56);ctx.lineTo(lx+3,56);ctx.lineTo(tx+20,196);ctx.lineTo(tx-20,196);ctx.closePath();ctx.fill();});
  const glow=(pose?0.5+0.15*Math.sin(G.t*20):0.3)*lit;const g=ctx.createRadialGradient(ENT_SPOT[0],ENT_SPOT[1],3,ENT_SPOT[0],ENT_SPOT[1],70);
- g.addColorStop(0,`rgba(255,235,255,${glow})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(ENT_SPOT[0]-75,ENT_SPOT[1]-40,150,70);
+ g.addColorStop(0,`rgba(255,235,255,${glow})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(ENT_SPOT[0]-71,ENT_SPOT[1]-71,142,142);
  if(pose&&t<ENT_POSE+0.12){ctx.fillStyle=`rgba(255,240,255,${(0.5*(1-(t-ENT_POSE)/0.12)).toFixed(2)})`;ctx.fillRect(0,0,W,H);} // flash as he hits it
  ctx.restore();
  // the fog footage: a haze over the whole stage, and a thick bank rolling along the floor (mirrored + offset so it doesn't repeat)
@@ -315,7 +315,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
   const fg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);fg.addColorStop(0,`rgba(${p.c},${a})`);fg.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=fg;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2);}
  entFog.p=entFog.p.filter(p=>p.t<p.life);
  // name card at the top so the pose isn't covered
- if(t>0.5){const a=clamp((t-0.5)/0.3,0,1);ctx.globalAlpha=a;R(0,4,W,26,'rgba(6,2,3,0.72)');T(f.ch.name,192,8,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');
+ if(t>0.5){const a=clamp((t-0.5)/0.3,0,1);ctx.globalAlpha=a;{const g=ctx.createLinearGradient(0,0,0,42);g.addColorStop(0,'rgba(6,2,3,0.8)');g.addColorStop(0.55,'rgba(6,2,3,0.55)');g.addColorStop(1,'rgba(6,2,3,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,42);}T(f.ch.name,192,8,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');
   T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,22,1,'#bfae98','center',null);ctx.globalAlpha=1;}
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',W-4,206,1,'#7a6a5a','right',null);}
 function newFog2(burst){const out=Math.random()<0.6;return{x:out?rnd(165,235):rnd(130,280),y:out?rnd(150,185):rnd(178,206),vx:rnd(-14,14)*(burst?2.4:1),vy:rnd(-1,4),r:rnd(12,22),t:0,life:rnd(1.6,3.2),a:rnd(0.16,0.3),c:pick(['220,190,255','185,130,255','240,232,255'])};}
