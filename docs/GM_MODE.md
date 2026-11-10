@@ -42,3 +42,14 @@ What it buys:
 - Roster: sign Coming Soon wrestlers (Tripp, Jason, Ultimo Jaguar...), one-night guest, training sessions with Hayashi/CJ (+stats), medical (faster injury return).
 - Promotion: flyer stacks for Flyer Run, social media ads (+followers before an event), print merch (small income every show after).
 - Titles/extras: create a new championship (e.g. Hardcore title), unlock alternate gear for the season.
+
+## Sponsorships (Liam picked these three)
+1. Offers with a catch: local businesses approach once popularity is high enough. Big payout + a condition
+   (e.g. book a Hardcore match this month, a top-rope dive in the main event, champion keeps the belt through the big event,
+   reach a follower count by a week). Meet it = bonus; miss it = they drop you and the next sponsor hears about it.
+2. Ad spots you can see: sell turnbuckle pads, apron, center of the mat, ref shirt, entrance banners, commentary table.
+   The sponsor's logo shows up in the game. More visible spots pay more; raise prices as the Den grows.
+5. Sponsor ladder: start small (Filthy Farms, a taco truck, the corner store); bigger names unlock as ratings grow (gym, car dealership,
+   energy drink). Some can't be signed together (two rival gyms) - you choose.
+Businesses are made up, except Filthy Farms and any real sponsor who says it's okay.
+Not picked (maybe later): commentator ad reads / sponsor-named matches, pitch meetings, personal wrestler deals, sponsor flyers in Flyer Run.
