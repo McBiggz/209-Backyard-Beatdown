@@ -1,5 +1,5 @@
-// Skinny Omega stands about 8% taller than the Viral Voice (team photo, Nov 2026)
-const REF_SCALE=1.1;
+// Skinny Omega is 5'5" (Viral 6'0" = 72.6 drawn); his art at scale 1 is 71 tall
+const REF_SCALE=0.923;
 // ================= REF =================
 function updRef(dt,a=G.f[0],b=G.f[1]){const R0=G.ref;let tx,tz;
  if(R0.mode==='pin'&&G.pin){const d=G.pin.d,hd=SETS.ref&&SETS.ref.rcount;

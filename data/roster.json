@@ -289,7 +289,7 @@
    "tag": "BMF Entertainment",
    "wrist": "#141414",
    "gloves": true,
-   "belly": true, "drawScale": 1.02},
+   "belly": true, "drawScale": 0.929},
   {
    "id": "necrosis",
    "name": "NECROSIS BLACK",
