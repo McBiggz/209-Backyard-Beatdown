@@ -237,8 +237,7 @@
    "knee": "#141414",
    "armSleeve": true,
    "smile": true,
-   "belly": true
-  },
+   "belly": true, "drawScale": 0.88},
   {
    "id": "cdiddy",
    "name": "C.DIDDY",
@@ -290,8 +289,7 @@
    "tag": "BMF Entertainment",
    "wrist": "#141414",
    "gloves": true,
-   "belly": true
-  },
+   "belly": true, "drawScale": 1.02},
   {
    "id": "necrosis",
    "name": "NECROSIS BLACK",
@@ -373,8 +371,7 @@
    "spd": 1.32,
    "fin": "FIRESTARTER",
    "finType": "spin",
-   "tag": "Fiery underdog"
-  },
+   "tag": "Fiery underdog", "drawScale": 0.985},
   {
    "id": "zeke",
    "name": "THE SAMOAN REAPER",
