@@ -42,7 +42,7 @@ function drawHUD(){if(G.mm){drawGroupHUD();return;}const[a,b]=G.f;hpBar(a,3,3,1)
  R(0,207,W,9,'#0a0506');R(0,207,20,9,'#8f0f14');T('LIVE',10,209,1,'#fff','center',null);
  const vis=Math.min(G.ticker.length,Math.floor(G.tickerT*60));T(G.ticker.slice(0,vis),24,209,1,'#f1e6d0','left',null);
  T(muted?'M:SOUND OFF':'M:SOUND',W-3,209,1,'#7a6a5a','right',null);
- if(G.pin&&!G.pin.d.cpu){const P=G.pin,y=PY(P.d.z)-40,x=clamp(PX(bodyX(P.d),P.d.z),82,W-82);T(P.ropes?(coarse?'PUSH THE PAD TO GRAB THE ROPES!':'PUSH A DIRECTION TO GRAB THE ROPES!'):(coarse?'TAP TO KICK OUT!':'MASH ATTACK TO KICK OUT!'),x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff','center');
+ if(G.pin&&!G.pin.d.cpu){const P=G.pin,y=PY(P.d.z)-40,x=clamp(PX(bodyX(P.d),P.d.z),82,W-82);T(P.ropes?(coarse?'PUSH THE PAD TO GRAB THE ROPES!':'PUSH A DIRECTION TO GRAB THE ROPES!'):(coarse?'TAP OR WIGGLE THE STICK TO KICK OUT!':'MASH OR WIGGLE TO KICK OUT!'),x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff','center');
   R(x-30,y+7,60,4,'#000');R(x-29,y+8,58*clamp(P.presses/Math.min(P.need,60),0,1),2,'#33d17a');
   if(P.d.meter>=100&&!P.d.usedSW)T(coarse?'OR PRESS FINISH FOR A SECOND WIND!':('OR PRESS '+(P.d.idx?'I':'R')+' FOR A SECOND WIND!'),x,y+14,1,Math.floor(G.t*8)%2?'#ff8a1f':'#fff','center');}}
 const HPG=(()=>{const a=[224,48,64],b=[48,96,232],o=[];for(let k=0;k<24;k++){const t=k/23;o.push(`rgb(${lerp(a[0],b[0],t)|0},${lerp(a[1],b[1],t)|0},${lerp(a[2],b[2],t)|0})`);}return o;})();

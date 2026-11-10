@@ -129,6 +129,8 @@ function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
  if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.usedSW&&!P.d.out){secondWind();return;}
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}
+ // wiggling the stick counts too: every swing to a new direction is one press (made for the phone stick; arrows and pads work the same)
+ if(!P.d.cpu&&!P.ropes){const dk=(di.left?'L':'')+(di.right?'R':'')+(di.up?'U':'')+(di.down?'D':'');if(dk&&dk!==P.d.pinDir){P.presses++;P.d.wiggle=0.15;}P.d.pinDir=dk;}
  if(P.d.wiggle>0)P.d.wiggle-=dt;
  if(P.ropes&&!P.d.cpu&&(di.left||di.right||di.up||di.down)&&P.t>0.3){ropeBreak();return;}
  if(!P.d.cpu&&P.presses>=P.need){kickout();return;}
