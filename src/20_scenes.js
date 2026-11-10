@@ -111,7 +111,7 @@ function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);con
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
  G.dodgeOn=G.replay?!!G.replay.dodge:(TEST_MODES&&!G.net);
  G.windOn=G.replay?!!G.replay.wind:(TEST_MODES&&!G.net); // wind-up beat before strikes (test link)
- G.styleOn=G.replay?!!G.replay.style:(TEST_MODES&&!G.net); // CPU fighting styles (test link)
+ G.styleOn=G.replay?!!G.replay.style:true;                 // CPU fighting styles + balance (live, online too)
  for(const f of G.f)f.aiP=null;
  G.entFx=!G.replay;                                        // fog + lights + pose entrance (online too: skipping goes through both players' buttons)
  G.secretOn=G.replay?!!G.replay.secret:(TEST_MODES&&!G.net);G.rollInOn=G.replay?!!G.replay.rollin:(TEST_MODES&&!G.net);G.map=G.replay?(G.replay.map||'ranch'):(G.mapPick||'ranch');G.mapT=0;G.mapArm=true;G.mapFade=0;G.mapWalk=null;G.f.forEach(f=>f.mwA=1); // Secret Map: test link only for now // 5-by-5s: test link only while it's being cleaned up
