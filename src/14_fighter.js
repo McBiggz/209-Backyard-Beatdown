@@ -3,7 +3,8 @@ function makeFighter(ch,x,z,dir,cpu,idx){return{ch,set:null,x,z,y:0,vx:0,vz:0,vy
  walkPh:0,downDur:1.5,stun:0.3,ai:{t:0.6,mv:null,goal:null},wiggle:0,finHit:false,launched:false,readyAnn:false,spin:0,turn:1,finBy:''};}
 function atCorner(f,mx){if(f.out)return false;const[a,b]=wbounds(f);return((f.x<=a+3&&mx<0)||(f.x>=b-3&&mx>0))&&(f.z<=ZMIN+6||f.z>=ZMAX-6);}
 function updFighter(f,o,inp,dt){
- f.t+=dt;if(f.comboT>0){f.comboT-=dt;if(f.comboT<=0)f.combo=0;}
+ f.t+=dt;if(G.styleOn&&(f.state==='punch'||f.state==='kick'||f.state==='stomp'))f.t+=dt*(aspdOf(f)-1); // fast wrestlers strike faster
+ if(f.comboT>0){f.comboT-=dt;if(f.comboT<=0)f.combo=0;}
  f.hpShow=lerp(f.hpShow,f.hp,1-Math.exp(-dt*2.5));
  const S=f.state,dx=o.x-f.x;
  switch(S){

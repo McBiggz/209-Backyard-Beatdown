@@ -24,7 +24,7 @@ function startSwing(f){setState(f,'wswing');f.vx=f.vz=0;sfx('whoosh');}
 function updSwing(f,o){const p=propAt(f.wpn);if(!p){setState(f,'idle');return;}
  if(f.t>=0.2&&!f.hitDone){f.hitDone=true;const W0=WPN[p.k],dx=(o.x-f.x)*f.dir;
   const can=o.out===f.out&&dx>-6&&dx<W0.reach&&Math.abs(o.z-f.z)<14&&o.y<24&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');
-  if(can){const lying=o.state==='down';damage(o,(lying?0.7:1)*W0.dmg*f.ch.pow,f);hitFx(sx_(o),sy_(o)-(lying?6:30),14);sfx('slam');tone(620,0.18,0.25,'square',300);shake(6);G.hitStop=0.1;irpMark('big');heat(0.1);crowdReact(f,true);
+  if(can){const lying=o.state==='down';damage(o,(lying?0.7:1)*W0.dmg*powOf(f),f);hitFx(sx_(o),sy_(o)-(lying?6:30),14);sfx('slam');tone(620,0.18,0.25,'square',300);shake(6);G.hitStop=0.1;irpMark('big');heat(0.1);crowdReact(f,true);
    if(!lying)knock(o,f.dir*170,190);else o.downDur=Math.max(o.downDur,1.2);
    popOn(o,W0.name,'#ffd35a');say(`${f.ch.short} with a ${p.k} shot on ${o.ch.short}!`);p.hits++;
    if(p.k==='chair'&&p.hits>=(HC().chairHits||4)){f.wpn=-1;p.held=-1;p.st='dent';p.dead=true;p.x=f.x+f.dir*12;p.z=f.z;p.out=f.out;popOn(f,'CHAIR DESTROYED!','#fff');}

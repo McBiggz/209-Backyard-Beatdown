@@ -23,7 +23,7 @@ function ghostFor(f){const g=G.ghost;g.x=f.x<157?262:52;g.z=140;return g;}
 function startGroup(cfg){G.mm=null;G.mmCfg=cfg;const seed=G.forceSeed!=null?G.forceSeed:(Math.random()*4294967296)>>>0;SIM.seed=seed;AIR.seed=seed^0x9E3779B9;
  G.stage=3;XMIN=52;XMAX=262;ZMIN=125;ZMAX=154;
  // test-only moves come from the match config (online: the host's link decides, so everyone runs the same rules)
- const tf=cfg.testFx!=null?cfg.testFx:TEST_MODES;G.dodgeOn=tf;G.rollInOn=tf;G.windOn=tf;
+ const tf=cfg.testFx!=null?cfg.testFx:TEST_MODES;G.dodgeOn=tf;G.rollInOn=tf;G.windOn=tf;G.styleOn=tf;
  G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const ctl=cfg.ctl?cfg.ctl[i]:(i!==0||cfg.cpuAll?'cpu':0);const f=makeFighter(ch,110,140,1,ctl==='cpu',i);f.ctl=ctl;f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
  G.me=cfg.me!=null?cfg.me:0;G.map=cfg.map||'ranch';G.mapT=0;G.mapArm=false;G.mapFade=0;G.secretOn=false;G.hc=G.cage=false;G.props=[];
  G.ghost=makeFighter(G.f[0].ch,300,150,1,true,-1);G.ghost.ghost=true;G.ghost.hidden=true;

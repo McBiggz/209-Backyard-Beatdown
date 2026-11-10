@@ -3,7 +3,7 @@ const bodyX=o=>['down','pinned','held'].includes(o.state)||(o.state==='finished'
 // CROWD METER: G.hype (0-1). When the crowd is hot, both finisher meters fill faster.
 const crowdMul=()=>G.hype>=CTR.crowd.hot?1+CTR.crowd.meterBonus:1;
 const heat=v=>{G.hype=Math.min(1,G.hype+v);};
-function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
+function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(G.styleOn)dmg/=balOf(o);/* balance: a tuned-down wrestler also takes a bit more */if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg);f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
 function setState(f,s){f.state=s;f.t=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
@@ -13,17 +13,17 @@ const incoming=(f,o)=>['punch','kick','runline','dropkick'].includes(o.state)&&M
 const holdsAway=(f,o,inp)=>o.x<f.x?inp.right:inp.left;
 const canBlock=(o,f)=>['idle','walk','block'].includes(o.state)&&o.y<2&&o.inp&&(f.x<o.x?o.inp.right:o.inp.left);
 function tryHit(f,o,A){if(o.ghost)return;
- const tx=A.ground?bodyX(o):o.x,dx=(tx-f.x)*f.dir,reach=A.reach*f.ch.size;
+ const tx=A.ground?bodyX(o):o.x,dx=(tx-f.x)*f.dir,reach=A.reach*reachOf(f);
  if(dx<-8||dx>reach)return;if(Math.abs(o.z-f.z)>(A.ground?12:10))return;
  if(A.ground){if(o.state!=='down')return;}
  else{if(!HITTABLE.has(o.state))return;if(o.state!=='perch'&&Math.abs(o.y-f.y)>(A.air?40:22))return;}
  if(wide()&&f.out!==o.out)return;
- if(!A.ground&&canBlock(o,f)){f.hitDone=true;const chip=A.dmg*f.ch.pow*CTR.block.chip;o.hp=Math.max(1,o.hp-chip);f.meter=Math.min(100,f.meter+chip);
+ if(!A.ground&&canBlock(o,f)){f.hitDone=true;const chip=A.dmg*powOf(f)*CTR.block.chip;o.hp=Math.max(1,o.hp-chip);f.meter=Math.min(100,f.meter+chip);
   setState(o,'block');o.blockStun=CTR.block.stun+(A.knock?0.15:0);o.vx=f.dir*A.kb*CTR.block.push;o.vz=0;o.combo=0;
   if(f.state==='runline')f.vx*=0.3;sfx('block');tutEv('block',o);G.hitStop=0.03;part(PX(o.x,o.z)-f.dir*10,PY(o.z)-o.y-40*o.ch.size,-f.dir*30,-20,0.25,'#9fd4ff',2);
   if(o.blockN=(o.blockN||0)+1,o.blockN%3===1)popOn(o,'BLOCK','#9fd4ff');return;}
  f.hitDone=true;const whipped=o.state==='whipped'||o.state==='run';
- const dmg=A.dmg*f.ch.pow*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);tutEv(A===ATK.punch?'punch':A===ATK.kick?'kick':'hit',f);
+ const dmg=A.dmg*powOf(f)*srnd(0.9,1.1)*(whipped?1.5:1);damage(o,dmg,f);tutEv(A===ATK.punch?'punch':A===ATK.kick?'kick':'hit',f);
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);
  if(A.ground){o.t=Math.max(0,o.t-0.35);if(Math.random()<0.4)line('stomp',f,o);return;}
  o.combo++;o.comboT=1.1;
@@ -38,7 +38,7 @@ function startWhip(f,o,mx,canRev){link(f,o);setState(f,'whip');setState(o,'whipp
 // ---- Roll him back in: both outside, opponent next to the ring. GRAB while pushing toward the ring (UP at the front, LEFT on the right side)
 // shoves him under the bottom rope. Test link only for now.
 function rollInDir(f,o){if(!G.rollInOn||!wide()||G.mm||!f.out||!o.out||G.over||G.pin)return 0;
- if(Math.abs(o.x-f.x)>36*f.ch.size||Math.abs(o.z-f.z)>12||o.y>2||!(GRABBABLE.has(o.state)||o.state==='down'))return 0;
+ if(Math.abs(o.x-f.x)>36*reachOf(f)||Math.abs(o.z-f.z)>12||o.y>2||!(GRABBABLE.has(o.state)||o.state==='down'))return 0;
  if(o.z>=186&&o.x>40&&o.x<260)return -1;           // front apron: push UP
  if(o.z<190&&o.x>=RING_R-4&&o.x<=RING_R+30)return 1; // right side: push LEFT
  return 0;}
@@ -48,7 +48,7 @@ function rollIn(f,o){const front=o.z>=186;link(f,o);
  callout('BACK IN THE RING!','#ffd35a',1.0);say(`${f.ch.short} rolls ${o.ch.short} back into the ring!`);}
 function tryGrab(f,o,mx){if(o.ghost){setState(f,'whiff');return;}
  if(wide()&&f.out)mx=0;
- if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*f.ch.size&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){
+ if((!wide()||f.out===o.out)&&Math.abs(o.x-f.x)<30*reachOf(f)&&Math.abs(o.z-f.z)<10&&o.y<2&&GRABBABLE.has(o.state)){
   if(mx&&canToss(f,o)){startToss(f,o,mx);return;}
   if(mx){startWhip(f,o,mx,true);line('whip',f,o);tutEv('whip',f);return;}
   link(f,o);setState(f,'grapple');setState(o,'grappled');f.vx=f.vz=o.vx=o.vz=0;o.z=f.z+0.2;sfx('grab');}
@@ -60,7 +60,7 @@ function updGrapple(f,o){
  if(t<0.3){o.x=f.x+d*18*s;o.y=0;o.spin=0;}
  else if(t<0.65){const p=(t-0.3)/0.35,a=Math.PI*p;o.x=f.x+d*18*s*Math.cos(a);o.y=42*s*Math.sin(a);o.spin=a;}
  else{o.spin=0;o.y=0;o.x=cx(o,f.x-d*20);o.dir=d;setState(o,'down');o.downDur=1.6;
-  damage(o,13*f.ch.pow,f);sfx('slam');shake(6);dust(PX(o.x-o.dir*24,o.z),PY(o.z),true);G.hitStop=0.09;line('grab',f,o);crowdReact(f,false);}
+  damage(o,13*powOf(f),f);sfx('slam');shake(6);dust(PX(o.x-o.dir*24,o.z),PY(o.z),true);G.hitStop=0.09;line('grab',f,o);crowdReact(f,false);}
 }
 function tryFin(f,o){if(o.ghost)return;
  if(f.meter<100){popOn(f,'NO MOMENTUM','#bbb');return;}
@@ -69,7 +69,7 @@ function tryFin(f,o){if(o.ghost)return;
  callout(f.ch.fin+'!!',f.ch.accent,1.7);G.slow=0.8;G.slowT=1.3;G.flash=0.3;sfx('whoosh');
  if(f.ch.finType==='kick')sfx('fire');if(f.ch.finType==='spin')sfx('glitter');crowdReact(f,true);
 }
-function finContact(f,o){damage(o,27*f.ch.pow,f);shake(9);G.hitStop=0.14;G.slow=0.35;G.slowT=0.5;G.flash=0.35;sfx('slam');line('fin',f,o);crowdReact(f,true);}
+function finContact(f,o){damage(o,27*powOf(f),f);shake(9);G.hitStop=0.14;G.slow=0.35;G.slowT=0.5;G.flash=0.35;sfx('slam');line('fin',f,o);crowdReact(f,true);}
 function updFinisher(f,o,dt){
  const t=f.t,ty=f.ch.finType;
  if(ty==='kick'){
@@ -101,7 +101,7 @@ function startDive(f,o){link(f,o);irpMark('big');heat(CTR.crowd.dive);tutEv('div
 function landDive(f,o){
  f.y=0;f.vx=f.vz=0;if(wide())f.out=!insideRing(f.x,f.z);clampPos(f);
  const hitIt=Math.abs(bodyX(o)-f.x)<28&&Math.abs(o.z-f.z)<12&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');
- if(hitIt){damage(o,17*f.ch.pow,f);hitFx(sx_(o),sy_(o)-12,12);
+ if(hitIt){damage(o,17*powOf(f),f);hitFx(sx_(o),sy_(o)-12,12);
   if(o.state==='down'||o.state==='getup'){setState(o,'down');o.downDur=1.9;}else knock(o,f.dir*60,150);
   setState(f,'down');f.downDur=0.45;sfx('slam');shake(7);G.hitStop=0.1;dust(sx_(f),PY(f.z),true);callout('SPLASH!!','#ffd35a',1.0);crowdReact(f,true);}
  else{damage(f,7,o);setState(f,'down');f.downDur=1.7;sfx('slam');shake(5);dust(sx_(f),PY(f.z),true);popOn(f,'CRASH!','#ff5a5a');line('crash',f,o);crowdReact(o,false);}
