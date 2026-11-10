@@ -31,3 +31,14 @@ Payoff: more flyers = bigger crowd/money/followers at the next show; perfect run
 and maybe a banged-up wrestler. Sending a big name draws more but risks your top guy.
 Build: reuses the group engine (8 fighters) and wide scrolling stage. Needs: a background per location, enemies (recolor existing wrestler
 sprites first, later 2-3 ChatGPT enemy sheets), a flyer prop (real Den flyer if Liam has one).
+
+## Money (Liam: "money should matter a little bit")
+In: tickets + merch, small weekly Filthy Farms sponsor payment; good shows earn more. Out: low flat wrestler pay.
+No game over: go broke -> sponsor bails you out with a warning and a popularity hit. Money mostly decides how fast you unlock things.
+
+What it buys:
+- Show production: fog machine (entrance smoke becomes a purchase), stage lights, powder cannon, sound system (louder crowd), ring announcer.
+- Venue: more chairs (bigger crowds/tickets), run a secret show in the Barn, new barn ring, lighting rigs/banners (+show score).
+- Roster: sign Coming Soon wrestlers (Tripp, Jason, Ultimo Jaguar...), one-night guest, training sessions with Hayashi/CJ (+stats), medical (faster injury return).
+- Promotion: flyer stacks for Flyer Run, social media ads (+followers before an event), print merch (small income every show after).
+- Titles/extras: create a new championship (e.g. Hardcore title), unlock alternate gear for the season.
