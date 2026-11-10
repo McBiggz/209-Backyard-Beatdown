@@ -7,7 +7,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'punch':{const w=windOf('punch');return t<0.07+w||t>0.24+w?'punch0':'punch1';}
  case 'kick':{const w=windOf('kick');return t<0.11+w||t>0.32+w?'kick0':'kick1';}
  case 'stomp':return t<0.2+windOf('stomp')?'stomp0':'stomp1';
- case 'entpose':return f.set&&f.set.fs0?'fs0':'win0';
+ case 'entpose':return 'win0';
  case 'down':case 'pinned':return f.wiggle>0&&Math.floor(G.t*20)%2?'downW':'down';
  case 'grapple':return t<0.3?'grap0':'grap1';
  case 'whip':return 'grap0';

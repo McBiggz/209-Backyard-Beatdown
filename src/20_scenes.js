@@ -174,8 +174,10 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
 function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[order[E.i]];
  const skip=G.net?(G.stepInp&&((G.stepInp[0]|G.stepInp[1])&(16|32))):(confirmP()||clickQ);
  if(E.t>0.3&&skip){finishEntrance();return;}
- if(E.phase==='show'){if(E.t<dt*1.5){callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;musPlay(f.ch.id.replace('_alt',''),'theme');}if(E.t>1.8){E.t=0;f.hidden=false;f.out=true;f.dir=-1;
-   if(G.entFx&&G.map!=='secret'){E.phase='emerge';f.x=533;f.z=139;f.mwA=0;setState(f,'walk');entFog.burst=1;} // test link: out of the tunnel through the fog
+ if(E.phase==='show'){if(E.t<dt*1.5){if(!G.entFx)callout(f.ch.name,'#fff',1.8);sfx('roar');G.hype=0.8;musPlay(f.ch.id.replace('_alt',''),'theme');entFog.p.length=0;}
+  if(G.entFx&&E.t>=ENT_POSE&&E.t<ENT_POSE+dt*1.5){sfx('roar');shake(4);entFog.burst=1;}
+  if(E.t>(G.entFx?ENT_SHOW:1.8)){E.t=0;f.hidden=false;f.out=true;f.dir=-1;
+   if(G.entFx&&G.map!=='secret'){E.phase='walk';f.x=533;f.z=158;f.mwA=1;setState(f,'walk');} // test link: he already came out and posed in the close-up
    else{E.phase='walk';f.x=513;f.z=160;setState(f,'walk');for(let k=0;k<30;k++)part(PX(513,160)+rnd(-20,20),160+rnd(-30,0),rnd(-30,30),rnd(-40,-5),rnd(0.6,1.2),pick(['#b050ff','#e0a0ff','#7a30c0']),2,'dust');}}}
  else if(E.phase==='emerge'){f.state='walk';f.walkPh+=dt*8;f.dir=1;f.z=Math.min(158,f.z+dt*16);f.mwA=clamp((f.z-139)/12,0,1);
   if(f.z>=158){f.mwA=1;f.dir=-1;f.state='entpose';f.t=0;E.phase='pose';E.t=0;sfx('roar');shake(3);heat(0.15);entFog.burst=1;
@@ -192,7 +194,7 @@ const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
 function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters();if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
-function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];ctx.drawImage(ENT,0,0,W,H);
+function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];if(G.entFx){drawEntranceShowFx(E,f);return;}ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
  if(E.t>0.4){R(0,170,W,30,'rgba(6,2,3,0.72)');T(f.ch.name,192,176,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,190,1,'#bfae98','center',null);}
@@ -278,3 +280,38 @@ function drawEntFx(){const E=G.entrance,ph=E.phase,cx=533-G.cam,pose=ph==='pose'
   if(a<=0.005)continue;const g=ctx.createRadialGradient(p.x-G.cam,p.y,0,p.x-G.cam,p.y,p.r);g.addColorStop(0,`rgba(${p.c},${a})`);g.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=g;ctx.fillRect(p.x-G.cam-p.r,p.y-p.r,p.r*2,p.r*2);}
  ctx.restore();entFog.p=entFog.p.filter(p=>p.t<p.life);}
 function newFog(burst){return{x:533+rnd(-22,22),y:rnd(146,166),vx:rnd(-16,16)*(burst?2:1),vy:rnd(-2,3),r:rnd(9,16),t:0,life:rnd(1.6,3.2),a:rnd(0.18,0.32),c:pick(['220,200,255','190,150,255','240,235,255'])};}
+
+// ---------- the entrance close-up (test link): out through the curtains, into the light, hit the pose ----------
+const ENT_POSE=1.3,ENT_SHOW=3.3,ENT_LAMPS=[137,168,196,224,251],ENT_GAP=[150,70,222,182],ENT_SPOT=[205,192];
+function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=f.idx===1?-1:1,ds=f.ch.drawScale||1;
+ ctx.drawImage(ENT,0,0,W,H);
+ const lit=clamp((t-0.1)/0.5,0,1);
+ R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`); // the yard dims, the stage takes the light
+ // walking out: from deep in the tunnel (small, in shadow) to the spotlight
+ const k=clamp((t-0.3)/(ENT_POSE-0.3),0,1),e=k*k*(3-2*k);
+ const x=lerp(194,ENT_SPOT[0],e),y=lerp(170,ENT_SPOT[1]+4,e),sc=lerp(0.95,1.5,e)*ds,inside=k<0.55;
+ if(t>0.3){ctx.globalAlpha=clamp(k*2.2,0,1);
+  drawSpr(f.set,pose?'win0':'walk'+(Math.floor(t*9)%4),x,y,dir,sc);ctx.globalAlpha=1;
+  // while he's still in the tunnel, the curtains and banners are in front of him
+  if(inside){ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(ENT_GAP[0],ENT_GAP[1],ENT_GAP[2]-ENT_GAP[0],ENT_GAP[3]-ENT_GAP[1]);ctx.clip('evenodd');ctx.drawImage(ENT,0,0,W,H);
+   R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`);ctx.restore();}}
+ // light beams from the five lamps onto the spotlight; they strobe when he hits the pose
+ ctx.save();ctx.globalCompositeOperation='lighter';
+ ENT_LAMPS.forEach((lx,i)=>{const on=pose?(Math.floor(G.t*10+i)%2?1:0.4):0.75,a=0.15*lit*on;if(a<0.01)return;
+  const tx=ENT_SPOT[0]+(lx-196)*0.55,g=ctx.createLinearGradient(0,56,0,196);g.addColorStop(0,`rgba(240,205,255,${a*1.7})`);g.addColorStop(1,'rgba(170,80,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(lx-3,56);ctx.lineTo(lx+3,56);ctx.lineTo(tx+20,196);ctx.lineTo(tx-20,196);ctx.closePath();ctx.fill();});
+ const glow=(pose?0.5+0.15*Math.sin(G.t*20):0.3)*lit;const g=ctx.createRadialGradient(ENT_SPOT[0],ENT_SPOT[1],3,ENT_SPOT[0],ENT_SPOT[1],70);
+ g.addColorStop(0,`rgba(255,235,255,${glow})`);g.addColorStop(1,'rgba(160,80,255,0)');ctx.fillStyle=g;ctx.fillRect(ENT_SPOT[0]-75,ENT_SPOT[1]-40,150,70);
+ if(pose&&t<ENT_POSE+0.12){ctx.fillStyle=`rgba(255,240,255,${(0.5*(1-(t-ENT_POSE)/0.12)).toFixed(2)})`;ctx.fillRect(0,0,W,H);} // flash as he hits it
+ ctx.restore();
+ // fog rolling out of the tunnel and across the stage floor
+ const want=pose?46:28;if(entFog.burst){entFog.burst=0;for(let i=0;i<18;i++)entFog.p.push(newFog2(true));}
+ while(entFog.p.length<want)entFog.p.push(newFog2(false));
+ for(const p of entFog.p){p.t+=1/60;p.x+=p.vx/60;p.y+=p.vy/60;p.r+=5/60;const a=Math.sin(Math.min(1,p.t/p.life)*Math.PI)*p.a;if(a<=0.005)continue;
+  const fg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);fg.addColorStop(0,`rgba(${p.c},${a})`);fg.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=fg;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2);}
+ entFog.p=entFog.p.filter(p=>p.t<p.life);
+ // name card at the top so the pose isn't covered
+ if(t>0.5){const a=clamp((t-0.5)/0.3,0,1);ctx.globalAlpha=a;R(0,4,W,26,'rgba(6,2,3,0.72)');T(f.ch.name,192,8,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');
+  T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,22,1,'#bfae98','center',null);ctx.globalAlpha=1;}
+ T(coarse?'TAP TO SKIP':'ENTER TO SKIP',W-4,206,1,'#7a6a5a','right',null);}
+function newFog2(burst){const out=Math.random()<0.6;return{x:out?rnd(165,235):rnd(130,280),y:out?rnd(150,185):rnd(178,206),vx:rnd(-14,14)*(burst?2.4:1),vy:rnd(-1,4),r:rnd(12,22),t:0,life:rnd(1.6,3.2),a:rnd(0.16,0.3),c:pick(['220,190,255','185,130,255','240,232,255'])};}
