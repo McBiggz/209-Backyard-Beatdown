@@ -62,3 +62,33 @@ Lay the 2 frames side by side in one row, each frame the same size as the refere
 Solid flat magenta background (#FF00FF) behind both frames, with no shadow, floor, motion lines or other people. No text.
 ```
 For other wrestlers: swap the description in the first line for theirs and attach their sprite.
+
+## 5. Suplex, getting up and signature pose (4 frames) - The Viral Voice first
+Attach: the wrestler's standing sprite. Same chat as #4.
+
+```
+Using the attached sprite as the exact reference for this wrestler (same face, long blond hair, beard, chest tattoo, arm tattoos, black elbow pads, black pants with teal and white stripes, black boots) and the exact same 16-bit SNES pixel-art style, size and outline, draw 4 new frames of him facing RIGHT like the reference. Draw ONLY him: the opponent is invisible, so pose his arms as if holding someone.
+
+One row of 4 frames, each the same size and scale as the reference:
+1. SUPLEX LIFT: standing, leaning back, arms locked around an invisible opponent's head and waist as if lifting him straight up overhead.
+2. SUPLEX GOING OVER: falling backward in mid-air, back arched, arms still wrapped around the invisible opponent above him.
+3. SITTING UP: sitting on the mat after being knocked down, one hand on the mat, shaking his head, about to stand.
+4. SIGNATURE POSE: standing tall, chest out, both arms raised and flexing, mouth open yelling at the crowd.
+
+Solid flat magenta background (#FF00FF), no shadows, floor, motion lines or other people. No text.
+```
+
+## 6. Pins (5 frames) - feeds the random pin system
+Frame names in game: pinned_up, pin_bs0, pin_bs1, pin_cx, pin_ru. Frame 1 is shared by all pins (most important).
+
+```
+Same wrestler, same style, size and outline as the attached reference. Draw 5 new frames in one row, each the same size and scale, side view. Draw ONLY him; any opponent is invisible.
+
+1. BEING PINNED: lying on his back, shoulders flat on the mat, both legs up in the air and bent at the knees, arms out at his sides (he's being held down).
+2. BACKSLIDE SET-UP: standing, facing LEFT, his back pressed against an invisible opponent's back, both arms reaching back over his own shoulders as if hooking the opponent's arms.
+3. BACKSLIDE PIN: bridging backward, feet planted on the mat, back arched up high, arms reaching back over his head as if holding an opponent's arms down to the mat.
+4. CRUCIFIX PIN: lying on his back at an angle, legs bent and spread as if trapping an opponent's arm, one arm hooking the other arm, pressing down.
+5. ROLL-UP: crouched low over an invisible opponent, cradling him: one arm around the opponent's head, the other hooking a leg, body leaning forward to hold his shoulders down.
+
+Solid flat magenta background (#FF00FF), no shadows, floor, motion lines or other people. No text.
+```
