@@ -48,3 +48,17 @@ Keep it in the barn's style: dark grey canvas mat, black ropes with dark turnbuc
 ```
 
 After the new ring comes in: make a new front-ropes layer (like `secret_front.png`) from it.
+
+## 4. Straddle leapfrog (The Viral Voice first, then anyone)
+Attach: the wrestler's standing sprite (magenta background version).
+
+```
+Using the attached sprite as the exact reference for this wrestler (same face, long blond hair, beard, chest tattoo, arm tattoos, black elbow pads, black pants with teal and white stripes, black boots) and the exact same 16-bit SNES pixel-art style, size and outline, draw 2 new frames of him doing a LEAPFROG over an opponent, facing RIGHT like the reference.
+
+Lay the 2 frames side by side in one row, each frame the same size as the reference and the same scale, feet/body lined up on the same baseline:
+1. TAKE-OFF: he has just jumped, body leaning forward, both legs swinging out wide to the sides, arms reaching forward and down as if about to push off someone's back.
+2. STRADDLE (top of the leap): fully in the air, legs spread wide in a straddle (split out to both sides, knees straight), toes pointed, arms out to the sides for balance, chest up, mouth open yelling.
+
+Solid flat magenta background (#FF00FF) behind both frames, with no shadow, floor, motion lines or other people. No text.
+```
+For other wrestlers: swap the description in the first line for theirs and attach their sprite.
