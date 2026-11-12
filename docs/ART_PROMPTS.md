@@ -92,3 +92,20 @@ Same wrestler, same style, size and outline as the attached reference. Draw 5 ne
 
 Solid flat magenta background (#FF00FF), no shadows, floor, motion lines or other people. No text.
 ```
+
+## 7. Counterparts: being suplexed and being pinned (5 frames) - The Viral Voice first
+The opponent's side of #5 and #6. Frame names in game: sup_v0, sup_v1, pin_bsv0, pin_bsv1, pin_cxv.
+Roll-up uses pinned_up (frame 1 of #6), so it needs no new frame.
+Attach: the wrestler's standing sprite. Same chat as #5 and #6.
+
+```
+Using the attached sprite as the exact reference for this wrestler (same face, long blond hair, beard, chest tattoo, arm tattoos, black elbow pads, black pants with teal and white stripes, black boots) and the exact same 16-bit SNES pixel-art style, size and outline, draw 5 new frames in one row, each the same size and scale as the reference, side view, head on the LEFT side of the frame like the reference faces right. Draw ONLY him; the other wrestler is invisible. These are the frames of him RECEIVING moves.
+
+1. BEING SUPLEXED, LIFTED: body straight up and down, completely upside down (head toward the ground, boots pointing straight up at the sky), legs together, arms limp, as if being held up vertically by an invisible opponent.
+2. BEING SUPLEXED, GOING OVER: body flat and horizontal in mid-air, back facing the ground, legs straight, arms flung out, hair flying, about to crash down on his back.
+3. BEING BACKSLID, SET-UP: standing, leaning backward, his back pressed against an invisible opponent's back, both arms pulled up and back over his own head as if they are hooked, feet coming off the mat.
+4. BEING BACKSLID, PINNED: lying flat on his back, shoulders on the mat, both arms stretched straight up over his head along the mat as if held down, legs flat, face grimacing.
+5. BEING CRUCIFIXED: lying flat on his back, shoulders on the mat, both arms spread straight out to the sides like a cross as if trapped, legs slightly bent, face grimacing.
+
+Solid flat magenta background (#FF00FF), no shadows, floor, motion lines or other people. No text.
+```
