@@ -116,7 +116,8 @@ function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out
  let sh=0;if(hi-lo>b-a)sh=(a+b)/2-(lo+hi)/2;else if(lo<a)sh=a-lo;else if(hi>b)sh=b-hi;if(sh)for(const[f]of live)f.x+=sh;}
 function startPin(f,o){if(o.ghost||(G.mm&&!G.mm.pins)||G.pin){setState(f,'whiff');return;}link(f,o);tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
- G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6};G.ref.mode='pin';sfx('grab');line('pin',f,o);}
+ G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6,type:'cover'};
+ {const ty=pinTypes(f,o);if(ty.length>1){const P=G.pin;P.type=ty[Math.floor(srnd()*ty.length)];if(P.type!=='cover')P.nextAt+=PIN_SETUP;}}G.ref.mode='pin';sfx('grab');line('pin',f,o);}
 function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
  if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);heat(CTR.crowd.nearFall);crowdReact(d,false);sfx('roar');sfx('roar');shake(5);irpMark('big');}
  else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);heat(CTR.crowd.kickout);sfx('roar');shake(3);}}
@@ -143,3 +144,16 @@ function updPin(dt,inp){
 }
 function endMatch(w,l){if(G.mm&&G.mm.type==='multi'){multiPin(w,l);return;}G.pin=null;G.over={w,l,t:0,how:'PINFALL'};l.downDur=999;setState(w,'getup');G.ref.mode='raise';setTimeout(()=>sfx('bell'),250);sfx('roar');crowdReact(w,true);say(`Here is your winner... ${w.ch.name}!`);}
 
+
+// ---------- pin variety: the game picks one at random each time ----------
+// A pin type is available when the pinner has its frames and the one being pinned has 'pinned_up' (shoulders down, legs up).
+// Until a wrestler's art is in, only the standard cover is possible (and no random number is drawn, so nothing changes).
+// Frame names to give the new sheet: pin_bs0 (backslide set-up, back to back hooking arms), pin_bs1 (backslide bridge),
+// pin_cx (crucifix), pin_ru (roll-up / small package), pinned_up (being pinned: shoulders down, legs up).
+const PIN_SETUP=0.35;
+const PIN_FRAMES={backslide:['pin_bs0','pin_bs1'],crucifix:['pin_cx'],rollup:['pin_ru']};
+function pinTypes(a,d){const out=['cover'];if(!(d.set&&d.set.pinned_up))return out;
+ for(const t in PIN_FRAMES)if(PIN_FRAMES[t].every(n=>a.set&&a.set[n]))out.push(t);return out;}
+function pinFrame(f){const P=G.pin;if(!P||P.type==='cover')return null;
+ if(f===P.d)return P.t<PIN_SETUP*0.5?'grabbed':'pinned_up';
+ const fr=PIN_FRAMES[P.type];return fr.length>1&&P.t<PIN_SETUP?fr[0]:fr[fr.length-1];}
