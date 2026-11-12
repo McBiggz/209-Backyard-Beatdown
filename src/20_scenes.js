@@ -137,11 +137,11 @@ function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,
  if(t>0.5)T('VS',192,90,t<0.62?6:4,'#ffd35a','center','#5a0608');
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',192,206,1,'#7a6a5a','center',null);}
 const OVER_BTNS=[[122,128,140,14],[122,146,140,14],[122,164,140,14]];
-const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14]];
+const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14],[132,176,120,14]];
 function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.net){if(G.net.updFightMeta)G.net.updFightMeta();}
  else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
- if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
+ if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(hit(['KeyC'])||(clickQ&&inRect(clickQ,PAUSE_BTNS[2])))cycleDiff();if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
  if(hit(['KeyM']))toggleMute();
  if(G.tut){tutMeta();tutStep(dt);}
  if(G.over){if(!G.over.tc){G.over.tc=1;titleCall();}G.over.t+=dt;if(G.uniMatch){if(G.over.t>1.8&&(confirmP()||clickQ||hit(['Escape'])))uniAfterMatch();return;}if(G.over.t>1.8&&!G.net){
@@ -212,7 +212,7 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
   T('P1: WASD MOVE · SPACE JUMP · F PUNCH · G KICK · H GRAB/PIN · R FINISHER',192,80,1,'#e9dcc6','center',null);
   if(G.mode===1)T('P2: ARROWS · U JUMP · J PUNCH · K KICK · L GRAB/PIN · I FINISHER',192,90,1,'#e9dcc6','center',null);
   T('HOLD LEFT/RIGHT + GRAB TO WHIP INTO THE ROPES · CORNER + JUMP TO CLIMB',192,102,1,'#bfae98','center',null);T('PUSH INTO THE ROPES + JUMP TO ROLL OUT / BACK IN · BACK IN BY 10 OR LOSE!',192,110,1,'#bfae98','center',null);T('HOLD AWAY FROM YOUR OPPONENT TO BLOCK • WHIPPED? GRAB ON THE ICON TO REVERSE',192,118,1,'#ffd35a','center',null);T('DOUBLE-TAP TO RUN · RUNNING OR OFF THE ROPES: PUNCH = CLOTHESLINE, KICK = DROPKICK',192,126,1,'#ffd35a','center',null);
-  [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
+  [['RESUME (ESC)',0],['QUIT TO MENU (Q)',1],['CPU: '+DIFF_NAMES[savedDiff]+(savedDiff!==G.diff?' (NEXT MATCH)':''),2]].forEach(([s,i])=>{const r=PAUSE_BTNS[i];BOX(...r,'#140a0c','#ffd35a');T(s,192,r[1]+5,1,'#fff','center',null);});}
  if(G.flash>0){R(0,0,W,H,`rgba(255,250,235,${G.flash.toFixed(2)})`);}}
 
 
@@ -340,3 +340,6 @@ function drawTitleBanner(){const B=G.tcBan;if(!B)return;if(!G.over||G.scene!=='f
  const a=Math.min(1,t*4,(3.2-t)*3),pop=1+Math.max(0,0.25-t)*2;ctx.save();ctx.globalAlpha=a;
  {const g=ctx.createLinearGradient(0,8,0,54);g.addColorStop(0,'rgba(6,2,3,0)');g.addColorStop(0.3,'rgba(6,2,3,0.85)');g.addColorStop(0.7,'rgba(6,2,3,0.85)');g.addColorStop(1,'rgba(6,2,3,0)');ctx.fillStyle=g;ctx.fillRect(0,8,W,46);}
  const sc=TW(B.a,2)>W-16?1:2;T(B.a,192,16,sc,'#ffd35a','center','#5a0608');T(B.b,192,30,pop>1.05?3:3,Math.floor(t*8)%2?'#fff':'#ffd35a','center','#5a0608');ctx.restore();}
+
+// CPU difficulty from the pause menu: saved now, used from the next match (so the instant replay of this one still matches)
+function cycleDiff(){savedDiff=(savedDiff+1)%3;try{localStorage.setItem('bb_diff',savedDiff);}catch(e){}sfx('punch');}

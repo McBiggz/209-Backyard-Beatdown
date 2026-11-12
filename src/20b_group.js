@@ -61,7 +61,7 @@ function startTag(pick){const others=ROSTER.filter(c=>c.id!==ROSTER[pick].id&&c.
 function updGroupFight(dt){const mm=G.mm;
  if(G.net&&!G.over)G.net.updFightMeta();
  else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
- if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
+ if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(hit(['KeyC'])||(clickQ&&inRect(clickQ,PAUSE_BTNS[2])))cycleDiff();if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
  if(hit(['KeyM']))toggleMute();
  if(G.over){G.over.t+=dt;if(G.over.t>1.8){mm.ff=false;
   if(G.net){G.net.updFightMeta();return;}

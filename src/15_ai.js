@@ -30,7 +30,7 @@ const AI_WHO={
  kliq:['brawler',{}]};
 // ---- Balance rules (test link, same flag as the styles): size gives half as much reach, speed also makes strikes come out faster,
 // and each wrestler has a small damage adjustment found by running every matchup CPU vs CPU until win rates sit near 50%.
-const AI_BAL={"viral":1.154,"dragon":1.28,"papi":1.174,"mainevent":0.953,"razzle":1.187,"bigmf":0.715,"asesino":1.132,"spektro":1.232,"jojo":0.698,"cdiddy":1.02,"cjdirt":0.961,"necrosis":1.119,"firebelly":0.95,"maverick":1.192,"matsunaga":1.251,"zeke":0.802,"ghoulie":1.141,"kliq":0.947}; // from tests/balance_tune.py (Nov 9 2026); 1 = no change, <1 = toned down
+const AI_BAL={"viral":1.06,"dragon":1.28,"papi":1.174,"mainevent":0.953,"razzle":1.187,"bigmf":0.715,"asesino":1.132,"spektro":1.232,"jojo":0.698,"cdiddy":1.02,"cjdirt":0.961,"necrosis":1.119,"firebelly":0.95,"maverick":1.192,"matsunaga":1.251,"zeke":0.72,"ghoulie":1.141,"kliq":0.85}; // from tests/balance_tune.py (Nov 9 2026); 1 = no change, <1 = toned down
 const reachOf=f=>G.styleOn?1+(f.ch.size-1)*0.5:f.ch.size;
 const balOf=f=>G.styleOn&&AI_BAL[f.ch.id.replace('_alt','')]||1;
 const powOf=f=>f.ch.pow*balOf(f);
@@ -38,10 +38,10 @@ const spdOf=f=>f.ch.spd;
 const aspdOf=f=>G.styleOn?1+(f.ch.spd-1)*0.6:1;
 // ---- CPU difficulty: 0 Easy, 1 Normal, 2 Hard (Hard = the original CPU). Scales how fast it reacts and how often it blocks/reverses/dodges.
 // finC: chance the CPU takes its finisher when ready and in position; finWait: seconds it holds off first
-const AI_DIFF=[{react:1.7,block:0.4,rev:0.35,dodge:0.55,ropes:0.6,dmg:0.85,finC:0.15,finWait:4},{react:1.3,block:0.7,rev:0.65,dodge:0.8,ropes:0.85,dmg:1,finC:0.35,finWait:2},{react:1,block:1,rev:1,dodge:1,ropes:1,dmg:1,finC:1,finWait:0}];
+const AI_DIFF=[{react:2.0,block:0.25,rev:0.2,dodge:0.4,ropes:0.5,dmg:0.8,finC:0.1,finWait:5},{react:1.4,block:0.62,rev:0.55,dodge:0.7,ropes:0.8,dmg:0.95,finC:0.3,finWait:2.5},{react:1,block:1,rev:1,dodge:1,ropes:1,dmg:1,finC:1,finWait:0}];
 const DIFF_NAMES=['EASY','NORMAL','HARD'];
 // how often a pinned CPU grabs the ropes / uses its second wind (Hard = the original 80% / 85%)
-const cpuPinEsc=k=>{const d=G.diff!=null?G.diff:2;return k==='rope'?[0.35,0.55,0.8][d]:[0.3,0.5,0.85][d];};
+const cpuPinEsc=k=>{const d=G.diff!=null?G.diff:2;return k==='rope'?[0.3,0.45,0.8][d]:[0.25,0.4,0.85][d];};
 let savedDiff=1;try{const v=+localStorage.getItem('bb_diff');if(v>=0&&v<=2&&localStorage.getItem('bb_diff')!==null)savedDiff=v;}catch(e){}
 function aiProfile(f){if(f.aiP)return f.aiP;const D=AI_DIFF[G.diff!=null?G.diff:2];
  let P;if(!G.styleOn)P=Object.assign({},AI_DEF);else{const w=AI_WHO[f.ch.id.replace('_alt','')]||['brawler',{}];P=Object.assign({},AI_DEF,AI_STYLES[w[0]],w[1],{style:w[0]});}
