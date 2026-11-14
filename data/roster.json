@@ -446,8 +446,7 @@
    "fin": "ROGERS RIDE",
    "finType": "slam",
    "tag": "Tripp Rogers",
-   "drawScale": 0.967,
-   "testOnly": true
+   "drawScale": 0.967
   },
   {
    "id": "jason",
@@ -467,8 +466,7 @@
    "fin": "MOTHER KNOWS BEST",
    "finType": "slam",
    "tag": "Jason Hastings",
-   "drawScale": 0.995,
-   "testOnly": true
+   "drawScale": 0.995
   },
   {
    "id": "frank",
@@ -488,8 +486,7 @@
    "fin": "PARENTAL CONTROL",
    "finType": "kick",
    "tag": "Frank Douglas",
-   "drawScale": 0.967,
-   "testOnly": true
+   "drawScale": 0.967
   },
   {
    "id": "flaco",
@@ -509,8 +506,7 @@
    "fin": "LOCO DRIVER",
    "finType": "spin",
    "tag": "El Flaco Loco",
-   "drawScale": 0.953,
-   "testOnly": true
+   "drawScale": 0.953
   },
   {
    "id": "jaguar",
@@ -530,8 +526,7 @@
    "fin": "JAGUAR CLAW",
    "finType": "kick",
    "tag": "Ultimo Jaguar",
-   "drawScale": 0.967,
-   "testOnly": true
+   "drawScale": 0.967
   },
   {
    "id": "kruze",
@@ -551,8 +546,7 @@
    "fin": "CHAIN GANG",
    "finType": "slam",
    "tag": "Jesus Kruze",
-   "drawScale": 0.995,
-   "testOnly": true
+   "drawScale": 0.995
   },
   {
    "id": "kliq",

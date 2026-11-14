@@ -15,7 +15,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'pinned':{const pf=pinFrame(f);if(pf)return pf;} // fall through to the normal lying frames
  case 'down':if(f.supLand&&hasArt(f,'pin_cxv'))return 'pin_cxv'; // landed on his back from a suplex
   return f.wiggle>0&&Math.floor(G.t*20)%2?'downW':'down';
- case 'grapple':if(hasArt(f,'sup0')){if(f.supAF)return t<0.3?'grap0':f.supAF;return t<0.3?'grap0':t<0.45?'sup0':t<0.65?'sup1':'situp';} // suplex art (keyframed when the other man has art too)
+ case 'grapple':if(hasArt(f,'sup0')&&TEST_MODES){if(f.supAF)return t<0.3?'grap0':f.supAF;return t<0.3?'grap0':t<0.45?'sup0':t<0.65?'sup1':'situp';} // suplex art (keyframed when the other man has art too)
   return t<0.3?'grap0':'grap1';
  case 'whip':return 'grap0';
  case 'block':return 'grap0';

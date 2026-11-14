@@ -166,7 +166,7 @@ const LIVE_ART=new Set(['viral']);
 const artId=f=>((f&&f.ch&&f.ch.id)||'').replace(/_alt$/,'');
 function artOn(f){return LIVE_ART.has(artId(f))||TEST_MODES;}
 // sim-safe check (same answer on both online players): the new art only counts live for LIVE_ART, or offline on the test link
-function supArt(o){return !!(o.set&&o.set.sup_v0&&o.set.pin_cxv)&&(LIVE_ART.has(artId(o))||G.windOn);}
+function supArt(o){return !!(o.set&&o.set.sup_v0&&o.set.pin_cxv)&&G.windOn;} // new suplex: test link only for now
 const SUP_LAND=66;
 function hasArt(f,n){return !!(f&&f.set&&f.set[n])&&artOn(f);}
 function pinTypes(a,d){const out=['cover'];const ok=f=>LIVE_ART.has(artId(f))||G.windOn;if(!(d.set&&d.set.pinned_up&&ok(d)&&ok(a)))return out;
