@@ -141,3 +141,8 @@ Same wrestler, same style, size and outline as the attached reference. Draw ONE 
 PIN COVER: lying chest-down across an invisible opponent who is flat on his back, his body draped across at a slight angle, one arm hooked around the opponent's leg pulling it up, the other arm pressing down on the opponent's chest, head up looking at the referee.
 Draw ONLY him. Solid flat magenta background (#FF00FF), no shadows, floor, border or text.
 ```
+
+## 11. Cage escape (6 frames) and steel chair (6 frames) - Nano Banana 2.1, any wrestler
+Game names: cage = cclimb0, cclimb1, ctop, cdrop, ccrawl0, ccrawl1; chair = chcarry0, chcarry1, chraise, chhit, chjab, chdrop.
+(Cage climb now uses the walk frames; chair swing uses grab/punch with the chair drawn by code. The art replaces both.)
+See the chat reply of 2026-11-14 for the full prompts.
