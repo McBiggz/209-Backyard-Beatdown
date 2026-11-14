@@ -350,8 +350,8 @@ function drawTitleBanner(){const B=G.tcBan;if(!B)return;if(!G.over||G.scene!=='f
 // CPU difficulty from the pause menu: saved now, used from the next match (so the instant replay of this one still matches)
 function cycleDiff(){savedDiff=(savedDiff+1)%3;try{localStorage.setItem('bb_diff',savedDiff);}catch(e){}sfx('punch');}
 
-// Jesus Kruze's hubcap entrance (test link only, while it's new)
-function hubEnt(f){return TEST_MODES&&f&&f.set&&f.set.hubsmack&&G.entrance;}
+// Jesus Kruze's hubcap entrance
+function hubEnt(f){return f&&f.set&&f.set.hubsmack&&G.entrance;}
 function hubFrame(f){const E=G.entrance;if(!E||!hubEnt(f))return null;const ef=G.f[[1,0][Math.min(E.i,1)]];if(ef!==f)return null;
  if(E.phase==='hub')return E.t<0.42?'hubwind':E.t<0.75?'hubsmack':'hubpose';
  if(E.phase==='walk'||E.phase==='emerge')return 'hubw'+(Math.floor((f.walkPh||0)/1.5708)%4);

@@ -44,4 +44,14 @@ for p in sorted(glob.glob(R + '/art_src/extra/*_*.webp')):
     Image.fromarray(qa, 'RGBA').save(f'{R}/assets/sprites/{wid}.webp', lossless=True, method=6, quality=100)
     js = js[:m.start(2)] + json.dumps(names) + js[m.end(2):]
     print(wid, fr, round(s, 3))
+# frames whose figure touches the left edge of its cell: slide right so nothing is cut off (2026-11-14 stress test)
+NUDGE = {'bigmf': {'pin_bsv1': 12}, 'ghoulie': {'pin_cxv': 12}}
+for wid, frs in NUDGE.items():
+    m = re.search(r'("%s": \{"src": "SPR\(sprites/%s.webp\)", "names": )(\[[^\]]*\])' % (wid, wid), js); names = json.loads(m.group(2))
+    sh = Image.open(f'{R}/assets/sprites/{wid}.webp').convert('RGBA')
+    for fr, dx in frs.items():
+        i = names.index(fr); box = ((i % 8) * 320, (i // 8) * 224, (i % 8) * 320 + 320, (i // 8) * 224 + 224)
+        c = sh.crop(box); n = Image.new('RGBA', c.size, (0, 0, 0, 0)); n.alpha_composite(c.crop((0, 0, 320 - dx, 224)), (dx, 0))
+        sh.paste((0, 0, 0, 0), box); sh.alpha_composite(n, box[:2])
+    sh.save(f'{R}/assets/sprites/{wid}.webp', lossless=True, method=6, quality=100); print(wid, 'nudged', list(frs))
 open(A, 'w').write(js)
