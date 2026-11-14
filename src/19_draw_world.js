@@ -30,7 +30,8 @@ function drawFighters(){
   // speed blur: fading copies trail behind a dropkick / dive
   if(TEST_MODES&&(f.state==='dropkick'||f.state==='dive')&&Math.abs(f.vx)>60){const vx=f.vx*ds,vy=f.vy*ds;
    for(const[k,a]of[[0.045,0.28],[0.085,0.14],[0.125,0.07]]){ctx.globalAlpha=a*(f.mwA??1);drawSpr(f.set,fr,fx_-vx*k,fy_+vy*k,f.dir*(f.turn||1),dsc,ky);}ctx.globalAlpha=f.mwA!=null&&f.mwA<1?Math.max(0,f.mwA):1;}
-  drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc,ky);
+  if(f.rot&&f.state==='grappled'){const cy=fy_-28*dsc;ctx.save();ctx.translate(fx_,cy);ctx.rotate(f.rot*Math.PI/180*f.dir);drawSpr(f.set,fr,0,28*dsc,f.dir*(f.turn||1),dsc,ky);ctx.restore();} // keyframed tilt (suplex)
+  else drawSpr(f.set,fr,fx_,fy_,f.dir*(f.turn||1),dsc,ky);
   ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;

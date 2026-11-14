@@ -79,14 +79,14 @@ function drawViewer(){const mv=VMOVES[V.m],[f,o]=G.f;
  vBtn('back','<<');vBtn('play',V.play?'PAUSE':'PLAY',V.play);vBtn('fwd','>>');vBtn('spd',VSPD[V.spd]+'X');vBtn('swap','SWAP');vBtn('exit','EXIT');}
 
 // ---- keyframe editor (suplex): drag the man being suplexed, add/delete keys, pick frames, copy the result
-const VE={back:[2,200,24,14],fwd:[28,200,24,14],add:[54,200,34,14],del:[90,200,28,14],vf:[120,200,52,14],af:[174,200,52,14],copy:[228,200,40,14],reset:[270,200,44,14],done:[316,200,66,14],tl:[20,180,344,12]};
+const VE={rl:[2,168,40,11],rr:[342,168,40,11],back:[2,200,24,14],fwd:[28,200,24,14],add:[54,200,34,14],del:[90,200,28,14],vf:[120,200,52,14],af:[174,200,52,14],copy:[228,200,40,14],reset:[270,200,44,14],done:[316,200,66,14],tl:[20,180,344,12]};
 const VF_OPTS=['sup_v0','sup_v1','flip0'],AF_OPTS=['sup0','sup1','grap1'];
 function vLoadKF(){try{const j=localStorage.getItem('bb_kf_suplex');if(j){const k=JSON.parse(j);if(Array.isArray(k)&&k.length>=2)return k;}}catch(e){}return SUP_KF.map(k=>({...k}));}
 function vSaveKF(){try{localStorage.setItem('bb_kf_suplex',JSON.stringify(V.kf));}catch(e){}}
 const vKeyAt=()=>V.kf.findIndex(k=>Math.abs(k.t-V.t)<0.017);
 function vEnsureKey(){let i=vKeyAt();if(i>=0)return i;if(V.t<0.3)return -1;const k=kfAt(V.kf,V.t);
- V.kf.push({t:+V.t.toFixed(3),dx:k.dx,dy:k.dy,vf:k.vf,af:k.af});V.kf.sort((a,b)=>a.t-b.t);vSaveKF();return vKeyAt();}
-const vKFtext=()=>JSON.stringify(V.kf.map(k=>({t:+k.t.toFixed(3),dx:+k.dx.toFixed(1),dy:+k.dy.toFixed(1),vf:k.vf,af:k.af})));
+ V.kf.push({t:+V.t.toFixed(3),dx:k.dx,dy:k.dy,r:k.r||0,vf:k.vf,af:k.af});V.kf.sort((a,b)=>a.t-b.t);vSaveKF();return vKeyAt();}
+const vKFtext=()=>JSON.stringify(V.kf.map(k=>({t:+k.t.toFixed(3),dx:+k.dx.toFixed(1),dy:+k.dy.toFixed(1),r:Math.round(k.r||0),vf:k.vf,af:k.af})));
 function vCopy(){const txt='SUPLEX KEYS '+vKFtext();let ok=false;
  try{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand('copy');ta.remove();}catch(e){}
  try{if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>{},()=>{});ok=true;}}catch(e){}
@@ -107,14 +107,17 @@ function vEditUpd(q){const tap=k=>q&&inRect(q,VE[k]);if(V.msgT>0)V.msgT-=STEP;
  if(tap('fwd')||hit(['ArrowRight']))V.t=Math.min(last+0.3,+(V.t+step).toFixed(4));
  if(tap('tl')){V.t=Math.max(0,Math.min(last+0.3,(q.x-VE.tl[0])/VE.tl[2]*(last+0.3)));const n=V.kf.reduce((b,k,i)=>Math.abs(k.t-V.t)<Math.abs(V.kf[b].t-V.t)?i:b,0);if(Math.abs(V.kf[n].t-V.t)<0.05)V.t=V.kf[n].t;}
  if(tap('add')||hit(['KeyK']))vEnsureKey();
+ for(const[n,dr,key]of[['rl',-15,'KeyQ'],['rr',15,'KeyE']])if(tap(n)||hit([key])){const i=vEnsureKey();if(i>=0){const k=V.kf[i];k.r=(((k.r||0)+dr+180)%360+360)%360-180;vSaveKF();}}
  if((tap('del')||hit(['Delete','Backspace']))&&V.kf.length>2){const i=vKeyAt();if(i>=0){V.kf.splice(i,1);vSaveKF();}}
  if(tap('vf')){const i=vEnsureKey();if(i>=0){const k=V.kf[i];k.vf=VF_OPTS[(VF_OPTS.indexOf(k.vf)+1)%VF_OPTS.length];vSaveKF();}}
  if(tap('af')){const i=vEnsureKey();if(i>=0){const k=V.kf[i];k.af=AF_OPTS[(AF_OPTS.indexOf(k.af)+1)%AF_OPTS.length];vSaveKF();}}
  if(tap('reset')){V.kf=SUP_KF.map(k=>({...k}));try{localStorage.removeItem('bb_kf_suplex');}catch(e){}V.msg='BACK TO THE GAME\'S VERSION';V.msgT=2;}
  vPose();}
+function B2(n,s){const r=VE[n];BOX(...r,'#140a0c','#9cf');T(s,r[0]+r[2]/2,r[1]+2,1,'#9cf','center',null);}
 function vEditDraw(){const tl=VE.tl,last=V.kf[V.kf.length-1].t,span=last+0.3,i=vKeyAt(),k=i>=0?V.kf[i]:kfAt(V.kf,Math.max(0.3,V.t));
  R(0,168,W,30,'rgba(0,0,0,0.75)');
  T(i>=0?'KEY '+(i+1)+'/'+V.kf.length+'  - DRAG HIM TO MOVE':(V.t<0.3?'GRAB (NOT EDITABLE)':V.t>=last?'LANDED':'BETWEEN KEYS - DRAG TO ADD ONE'),192,170,1,i>=0?'#ffd35a':'#ccc','center');
+ B2('rl','<ROT');B2('rr','ROT>');T((k.r?Math.round(k.r):0)+' DEG',330,170,1,'#9cf','right');
  R(tl[0],tl[1]+5,tl[2],2,'#666');
  R(tl[0]+0.3/span*tl[2],tl[1]+2,1,8,'#888');
  V.kf.forEach((q,j)=>{const x=tl[0]+q.t/span*tl[2];R(x-2,tl[1]+1,5,10,j===i?'#ffd35a':'#c84');});
