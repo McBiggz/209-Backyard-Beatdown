@@ -56,7 +56,7 @@ for w in sys.argv[1:]:
   for n in F:
     if n!='roar':C(n)
   C('idle1');C('walk0');C('stomp1','kick0');C('grap1','grap0');C('whiff','grap0');C('grabbed','hit');C('downW','down',dy=-2)
-  C('pinning','pinning' if 'pinning' in F else 'down','liefwd');C('held','fall');C('win1','win0',dy=-3)
+  C('pinning','pinning','liefwd') if 'pinning' in F else C('pinning','pin_ru','stand');   # no pin-cover art yet: the roll-up crouch stands inC('held','fall');C('win1','win0',dy=-3)
   C('fk0','kick0');C('fk1','kick1');C('fs0','sup0' if 'sup0' in F else 'grap0');C('fs1','punch1');C('fp0','perch0');C('fp1','jump','air');C('fp2','perch0');C('fv0','roar');C('fv1','hit')
   # breathing: second idle frame = first one with the chest and shoulders lifted 1 pixel (no size change)
   if 'br0' in F:   # hand-drawn breathing frames replace the stance pair
