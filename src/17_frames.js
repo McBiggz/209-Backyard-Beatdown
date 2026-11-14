@@ -3,7 +3,10 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  switch(s){
  case 'idle':return 'idle'+(Math.floor(G.t*1.6+f.idx)%2);
  case 'walk':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
- case 'whipped':case 'run':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
+ case 'run':if(f.set&&f.set.frog_v0){ // 5x5 art: duck under a leapfrog, then skid
+   if(G.f.some(q=>q!==f&&q.leap&&q.state==='jump'&&q.dodge&&q.dodge.by===f.idx&&Math.abs(q.x-f.x)<45))return 'frog_v0';
+   if(f.r5t!=null&&G.t-f.r5t<0.35)return 'frog_v1';}
+ case 'whipped':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
  case 'punch':{const w=windOf('punch');return t<0.07+w||t>0.24+w?'punch0':'punch1';}
  case 'kick':{const w=windOf('kick');return t<0.11+w||t>0.32+w?'kick0':'kick1';}
  case 'stomp':return t<0.2+windOf('stomp')?'stomp0':'stomp1';
