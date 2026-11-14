@@ -52,7 +52,7 @@ for w in sys.argv[1:]:
     if (src or n) not in F:return
     im=F[src or n];im=ImageOps.mirror(im) if (flip or (src or n) in MIRROR) else im
     k=SS.get(SHOF.get(src or n),None);sc=s*k if k else s
-    sc*={'jason':{'sup1':1.23}}.get(w,{}).get(src or n,1)
+    sc*={'jason':{'sup1':1.23,'sup0':1.25}}.get(w,{}).get(src or n,1)
     cells[n]=cell(prep(im,sc),mode or MODE.get(src or n,'stand'),dy)
   for n in F:
     if n!='roar':C(n)

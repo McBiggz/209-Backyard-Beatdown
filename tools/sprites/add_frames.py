@@ -29,7 +29,7 @@ for p in sorted(glob.glob(R + '/art_src/extra/*_*.webp')):
     cells = [sh.crop(((i % 8) * 320, (i // 8) * 224, (i % 8) * 320 + 320, (i // 8) * 224 + 224)) for i in range(len(names))]
     im = one_figure(p)
     if fr == 'pinning':   # pin cover: as long as 1.39x his standing height (same proportions as Frank's, which fits)
-        b = cells[names.index('idle0')].getbbox(); s = 1.39 * (b[3] - b[1]) / im.size[0] * {'jason': 0.8, 'kruze': 0.88}.get(wid, 1); mode = 'liefwd'
+        b = cells[names.index('idle0')].getbbox(); s = 1.12 * (b[3] - b[1]) / im.size[0]   # body length ~1.12x his standing height (2026-11-14 roster audit); mode = 'liefwd'
     else:
         b = cells[names.index('down')].getbbox(); s = 0.92 * (b[2] - b[0]) / im.size[0] * {'jason': 0.85}.get(wid, 1); mode = 'lieback'
     pim = prep(im, s); c = cell(pim, mode, 0)

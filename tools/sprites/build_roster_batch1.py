@@ -14,7 +14,7 @@ R_SKID=hcell(vsh,vn,'frog_v1')/hcell(vsh,vn,'idle0');R_SIG=hcell(vsh,vn,'sig')/h
 ONLY=sys.argv[1:]
 GM={('bigmf','A'):0.934,('bigmf','B'):1.135,('bigmf','C'):0.883,('asesino','B'):1.139,('asesino','C'):0.921,('cdiddy','A'):0.912,('cdiddy','B'):1.094,('cdiddy','C'):0.849,('spektro','all'):0.903,('necrosis','all'):0.896,('firebelly','all'):0.891,('maverick','all'):0.919}
 FM={'bigmf':{'pin_cxv':0.87},'asesino':{'pin_bsv1':0.85},'cdiddy':{'pin_bsv1':0.83,'pin_cxv':0.85}}
-FOLD={'ghoulie':{'dive':1.25}}
+FOLD={'ghoulie':{'dive':1.25},'matsunaga':{'hit':1.35,'dazed':1.25}}
 for wid,srcs in SRC.items():
   if ONLY and wid not in ONLY:continue
   m=re.search(r'("%s": \{"src": "SPR\(sprites/%s.webp\)", "names": )(\[[^\]]*\])'%(wid,wid),js);names=json.loads(m.group(2))
@@ -22,7 +22,7 @@ for wid,srcs in SRC.items():
   cells={n:base.crop(((i%8)*320,(i//8)*224,(i%8)*320+320,(i//8)*224+224)) for i,n in enumerate(old)}
   for n_,f_ in FOLD.get(wid,{}).items():
     c_=cells[n_];bb=c_.getbbox();fig=c_.crop(bb);fig=fig.resize((round(fig.width*f_),round(fig.height*f_)),Image.NEAREST)
-    nc=Image.new('RGBA',c_.size,(0,0,0,0));cx_=(bb[0]+bb[2])/2;cy_=(bb[1]+bb[3])/2;nc.alpha_composite(fig,(int(max(0,min(c_.width-fig.width,cx_-fig.width/2))),int(max(0,min(c_.height-fig.height,cy_-fig.height/2)))));cells[n_]=nc
+    nc=Image.new('RGBA',c_.size,(0,0,0,0));cx_=(bb[0]+bb[2])/2;cy_=(bb[1]+bb[3])/2;oy_=bb[3]-fig.height if n_!='dive' else cy_-fig.height/2;nc.alpha_composite(fig,(int(max(0,min(c_.width-fig.width,cx_-fig.width/2))),int(max(0,min(c_.height-fig.height,oy_)))));cells[n_]=nc   # standing frames keep their feet
   new={}
   for p,k in srcs:
     d=layout(p,k)
