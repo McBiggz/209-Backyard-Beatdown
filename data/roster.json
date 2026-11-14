@@ -549,6 +549,27 @@
    "drawScale": 0.995
   },
   {
+   "id": "razz",
+   "name": "RAZZLE",
+   "short": "Razzle",
+   "align": "face",
+   "skin": "#c88a5a",
+   "trunks": "#ff3aa0",
+   "boots": "#f0f0f0",
+   "accent": "#ffe040",
+   "hair": "short",
+   "hairC": "#1a1414",
+   "beard": false,
+   "size": 0.95,
+   "pow": 0.96,
+   "spd": 1.06,
+   "fin": "RAZZLE DAZZLER",
+   "finType": "spin",
+   "tag": "Razzle",
+   "drawScale": 0.925,
+   "testOnly": true
+  },
+  {
    "id": "kliq",
    "name": "209 KLIQ ENFORCER",
    "short": "Kliq Enforcer",
@@ -599,6 +620,7 @@
   "frank": "FRANK DOUGLAS",
   "flaco": "EL FLACO LOCO",
   "jaguar": "ULTIMO JAGUAR",
-  "kruze": "JESUS KRUZE"
+  "kruze": "JESUS KRUZE",
+  "razz": "RAZZLE"
  }
 }
