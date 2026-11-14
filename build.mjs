@@ -18,14 +18,20 @@ import crypto from 'node:crypto';
 // Inline every asset so the page has no outside files to lose
 // catch typos before they ship: the game must at least parse
 try { new Function(js.replace(/__ASSET\(([^)]+)\)__/g, 'A')); } catch (e) { console.error('BUILD STOPPED - code error: ' + e.message); process.exit(1); }
+fs.mkdirSync('dist', { recursive: true });
+// Images ship as separate files with content-hashed names (dist/a/), so phones download each one once and cache it
+fs.rmSync('dist/a', { recursive: true, force: true }); fs.mkdirSync('dist/a', { recursive: true });
+let assetBytes = 0;
 js = js.replace(/__ASSET\(([^)]+)\)__/g, (_, p) => {
-  const ext = p.split('.').pop();
-  return `data:${mime[ext]};base64,` + fs.readFileSync('assets/' + p).toString('base64');
+  const ext = p.split('.').pop(), buf = fs.readFileSync('assets/' + p);
+  const name = 'a/' + crypto.createHash('sha1').update(buf).digest('hex').slice(0, 12) + '.' + ext;
+  if (!fs.existsSync('dist/' + name)) { fs.writeFileSync('dist/' + name, buf); assetBytes += buf.length; }
+  return name;
 });
 // third-party libraries (vendor/*.js) go in before the game, e.g. PeerJS for online play
 const vendor = fs.existsSync('vendor') ? fs.readdirSync('vendor').filter(f => f.endsWith('.js')).sort().map(f => '<script>' + fs.readFileSync('vendor/' + f, 'utf8') + '</script>').join('') : '';
 const page = fs.readFileSync('src/page_head.html', 'utf8') + vendor + '<script>' + js + '</script>' + fs.readFileSync('src/page_tail.html', 'utf8');
-fs.mkdirSync('dist', { recursive: true });
 fs.writeFileSync('dist/index.html', page);
 for (const f of ['manifest.json', 'icon-192.png', 'icon-512.png']) if (fs.existsSync('public/' + f)) fs.copyFileSync('public/' + f, 'dist/' + f);
-console.log('built dist/index.html', (page.length / 1024 / 1024).toFixed(2), 'MB');
+fs.writeFileSync('dist/_headers', '/a/*\n  Cache-Control: public, max-age=31536000, immutable\n');
+console.log('built dist/index.html', (page.length / 1024 / 1024).toFixed(2), 'MB + images', (assetBytes / 1024 / 1024).toFixed(2), 'MB');
