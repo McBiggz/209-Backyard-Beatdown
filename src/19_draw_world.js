@@ -20,20 +20,16 @@ function drawFighters(){
  // Ranch entrance: whoever is deeper than the entrance (walking into the tunnel) goes behind its curtains and banner
  let entDone=!(wide()&&G.stage===3&&G.map!=='secret'&&G.scene==='fight');
  const drawEnt=()=>{entDone=true;const E=ENTFRONT;if(E.img.complete&&E.img.naturalWidth)ctx.drawImage(E.img,E.x-G.cam,E.y,E.w,E.h);};
+ for(const e of ents)if(e.f&&!e.ref){const L=lpOf(e.f,frameOf(e.f));if(L&&L.some(q=>!q.front)){fDraw(e.f,fArgs(e.f),L,'back');}} // body parts that go BEHIND the other wrestler
  for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(!entDone&&(e===null||e.z>=ENTFRONT.z))drawEnt();if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z)*REF_SCALE);continue;}
-  const f=e.f,ds=depthS(f.z);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);
-  let jx=0,jy=0,ky=1;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
-   if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);                                                                        // squash as it lands
-   if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
-   const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
-  const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
+  const f=e.f,A=fArgs(f);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);
+  const {fr,fx_,fy_,ds,dsc,ky}=A;
   // speed blur: fading copies trail behind a dropkick / dive
   if(TEST_MODES&&(f.state==='dropkick'||f.state==='dive')&&Math.abs(f.vx)>60){const vx=f.vx*ds,vy=f.vy*ds;
    for(const[k,a]of[[0.045,0.28],[0.085,0.14],[0.125,0.07]]){ctx.globalAlpha=a*(f.mwA??1);drawSpr(f.set,fr,fx_-vx*k,fy_+vy*k,f.dir*(f.turn||1),dsc,ky);}ctx.globalAlpha=f.mwA!=null&&f.mwA<1?Math.max(0,f.mwA):1;}
-  {const gx=fx_+(f.dox||0)*ds,gy=fy_-(f.doy||0)*ds,gd=f.dir*(f.turn||1)*(f.flipX?-1:1); // keyframed offset / flip / tilt (suplex editor)
-   if(f.rot){const cy=gy-28*dsc;ctx.save();ctx.translate(Math.round(gx),Math.round(cy));ctx.rotate(f.rot*Math.PI/180*f.dir);drawSpr(f.set,fr,0,28*dsc,gd,dsc,ky);ctx.restore();}
-   else drawSpr(f.set,fr,gx,gy,gd,dsc,ky);}
+  fDraw(f,A,lpOf(f,fr),'main');
   ctx.globalAlpha=1;if(G.props&&f.wpn>=0)drawHeld(f);}
+ for(const e of ents)if(e.f&&!e.ref){const L=lpOf(e.f,e.f._fr);if(L&&L.some(q=>q.front))fDraw(e.f,e.f._A,L,'front');} // body parts drawn IN FRONT of everyone
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}
@@ -64,3 +60,33 @@ function drawCrowd(){if(G.entrance)return;const v=clamp(G.hype,0,1),hot=v>=CTR.c
  const col=hot?(Math.floor(G.t*8)%2?'#ff8a1f':'#ffd35a'):v>0.5?'#ffd35a':'#5aa8ff';
  T(hot?'CROWD: ON FIRE!':'CROWD',W/2,y-7,1,hot?col:'#bfae98','center','#000');
  R(x-1,y-1,w+2,6,'#000');R(x,y,w,4,'#2a1418');R(x,y,Math.round(w*v),4,col);R(x+Math.round(w*CTR.crowd.hot),y-1,1,6,'#fff');}
+
+// ---- one fighter's sprite, with optional body-part layers (cut-out pieces drawn in front of / behind the other wrestler)
+function fArgs(f){const ds=depthS(f.z);
+  let jx=0,jy=0,ky=1;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
+   if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);                                                                        // squash as it lands
+   if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
+   const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
+  const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
+ return {fr,fx_,fy_,ds,dsc,ky,gx:fx_+(f.dox||0)*ds,gy:fy_-(f.doy||0)*ds,gd:f.dir*(f.turn||1)*(f.flipX?-1:1)};}
+// the transform drawSpr uses, as a matrix from sprite units (0..SW, 0..SH) to the canvas
+function sprM(f,A){let m=ctx.getTransform(),sx=A.gx,sy=A.gy;
+ if(f.rot){m=m.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc)).rotate(f.rot*f.dir);sx=0;sy=28*A.dsc;}
+ sx=Math.round(sx);sy=Math.round(sy);const sh=A.dsc*A.ky,sw=A.dsc/Math.sqrt(A.ky);
+ if(A.gd>=0)return m.translate(sx-AX*sw,sy-AY*sh).scale(sw,sh);
+ return m.translate(sx,0).scale(-1,1).translate(-AX*sw,sy-AY*sh).scale(sw,sh);}
+function lpPath(L,pick){for(const q of L)if(pick(q)&&q.pts.length>2){ctx.moveTo(q.pts[0][0],q.pts[0][1]);for(const p of q.pts.slice(1))ctx.lineTo(p[0],p[1]);ctx.closePath();}}
+function fDraw(f,A,L,mode){const M=sprM(f,A),prev=ctx.getTransform();
+ const raw=()=>{if(f.rot){ctx.save();ctx.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc));ctx.rotate(f.rot*Math.PI/180*f.dir);drawSpr(f.set,A.fr,0,28*A.dsc,A.gd,A.dsc,A.ky);ctx.restore();}
+  else drawSpr(f.set,A.fr,A.gx,A.gy,A.gd,A.dsc,A.ky);};
+ if(mode==='main'){f._M=M;f._fr=A.fr;f._A=A;}
+ const back=L&&L.some(q=>!q.front);
+ if(mode==='main'&&!back){raw();return;}
+ ctx.save();ctx.setTransform(M);ctx.beginPath();
+ if(mode==='main'){ctx.rect(-4000,-4000,9000,9000);lpPath(L,q=>!q.front);ctx.setTransform(prev);ctx.clip('evenodd');}
+ else{lpPath(L,mode==='front'?q=>q.front:q=>!q.front);ctx.setTransform(prev);ctx.clip();}
+ raw();ctx.restore();}
+// layer data: baked into the game (LAYERS_DEF), plus edits saved on this device (test link only)
+const LAYERS_DEF={};
+let LAYERS_LOCAL=null;try{if(TEST_MODES)LAYERS_LOCAL=JSON.parse(localStorage.getItem('bb_layers')||'null');}catch(e){}
+function lpOf(f,fr){const k=artId(f)+'|'+fr;return (LAYERS_LOCAL&&LAYERS_LOCAL[k])||LAYERS_DEF[k]||null;}
