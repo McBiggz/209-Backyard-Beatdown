@@ -68,7 +68,9 @@ function fArgs(f){const ds=depthS(f.z);
    if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
   const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
- return {fr,fx_,fy_,ds,dsc,ky,gx:fx_+(f.dox||0)*ds,gy:fy_-(f.doy||0)*ds,gd:f.dir*(f.turn||1)*(f.flipX?-1:1)};}
+ return {fr,fx_,fy_,ds,dsc,ky,gx:fx_+(f.dox||0)*ds,gy:fy_-(f.doy||0)*ds,gd:f.dir*(f.turn||1)*(f.flipX?-1:1)*(FLIP_FR[artId(f)]&&FLIP_FR[artId(f)][fr]?-1:1)};}
+// frames drawn mirrored for one wrestler (Viral's pin cover faces the other way so the bodies line up)
+const FLIP_FR={viral:{pinning:1}};
 // the transform drawSpr uses, as a matrix from sprite units (0..SW, 0..SH) to the canvas
 function sprM(f,A){let m=ctx.getTransform(),sx=A.gx,sy=A.gy;
  if(f.rot){m=m.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc)).rotate(f.rot*f.dir);sx=0;sy=28*A.dsc;}
