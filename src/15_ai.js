@@ -27,7 +27,8 @@ const AI_WHO={
  matsunaga:['highflyer',{mix:[0.18,0.48,0.06,0.08,0.10],react:0.9}],  // fastest, nonstop kicks
  zeke:['powerhouse',{react:1.25,block:0.2}],                          // biggest and slowest
  ghoulie:['brawler',{react:1.2,evade:0.2,block:0.35}],                // patient, stalks
- kliq:['brawler',{}]};
+ kliq:['brawler',{}],
+ tripp:['technician',{}],jason:['powerhouse',{}],frank:['brawler',{}]};
 // ---- Balance rules (test link, same flag as the styles): size gives half as much reach, speed also makes strikes come out faster,
 // and each wrestler has a small damage adjustment found by running every matchup CPU vs CPU until win rates sit near 50%.
 const AI_BAL={"viral":1.06,"dragon":1.28,"papi":1.174,"mainevent":0.953,"razzle":1.187,"bigmf":0.715,"asesino":1.132,"spektro":1.232,"jojo":0.698,"cdiddy":1.02,"cjdirt":0.961,"necrosis":1.119,"firebelly":0.95,"maverick":1.192,"matsunaga":1.251,"zeke":0.72,"ghoulie":1.141,"kliq":0.85}; // from tests/balance_tune.py (Nov 9 2026); 1 = no change, <1 = toned down

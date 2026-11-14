@@ -1,7 +1,7 @@
 // ================= ROSTER =================
 // Wrestlers, the referee and strike tuning now live in data/roster.json and data/moves.json.
 /*@@DATA@@*/
-const ROSTER=DATA.roster.wrestlers;
+const ROSTER=DATA.roster.wrestlers.filter(c=>!c.testOnly||(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearchParams(location.search))); // new wrestlers: test link only for now
 const REF=DATA.roster.referee;
 
 
