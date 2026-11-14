@@ -15,7 +15,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'pinned':{const pf=pinFrame(f);if(pf)return pf;} // fall through to the normal lying frames
  case 'down':if(f.supLand&&hasArt(f,'pin_cxv'))return 'pin_cxv'; // landed on his back from a suplex
   return f.wiggle>0&&Math.floor(G.t*20)%2?'downW':'down';
- case 'grapple':if(hasArt(f,'sup0')){const H=f.supH||0,u=t>=0.45?(t<0.45+H?0.449:t-H):t;return u<0.3?'grap0':u<0.45?'sup0':u<0.65?'sup1':'situp';}
+ case 'grapple':if(hasArt(f,'sup0')){if(f.supAF)return t<0.3?'grap0':f.supAF;return t<0.3?'grap0':t<0.45?'sup0':t<0.65?'sup1':'situp';} // suplex art (keyframed when the other man has art too)
   return t<0.3?'grap0':'grap1';
  case 'whip':return 'grap0';
  case 'block':return 'grap0';
@@ -33,7 +33,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'runline':return f.t<0.1?'punch0':'punch1';
  case 'roll':return 'jump';
  case 'jump':return f.leap&&hasArt(f,'frog1')?(f.t<0.12?'frog0':'frog1'):'jump'; // leapfrog art: take-off, straddle
- case 'grappled':if(hasArt(f,'sup_v0')&&supArt(f)&&f.spin>0.01)return f.spin<=Math.PI?'sup_v0':'sup_v1'; // suplex art: upside down overhead, then flat going over
+ case 'grappled':if(f.supF&&hasArt(f,f.supF))return f.supF; // suplex art: upside down overhead, then flat going over
  {const k=((Math.round((f.spin||0)/(Math.PI/4))%8)+8)%8;return 'flip'+k;}
  case 'perch':return 'perch'+blink;
  case 'win':return 'win'+blink;
