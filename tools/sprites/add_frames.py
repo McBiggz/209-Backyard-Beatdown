@@ -15,8 +15,11 @@ for p in sorted(glob.glob(R + '/art_src/extra/*_*.webp')):
     names = json.loads(m.group(2)); sh = Image.open(f'{R}/assets/sprites/{wid}.webp').convert('RGBA')
     cells = [sh.crop(((i % 8) * 320, (i // 8) * 224, (i % 8) * 320 + 320, (i // 8) * 224 + 224)) for i in range(len(names))]
     im = max(frames(p), key=lambda f: f.size[0] * f.size[1])
-    dn = cells[names.index('down')]; b = dn.getbbox(); s = 0.92 * (b[2] - b[0]) / im.size[0]
-    c = cell(prep(im, s), 'lieback', 0)
+    if fr == 'pinning':   # pin cover: as long as 1.39x his standing height (same proportions as Frank's, which fits)
+        b = cells[names.index('idle0')].getbbox(); s = 1.39 * (b[3] - b[1]) / im.size[0]; mode = 'liefwd'
+    else:
+        b = cells[names.index('down')].getbbox(); s = 0.92 * (b[2] - b[0]) / im.size[0]; mode = 'lieback'
+    c = cell(prep(im, s), mode, 0)
     if fr in names: cells[names.index(fr)] = c
     else: names.append(fr); cells.append(c)
     rows = (len(names) + 7) // 8; out = Image.new('RGBA', (2560, 224 * rows), (0, 0, 0, 0))
