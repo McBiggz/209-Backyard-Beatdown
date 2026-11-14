@@ -7,11 +7,12 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'punch':{const w=windOf('punch');return t<0.07+w||t>0.24+w?'punch0':'punch1';}
  case 'kick':{const w=windOf('kick');return t<0.11+w||t>0.32+w?'kick0':'kick1';}
  case 'stomp':return t<0.2+windOf('stomp')?'stomp0':'stomp1';
- case 'entpose':return 'win0';
+ case 'entpose':return f.set&&f.set.sig?'sig':'win0';
  case 'pinning':return pinFrame(f)||'pinning';
  case 'pinned':{const pf=pinFrame(f);if(pf)return pf;} // fall through to the normal lying frames
  case 'down':return f.wiggle>0&&Math.floor(G.t*20)%2?'downW':'down';
- case 'grapple':return t<0.3?'grap0':'grap1';
+ case 'grapple':if(f.set&&f.set.sup0)return t<0.3?'grap0':t<0.47?'sup0':t<0.65?'sup1':'situp'; // suplex art: lift, go over, sit up
+  return t<0.3?'grap0':'grap1';
  case 'whip':return 'grap0';
  case 'block':return 'grap0';
  case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
