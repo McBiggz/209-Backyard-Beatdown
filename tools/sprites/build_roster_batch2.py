@@ -9,7 +9,7 @@ SH={'A':['idle0','idle1','walk0','walk1','walk2','walk3','roar'],'B':['punch0','
 MODE={'jump':'air','dropkick':'air','dive':'air','fall':'lieback','down':'lieback','sup1':'air','sup_v0':'air','sup_v1':'air','pinned_up':'lieback','pin_bs1':'liefwd','pin_cx':'liefwd','pin_bsv1':'lieback','pin_cxv':'lieback','frog1':'air'}
 MIRROR={'pin_bs0'}
 out={}
-EXTRA={'razz':[('razz_pin.webp',['pinning']),('razz_br.webp',['br0','br1'])],'frank':[('frank_pin.webp',['pinning']),('frank_br.webp',['br0','br1'])],'flaco':[('flaco_br.webp',['br0','br1'])],'jaguar':[('jaguar_br.webp',['br0','br1'])],'tripp':[('tripp_br.webp',['br0','br1'])],'jason':[('jason_br.webp',['br0','br1'])],'kruze':[('kruze_br.webp',['br0','br1']),('kruze_hub.webp',['hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose']),('kruze_X1.webp',['_a','perch0','_b','_c','situp','_d','sig']),('kruze_X2.webp',['_a','perch1','dive','_b','_c','_d','_e'])]}
+EXTRA={'razz':[('razz_pin.webp',['pinning']),('razz_br.webp',['br0','br1'])],'frank':[('frank_pin.webp',['pinning']),('frank_br.webp',['br0','br1'])],'flaco':[('flaco_br.webp',['br0','br1'])],'jaguar':[('jaguar_br.webp',['br0','br1'])],'tripp':[('tripp_br.webp',['br0','br1'])],'jason':[('jason_br.webp',['br0','br1'])],'kruze':[('kruze_br.webp',['br0','br1']),('kruze_sup.webp',['sup0','sup1']),('kruze_hub.webp',['hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose']),('kruze_X1.webp',['_a','perch0','_b','_c','situp','_d','sig']),('kruze_X2.webp',['_a','perch1','dive','_b','_c','_d','_e'])]}
 def get(w):
   F={}
   for L,names in SH.items():
@@ -44,6 +44,7 @@ for w in sys.argv[1:]:
     if L_ in 'BCDEF' and abs(v-1)>0.06:SS[L_]=SS.get(L_,1)/v   # this sheet was drawn smaller/bigger than Sheet A
   if 'pinning' in F:SS['PIN']=1.39*F['idle0'].size[1]/F['pinning'].size[0]   # pin cover: same proportions as Frank's (which fits)
   SHOF['pinning']='PIN'
+  if w=='kruze' and 'sup0' in F:SS['SUPX']=F['idle0'].size[1]*0.98/F['sup0'].size[1];SHOF['sup0']=SHOF['sup1']='SUPX'   # his separate suplex image
   if 'br0' in F:SS['BR']=F['idle0'].size[1]/F['br0'].size[1];SHOF['br0']=SHOF['br1']='BR'   # hand-drawn breathing, same size as his stance
   if 'hubw0' in F:SS['HUB']=F['walk0'].size[1]/F['hubw1'].size[1]
   for n in ['hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose']:SHOF[n]='HUB'
