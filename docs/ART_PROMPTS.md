@@ -122,3 +122,17 @@ Lay the 2 frames side by side in one row, each frame the same size and scale as 
 
 Solid flat magenta background (#FF00FF) behind both frames, with no shadow, floor, motion lines or other people. No text.
 ```
+
+## NOTES (2026-11-13)
+- Pin cover frame ('pinning') is missing for the six new wrestlers (Frank, Tripp, Jason, Flaco, Jaguar, Kruze).
+  Right now they use their lying-on-back frame, so they look like they're lying face up on top of the other guy.
+  Prompt #10 below. One frame each; send it and Claude swaps it in.
+- Jason: redo Sheet E. Kruze: redo Sheet D (suplex lift + fall).
+- Real finishers / heights / styles still needed for all six (placeholders in the game).
+
+## 10. Pin cover frame (1 frame) - new wrestlers
+```
+Same wrestler, same style, size and outline as the attached reference. Draw ONE frame, side view, facing RIGHT:
+PIN COVER: lying chest-down across an invisible opponent who is flat on his back, his body draped across at a slight angle, one arm hooked around the opponent's leg pulling it up, the other arm pressing down on the opponent's chest, head up looking at the referee.
+Draw ONLY him. Solid flat magenta background (#FF00FF), no shadows, floor, border or text.
+```
