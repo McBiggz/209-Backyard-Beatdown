@@ -115,13 +115,13 @@
    "hair": "short",
    "hairC": "#1a1414",
    "beard": false,
-   "size": 0.95,
+   "size": 0.92,
    "pow": 0.96,
    "spd": 1.06,
    "fin": "RAZZLE DAZZLER",
    "finType": "spin",
    "tag": "Razzle",
-   "drawScale": 0.925
+   "drawScale": 0.898
   },
   {
    "id": "razzle",
@@ -460,13 +460,13 @@
    "hair": "short",
    "hairC": "#5a3a22",
    "beard": true,
-   "size": 1.0,
+   "size": 1.04,
    "pow": 1.0,
    "spd": 1.02,
    "fin": "ROGERS RIDE",
    "finType": "slam",
    "tag": "Tripp Rogers",
-   "drawScale": 0.967
+   "drawScale": 1.008
   },
   {
    "id": "jason",
