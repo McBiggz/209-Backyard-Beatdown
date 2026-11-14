@@ -6,7 +6,7 @@ const heat=v=>{G.hype=Math.min(1,G.hype+v);};
 function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(f&&f.cpu&&G.diff!=null)dmg*=AI_DIFF[G.diff].dmg;if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg/(G.styleOn?balOf(o):1));/* balance changes health only, never how fast the finisher meter fills */f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
-function setState(f,s){f.state=s;f.t=0;f.supLand=false;f.hitDone=false;f.sid=(f.sid||0)+1;}
+function setState(f,s){f.state=s;f.t=0;f.supLand=false;f.supH=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
 // BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
 // an attack is coming at f from o, up close
 const incoming=(f,o)=>['punch','kick','runline','dropkick'].includes(o.state)&&Math.abs(o.x-f.x)<64*o.ch.size&&Math.abs(o.z-f.z)<14&&(!wide()||f.out===o.out);
@@ -55,11 +55,12 @@ function tryGrab(f,o,mx){if(o.ghost){setState(f,'whiff');return;}
  else setState(f,'whiff');
 }
 function updGrapple(f,o){
- const t=f.t,d=f.dir,s=f.ch.size;
- if(o.state!=='grappled'){if(t>0.85)setState(f,'idle');return;}
- const art=supArt(o); // suplex art: lifted straight up in front of him, then carried over his head as he falls back
+ const d=f.dir,s=f.ch.size;let t=f.t;
+ if(o.state!=='grappled'){t-=f.supH||0;if(t>0.85)setState(f,'idle');return;}
+ const art=supArt(o);f.supH=art?SUP_HOLD:0; // delayed vertical suplex: hold him straight up, then drop back
+ if(art&&t>=0.45)t=t<0.45+SUP_HOLD?0.449:t-SUP_HOLD; // suplex art: lifted straight up in front of him, then carried over his head as he falls back
  if(t<0.3){o.x=f.x+d*18*s;o.y=0;o.spin=0;}
- else if(art&&t<0.45){const p=(t-0.3)/0.15;o.x=f.x+d*(14-10*p)*s;o.y=(22+24*p)*s;o.spin=Math.PI*0.5;}
+ else if(art&&t<0.45){const p=(t-0.3)/0.15;o.x=f.x+d*(14-10*p)*s;o.y=(22+24*p)*s+(f.t>=0.45?Math.sin(f.t*9)*1.2*s:0);o.spin=Math.PI*0.5;}
  else if(art&&t<0.65){const p=(t-0.45)/0.2;o.x=f.x+d*(4-44*p*p)*s;o.y=s*46*Math.pow(1-p,1.5);o.spin=p<0.45?Math.PI*0.5:Math.PI*1.25;}
  else if(t<0.65){const p=(t-0.3)/0.35,a=Math.PI*p;o.x=f.x+d*18*s*Math.cos(a);o.y=42*s*Math.sin(a);o.spin=a;}
  else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;}else{o.x=cx(o,f.x-d*20);o.dir=d;}setState(o,'down');o.supLand=art;o.downDur=1.6;
@@ -161,7 +162,7 @@ const artId=f=>((f&&f.ch&&f.ch.id)||'').replace(/_alt$/,'');
 function artOn(f){return LIVE_ART.has(artId(f))||TEST_MODES;}
 // sim-safe check (same answer on both online players): the new art only counts live for LIVE_ART, or offline on the test link
 function supArt(o){return !!(o.set&&o.set.sup_v0&&o.set.pin_cxv)&&(LIVE_ART.has(artId(o))||G.windOn);}
-const SUP_LAND=66;
+const SUP_LAND=66,SUP_HOLD=0.7;
 function hasArt(f,n){return !!(f&&f.set&&f.set[n])&&artOn(f);}
 function pinTypes(a,d){const out=['cover'];const ok=f=>LIVE_ART.has(artId(f))||G.windOn;if(!(d.set&&d.set.pinned_up&&ok(d)&&ok(a)))return out;
  for(const t in PIN_FRAMES)if(PIN_FRAMES[t].every(n=>a.set&&a.set[n]))out.push(t);return out;}

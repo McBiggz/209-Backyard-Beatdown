@@ -1,6 +1,6 @@
 // ---- MOVE CHECKER (test link only): step through the new move art one frame at a time.
 // Uses the real fight drawing, but nothing is simulated: every frame the two wrestlers are posed from the viewer clock.
-const VMOVES=[['SUPLEX',1.0],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
+const VMOVES=[['SUPLEX',1.7],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
 const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','frog0','frog1','frog_v0','frog_v1'];
 const VSPD=[0.1,0.25,0.5,1];
 let V=null;
@@ -20,7 +20,8 @@ function vPose(){const[f,o]=G.f,mv=VMOVES[V.m][0],t=V.t,x=V.x0;
  f.x=x;f.z=o.z=V.z0;f.y=o.y=0;f.spin=o.spin=0;f.dir=1;o.dir=-1;f.leap=false;f.dodge=null;o.r5t=null;f.hidden=o.hidden=false;
  if(mv!=='BACKSLIDE'&&mv!=='CRUCIFIX'&&mv!=='ROLL-UP')G.pin=null;
  if(mv==='SUPLEX'){
-  if(t<0.65){setState(f,'grapple');f.t=t;setState(o,'grappled');o.dir=-1;updGrapple(f,o);}
+  const H=supArt(o)?SUP_HOLD:0;
+  if(t<0.65+H){setState(f,'grapple');f.t=t;setState(o,'grappled');o.dir=-1;updGrapple(f,o);}
   else{setState(f,'grapple');f.t=t;setState(o,'down');o.downDur=99;const art=supArt(o);o.x=x-f.dir*(art?12+SUP_LAND*o.ch.size:20);o.dir=art?-f.dir:f.dir;o.supLand=art;}
  }else if(mv==='BACKSLIDE'||mv==='CRUCIFIX'||mv==='ROLL-UP'){
   if(!G.pin||G.pin.type!==mv.toLowerCase().replace('-','')){G.pin=null;setState(f,'idle');setState(o,'down');o.downDur=99;o.x=x+24;startPin(f,o);}
