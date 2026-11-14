@@ -4,7 +4,7 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 // the test link gets the new menu: every match type is set up on one screen, and online takes up to 4 players
 // (Universe is still test-link only)
-const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6]]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
+const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6],['MOVE CHECKER','viewer']]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
@@ -31,6 +31,7 @@ function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.me
  const it=TITLE_ITEMS[G.menu];
  G.fromSetup=false;G.mapPick=null;G.titleBout=null;
  if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
+ if(go&&it[1]==='viewer'){viewerOpen();sfx('punch');return;}
  if(go&&it[1]==='setup'){msOpen(false);sfx('punch');return;}
  if(go&&it[1]==='party'){G.scene='lobby';partyUI.show(true);sfx('punch');return;}
  if(go){G.mode=it[1];G.hc=it[2]==='hc';G.cage=it[2]==='cage';if(G.hc||G.cage)G.stage=3;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};sfx('punch');}}

@@ -32,5 +32,6 @@
  "src/23_universe.js",
  "src/23b_social.js",
  "src/23c_matchsetup.js",
+ "src/24_viewer.js",
  "src/22_loop.js"
 ]
