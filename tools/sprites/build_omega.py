@@ -2,8 +2,7 @@
 import numpy as np, json, os
 from PIL import Image
 from scipy import ndimage
-src = open('/home/claude/v3/build_all.py').read()
-os.chdir('/home/claude/v3')
+src = open('/home/claude/ddgame/tools/sprites/lib/v3_helpers.py').read()
 exec(src.split('def split')[0].split('WR={')[0])                       # CW, CH, AXd, AYd
 exec('def split' + src.split('def split')[1].split('hd=json.load')[0])  # prep, cell, feetx
 os.chdir('/home/claude/omega')
