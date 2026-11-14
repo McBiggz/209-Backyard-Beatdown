@@ -131,6 +131,8 @@ Solid flat magenta background (#FF00FF) behind both frames, with no shadow, floo
 - Real finishers / heights / styles still needed for all six (placeholders in the game).
 - Idle breathing for the six new wrestlers: their 2nd idle frame (Sheet A frame 2) was drawn at a different size, so they grow/shrink while standing.
   Fix (no new art): build idle1 from idle0 with a subtle 1-2px chest/shoulder rise, like the original roster.
+- GM Mode expanded plan saved in docs/GM_MODE.md (screens, Flyer Run beat 'em up, production costs, injuries, favors/morale).
+- Look & feel priorities (roadmap Round 1): one art style for everyone, wrestlers drawn together for grapples, more in-between frames (strikes, walks, get-ups).
 - Razzle (Dazzle's tag partner): character prompt given; needs his model + 6 sheets + pin frame.
 
 ## 10. Pin cover frame (1 frame) - new wrestlers

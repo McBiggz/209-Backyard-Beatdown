@@ -53,3 +53,40 @@ What it buys:
    energy drink). Some can't be signed together (two rival gyms) - you choose.
 Businesses are made up, except Filthy Farms and any real sponsor who says it's okay.
 Not picked (maybe later): commentator ad reads / sponsor-named matches, pitch meetings, personal wrestler deals, sponsor flyers in Flyer Run.
+
+---
+## Expanded plan (2026-11-14, from Liam)
+
+### Special screens
+Each GM screen = ChatGPT background art + game-drawn UI (names, money, ratings, buttons) + small looping animations.
+- Backgrounds needed (~5-6): Den back office, booking board on the barn wall, equipment shop, show-night results, medical/trainer room, flyer-run map.
+- Code animations: smoke drift, light beams, flicker (like the entrance fog). Sprite moments: wrestler walking in with a request.
+
+### Flyer Run = side-scrolling beat 'em up
+- Uses the wide scrolling map with depth (like the ranch), Streets of Rage style.
+- Walk a strip of bars/streets; hold a button at poles and bar doors to post a flyer (a few seconds, open to attack).
+- Enemy waves: drunks, bouncers, rival promotion guys. Car / props to slam people into.
+- Reward: more flyers = bigger crowd at the next show.
+- Art: 2-3 wide street backgrounds, 3-4 enemy types (~3 sheets each), 2-frame flyer-posting animation, props.
+
+### Production upgrades (cost per show)
+- Smoke machines, light rigs, pyro, bigger sound system, LED entrance wall.
+- Raise crowd heat and ratings; show up visibly during that show's entrances and matches.
+- Match type costs: standard = cheap; hardcore = chairs/tables/ladders (broken tables must be replaced); cage = rental, most expensive. Bigger matches = bigger ratings.
+
+### Injuries
+- Risk up with hardcore/cage, top-rope moves, overworked wrestlers.
+- Minor (plays hurt, lower stats) / moderate (out 1-3 weeks) / major (out a month+, may vacate a title).
+- Spending on medical speeds recovery. Booking an injured guy = ratings bump but risk of making it worse.
+
+### Favors & morale
+- Between shows wrestlers bring requests: title shot, time off, team with a friend, complaints about a partner, pay raise or walk.
+- Choices change: individual morale (performance: slightly stronger/weaker, more/fewer mistakes), locker-room morale (favoritism annoys others), relationships (feuds/friendships -> storylines).
+- Very low morale: no-shows or quitting.
+
+### Build order
+1. Core weekly loop: book card -> buy production -> run show (play or simulate) -> money & ratings. (Test link, placeholder screens.)
+2. Injuries, favors and morale.
+3. Flyer Run beat 'em up.
+4. Polish: final screen art and animations.
+Reuse Universe Mode's seasons, titles, rivalries and career record.
