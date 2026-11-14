@@ -1,16 +1,18 @@
 BACKYARD BRAWL - FULL FRAME PROMPTS (every frame, every wrestler)
 
+11 sheets, 73 frames per wrestler. Includes the 10-frame suplex with exact grip points.
+
 HOW TO USE
-1. Make the STYLE REFERENCE first (see below) and keep it.
+1. Make the STYLE REFERENCE first (below) and keep it.
 2. New ChatGPT chat per wrestler. Attach his character model + the STYLE REFERENCE. Paste the SETUP prompt with his name and look line filled in.
-3. When it says "Ready", paste ONE sheet at a time (copy the whole sheet block, not just the letter).
-4. Check each sheet: right poses, right order, same size as before, still him. If not, "redo frame X" or start a fresh chat.
-5. Download the real image (not a screenshot) and send it to Claude with his name and the sheet letter.
+3. When it says "Ready", paste ONE whole sheet block at a time (not just the letter).
+4. For the suplex, paste the GRIP POINTS block once before Sheet G.
+5. Check each sheet: right poses, right order, same size as before, still him. If not, "redo frame X" or start a fresh chat.
+6. Download the real image (not a screenshot) and send it to Claude with his name and the sheet letter.
 
 STYLE REFERENCE (do this once, before anyone else)
-Pick the look you want for the whole game. Redraw Viral's fighting stance (and one new guy's) in that style using his character model + this line:
-"Redraw this wrestler as a single fighting-stance sprite in true 16-bit SNES fighting-game pixel art: visible square pixels, thin even black outline, limited palette of 16-24 colors, 2-3 flat shading tones per color, no gradients or airbrushing, bold readable shapes. Solid magenta background (#FF00FF)."
-When you like it, that image is the STYLE REFERENCE you attach to every chat.
+Redraw Viral's fighting stance (and one new guy's) with his character model attached and this prompt. Play them in the game first. When you like it, that image is the STYLE REFERENCE you attach to every chat:
+"Redraw this wrestler as a single fighting-stance sprite in true 16-bit SNES fighting-game pixel art: visible square pixels, thin even black outline, limited palette of 16-24 colors, 2-3 flat shading tones per color, no gradients or airbrushing, bold readable shapes. Facing RIGHT. Solid flat magenta background (#FF00FF), no border, no text."
 
 ============================================================
 SETUP PROMPT (paste once per wrestler chat)
@@ -108,20 +110,38 @@ Sheet F: Air and top rope. Draw a NEW image: ONE row of exactly 7 frames, left t
 7. Landing crouch: just landed on his feet, knees bent deep, one hand on the mat.
 
 ============================================================
-SHEET G - SUPLEX (6 frames)
+GRIP POINTS (paste once, before Sheet G)
 ============================================================
-Sheet G: Suplex. Draw a NEW image: ONE row of exactly 6 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
-1. Suplex lock: hooking an invisible opponent's head under his arm, other arm on the opponent's waist.
-2. Suplex lift: leaning back, arms locked around an invisible opponent held straight up overhead.
-3. Suplex fall: falling backward in mid-air, back arched, arms still wrapped around the invisible opponent.
-4. Sitting up after the suplex: sitting on the mat, one hand down, the other on his head.
-5. Being suplexed, lifted: completely upside down, straight up and down, feet to the sky, arms hanging.
-6. Being suplexed, going over: flat and horizontal in mid-air, back to the ground, head on the RIGHT, arms flung out.
+GRIP POINTS (used by every suplex frame, for every wrestler; the game lines two wrestlers up using these, so keep them exact):
+- NECK: the attacker's front (right) arm wraps the opponent's neck: elbow beside the opponent's ear, forearm across the back of the neck.
+- BELT: the attacker's back (left) hand grips the opponent's tights at the hip.
+- DRAPE: the opponent's near (right) arm is draped over the attacker's shoulder.
+- HEIGHTS: hook = neck at his chest, belt at his waist. Lift = both at his chest. Hold and fall = neck at HIS SHOULDER, belt one head-length ABOVE HIS HEAD.
 
 ============================================================
-SHEET H - PINS HE DOES (5 frames)
+SHEET G - SUPLEX: DOING IT (5 frames)
 ============================================================
-Sheet H: Pins he does. Draw a NEW image: ONE row of exactly 5 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
+Sheet G: Suplex: doing it. Draw a NEW image: ONE row of exactly 5 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before. Use the GRIP POINTS exactly as written. Draw only the attacker; the opponent is invisible.
+1. Hook: standing, knees bent, facing RIGHT. His front (right) arm wraps around the invisible opponent's neck, elbow beside the opponent's ear, forearm across the back of the opponent's neck (the opponent is bent over in front of him, head at his chest height). His back (left) hand grips the opponent's tights at the hip, at HIS waist height.
+2. Lift start: knees bent deep, hips low, leaning back slightly. Same grip: front arm around the neck at his chest height, back hand on the tights now at his chest height, both arms pulling up hard.
+3. Hold (the delayed part): standing straight up, legs locked, chest out, leaning back slightly, face red from strain. Front arm curled around the neck at HIS OWN SHOULDER height. Back arm pointing straight up, hand gripping the tights about one head-length ABOVE HIS OWN HEAD (as if holding a man straight up and down).
+4. Falling back: body tilted about 45 degrees backward in mid-air, feet leaving the mat. SAME grip as the hold: front arm curled at shoulder height, back arm straight up above his head.
+5. Sit up: sitting on the mat after the slam, legs out in front, one hand on the mat, the other hand on the back of his head.
+
+============================================================
+SHEET H - SUPLEX: TAKING IT (5 frames)
+============================================================
+Sheet H: Suplex: taking it. Draw a NEW image: ONE row of exactly 5 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before. Use the GRIP POINTS exactly as written: this is the man being suplexed, and the invisible attacker is to his RIGHT. Draw only him.
+1. Front facelock: bent forward at the waist, facing RIGHT toward the invisible attacker, head tucked down at the attacker's chest height. His near (right) arm draped up and over the attacker's shoulder; his other arm hanging. Knees slightly bent.
+2. Going up: feet leaving the mat, legs swinging up behind him, body tilted diagonally (head low and toward the RIGHT, feet high and to the LEFT). Right arm still draped as if over a shoulder.
+3. Straight up: completely upside down and vertical, legs together pointing straight at the sky, head at the bottom. His chest faces RIGHT (toward the attacker). Arms hanging limp. The top of his head is where the attacker's shoulder would be.
+4. Going over: flat and horizontal in mid-air, back toward the mat, head on the RIGHT, legs straight to the LEFT, arms flung out, hair flying, mouth open.
+5. Landing: flat on his back on the mat, head on the RIGHT, arms spread out, legs slightly bent, grimacing.
+
+============================================================
+SHEET I - PINS HE DOES (5 frames)
+============================================================
+Sheet I: Pins he does. Draw a NEW image: ONE row of exactly 5 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
 1. Pin cover: lying chest-down low across an invisible opponent, propped on both hands, legs stretched out behind him, head up yelling at the referee.
 2. Backslide set-up: standing, facing LEFT, back against an invisible opponent's back, arms reaching back over his shoulders.
 3. Backslide pin: bridging backward, feet planted, back arched high, arms reaching back over his head.
@@ -129,9 +149,9 @@ Sheet H: Pins he does. Draw a NEW image: ONE row of exactly 5 frames, left to ri
 5. Roll-up: crouched low over an invisible opponent, cradling a leg and the head.
 
 ============================================================
-SHEET I - PINS HE TAKES, AND THE 5-BY-5 (8 frames)
+SHEET J - PINS HE TAKES, AND THE 5-BY-5 (8 frames)
 ============================================================
-Sheet I: Pins he takes, and the 5-by-5. Draw a NEW image: ONE row of exactly 8 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
+Sheet J: Pins he takes, and the 5-by-5. Draw a NEW image: ONE row of exactly 8 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
 1. Being pinned: on his back, head on the LEFT, shoulders flat, both legs up and bent at the knees.
 2. Being backslid: leaning far backward against an invisible back, arms pulled up over his head.
 3. Backslid and pinned: flat on his back, head on the LEFT, arms stretched over his head along the mat.
@@ -142,9 +162,9 @@ Sheet I: Pins he takes, and the 5-by-5. Draw a NEW image: ONE row of exactly 8 f
 8. Skid: braking to a stop, front foot planted, arms out, angry look.
 
 ============================================================
-SHEET J - SHOWTIME AND FINISHER (6 frames)
+SHEET K - SHOWTIME AND FINISHER (6 frames)
 ============================================================
-Sheet J: Showtime and finisher. Draw a NEW image: ONE row of exactly 6 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
+Sheet K: Showtime and finisher. Draw a NEW image: ONE row of exactly 6 frames, left to right, in this order. Follow all the rules. Match the attached STYLE REFERENCE and keep him the same size as before.
 1. Taunt: [HIS TAUNT, e.g. pointing at the crowd and yelling].
 2. Signature pose: [HIS ENTRANCE POSE].
 3. Victory 1: both arms raised high overhead, celebrating.
