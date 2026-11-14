@@ -59,7 +59,7 @@ function drawViewer(){const mv=VMOVES[V.m],[f,o]=G.f;
   if(set&&set[n])drawSpr(set,n,120,170,1,1);else T('NO ART',120,120,1,'#f66','center');
   if(set&&set[n])drawSpr(set,n,270,170,-1,1);
   T(vName(n)+'  ('+(V.fi+1)+'/'+VNEW.length+')',192,24,1,'#ffd35a','center');T('FACING RIGHT',120,182,1,'#aaa','center');T('FACING LEFT',270,182,1,'#aaa','center');}
- else{const mx=(f.x+o.x)/2,mz=(f.z+o.z)/2,px=PX(mx,mz),py=PY(mz)-30,Z=2;
+ else{const mx=(f.x+o.x)/2,mz=(f.z+o.z)/2,px=PX(mx,mz),py=PY(mz)-(VMOVES[V.m][0]==='SUPLEX'?40:30),Z=2;
   ctx.save();ctx.translate(192,108);ctx.scale(Z,Z);ctx.translate(-px,-py);drawFight();ctx.restore();
   const fa=(pinFrame(f)||frameOf(f)),fb=(pinFrame(o)||frameOf(o));
   R(0,170,W,26,'rgba(0,0,0,0.6)');

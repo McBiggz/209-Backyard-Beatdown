@@ -59,8 +59,8 @@ function updGrapple(f,o){
  if(o.state!=='grappled'){if(t>0.85)setState(f,'idle');return;}
  const art=supArt(o); // suplex art: lifted straight up in front of him, then carried over his head as he falls back
  if(t<0.3){o.x=f.x+d*18*s;o.y=0;o.spin=0;}
- else if(art&&t<0.45){const p=(t-0.3)/0.15;o.x=f.x+d*(18-10*p)*s;o.y=(14+16*p)*s;o.spin=Math.PI*0.5;}
- else if(art&&t<0.65){const p=(t-0.45)/0.2;o.x=f.x+d*(8-58*p)*s;o.y=s*(30*(1-p)+14*Math.sin(Math.PI*p));o.spin=Math.PI*1.25;}
+ else if(art&&t<0.45){const p=(t-0.3)/0.15;o.x=f.x+d*(14-10*p)*s;o.y=(22+24*p)*s;o.spin=Math.PI*0.5;}
+ else if(art&&t<0.65){const p=(t-0.45)/0.2;o.x=f.x+d*(4-54*p)*s;o.y=s*(46*(1-p)+12*Math.sin(Math.PI*p));o.spin=Math.PI*1.25;}
  else if(t<0.65){const p=(t-0.3)/0.35,a=Math.PI*p;o.x=f.x+d*18*s*Math.cos(a);o.y=42*s*Math.sin(a);o.spin=a;}
  else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;}else{o.x=cx(o,f.x-d*20);o.dir=d;}setState(o,'down');o.supLand=art;o.downDur=1.6;
   damage(o,13*powOf(f),f);sfx('slam');shake(6);dust(PX(o.x-o.dir*24,o.z),PY(o.z),true);G.hitStop=0.09;line('grab',f,o);crowdReact(f,false);}
