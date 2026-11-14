@@ -297,7 +297,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  const x=lerp(194,ENT_SPOT[0],e),y=lerp(170,ENT_SPOT[1]+4,e),sc=lerp(0.95,1.5,e)*ds,inside=k<0.55;
  // he comes through the powder: invisible at first, fading in as the cloud blooms around him
  if(t>0.3){ctx.globalAlpha=clamp((t-0.42)/0.6,0,1);
-  drawSpr(f.set,pose?(f.set.sig?'sig':'win0'):'walk'+(Math.floor(t*9)%4),x,y,dir,sc);ctx.globalAlpha=1;
+  drawSpr(f.set,pose?(hasArt(f,'sig')?'sig':'win0'):'walk'+(Math.floor(t*9)%4),x,y,dir,sc);ctx.globalAlpha=1;
   // while he's still in the tunnel, the curtains and banners are in front of him
   if(inside){ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(ENT_GAP[0],ENT_GAP[1],ENT_GAP[2]-ENT_GAP[0],ENT_GAP[3]-ENT_GAP[1]);ctx.clip('evenodd');ctx.drawImage(ENT,0,0,W,H);
    R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`);ctx.restore();}}
