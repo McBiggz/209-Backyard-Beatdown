@@ -28,7 +28,8 @@ function simStep(){
  if(PARTY.st==='lost')PARTY.updLost();
  for(const k in pressed)delete pressed[k];clickQ=null;
 }
-function frame(now){acc+=Math.min(0.25,(now-last)/1000);last=now;
+function frame(now){if(G.scene!==frame._sc){frame._sc=G.scene;document.body.classList.toggle('on-title',G.scene==='title');} // full screen button only on the title screen (it covered menu buttons)
+acc+=Math.min(0.25,(now-last)/1000);last=now;
  try{
   padPoll();let n=0;if(G.net&&G.net.catchUp)G.net.catchUp();if(G.irp){irpFrame();acc=0;}
   else if(G.mm&&G.mm.ff&&G.scene==='fight'&&!G.over){for(let k=0;k<8&&!G.over;k++)simStep();acc=0;}
