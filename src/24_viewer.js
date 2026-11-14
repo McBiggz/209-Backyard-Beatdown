@@ -21,7 +21,7 @@ function vPose(){const[f,o]=G.f,mv=VMOVES[V.m][0],t=V.t,x=V.x0;
  if(mv!=='BACKSLIDE'&&mv!=='CRUCIFIX'&&mv!=='ROLL-UP')G.pin=null;
  if(mv==='SUPLEX'){
   if(t<0.65){setState(f,'grapple');f.t=t;setState(o,'grappled');o.dir=-1;updGrapple(f,o);}
-  else{setState(f,'grapple');f.t=t;setState(o,'down');o.downDur=99;o.x=x-f.dir*20;o.dir=f.dir;}
+  else{setState(f,'grapple');f.t=t;setState(o,'down');o.downDur=99;const art=supArt(o);o.x=x-f.dir*(art?12+SUP_LAND*o.ch.size:20);o.dir=art?-f.dir:f.dir;o.supLand=art;}
  }else if(mv==='BACKSLIDE'||mv==='CRUCIFIX'||mv==='ROLL-UP'){
   if(!G.pin||G.pin.type!==mv.toLowerCase().replace('-','')){G.pin=null;setState(f,'idle');setState(o,'down');o.downDur=99;o.x=x+24;startPin(f,o);}
   if(G.pin){G.pin.type=mv.toLowerCase().replace('-','');G.pin.t=t;}
