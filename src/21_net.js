@@ -1,5 +1,5 @@
 // online version: both players must be running the same build or the matches drift apart (bump when match rules change)
-const NET_VER=11,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
+const NET_VER=12,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
 // ================= ONLINE PLAY =================
 // Lockstep over a WebRTC data channel (PeerJS). Both games run the same deterministic simulation.
 // Each player sends their packed buttons for step (now + DELAY); a step only runs once both are in.
