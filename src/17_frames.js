@@ -32,7 +32,8 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'runline':return f.t<0.1?'punch0':'punch1';
  case 'roll':return 'jump';
  case 'jump':return f.leap&&f.set&&f.set.frog1?(f.t<0.12?'frog0':'frog1'):'jump'; // leapfrog art: take-off, straddle
- case 'grappled':{const k=((Math.round((f.spin||0)/(Math.PI/4))%8)+8)%8;return 'flip'+k;}
+ case 'grappled':if(f.set&&f.set.sup_v0&&f.spin>0.94)return f.spin<2.2?'sup_v0':'sup_v1'; // suplex art: upside down overhead, then flat going over
+ {const k=((Math.round((f.spin||0)/(Math.PI/4))%8)+8)%8;return 'flip'+k;}
  case 'perch':return 'perch'+blink;
  case 'win':return 'win'+blink;
  case 'finished':return f.finBy==='slam'?'held':'dazed';

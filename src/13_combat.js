@@ -155,5 +155,8 @@ const PIN_FRAMES={backslide:['pin_bs0','pin_bs1'],crucifix:['pin_cx'],rollup:['p
 function pinTypes(a,d){const out=['cover'];if(!(d.set&&d.set.pinned_up))return out;
  for(const t in PIN_FRAMES)if(PIN_FRAMES[t].every(n=>a.set&&a.set[n]))out.push(t);return out;}
 function pinFrame(f){const P=G.pin;if(!P||P.type==='cover')return null;
- if(f===P.d)return P.t<PIN_SETUP*0.5?'grabbed':'pinned_up';
+ if(f===P.d){const s=f.set||{},early=P.t<PIN_SETUP; // the pinned man's side, when he has the art
+  if(P.type==='backslide')return early?(s.pin_bsv0?'pin_bsv0':'grabbed'):(s.pin_bsv1?'pin_bsv1':'pinned_up');
+  if(P.type==='crucifix'&&s.pin_cxv&&!(P.t<PIN_SETUP*0.5))return 'pin_cxv';
+  return P.t<PIN_SETUP*0.5?'grabbed':'pinned_up';}
  const fr=PIN_FRAMES[P.type];return fr.length>1&&P.t<PIN_SETUP?fr[0]:fr[fr.length-1];}
