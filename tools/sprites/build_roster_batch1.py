@@ -9,7 +9,7 @@ MIRROR=json.load(open('mirror.json')) if os.path.exists('mirror.json') else {}
 A='/home/claude/ddgame/src/03_assets.js';js=open(A).read()
 vsh=Image.open('/home/claude/ddgame/assets/sprites/viral.webp')
 def hcell(sh,names,n):i=names.index(n);c=sh.crop(((i%8)*320,(i//8)*224,(i%8)*320+320,(i//8)*224+224));b=c.getbbox();return b[3]-b[1]
-vn=json.loads(re.search(r'"viral": \{"src": "__ASSET\(sprites/viral.webp\)__", "names": (\[[^\]]*\])',js).group(1))
+vn=json.loads(re.search(r'"viral": \{"src": "SPR\(sprites/viral.webp\)", "names": (\[[^\]]*\])',js).group(1))
 R_SKID=hcell(vsh,vn,'frog_v1')/hcell(vsh,vn,'idle0');R_SIG=hcell(vsh,vn,'sig')/hcell(vsh,vn,'idle0')
 ONLY=sys.argv[1:]
 GM={('bigmf','A'):0.934,('bigmf','B'):1.135,('bigmf','C'):0.883,('asesino','B'):1.139,('asesino','C'):0.921,('cdiddy','A'):0.912,('cdiddy','B'):1.094,('cdiddy','C'):0.849,('spektro','all'):0.903,('necrosis','all'):0.896,('firebelly','all'):0.891,('maverick','all'):0.919}
@@ -17,7 +17,7 @@ FM={'bigmf':{'pin_cxv':0.87},'asesino':{'pin_bsv1':0.85},'cdiddy':{'pin_bsv1':0.
 FOLD={'ghoulie':{'dive':1.25}}
 for wid,srcs in SRC.items():
   if ONLY and wid not in ONLY:continue
-  m=re.search(r'("%s": \{"src": "__ASSET\(sprites/%s.webp\)__", "names": )(\[[^\]]*\])'%(wid,wid),js);names=json.loads(m.group(2))
+  m=re.search(r'("%s": \{"src": "SPR\(sprites/%s.webp\)", "names": )(\[[^\]]*\])'%(wid,wid),js);names=json.loads(m.group(2))
   base=Image.open(f'/home/claude/ddgame/art_src/orig/{wid}.webp');old=[n for n in names if n not in MODE];idle=hcell(base,old,'idle0');win=hcell(base,old,'win0')
   cells={n:base.crop(((i%8)*320,(i//8)*224,(i%8)*320+320,(i//8)*224+224)) for i,n in enumerate(old)}
   for n_,f_ in FOLD.get(wid,{}).items():

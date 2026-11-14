@@ -2,6 +2,7 @@
  "src/00_setup.js",
  "src/01_pixels.js",
  "src/02_font.js",
+ "src/03b_pack.js",
  "src/03_assets.js",
  "src/04_audio.js",
  "src/04b_music.js",

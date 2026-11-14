@@ -16,4 +16,6 @@ and their frame lists (in `src/03_assets.js`).
 | `prompts_*.py / .js` | Generates the Full Frame Prompts doc |
 
 Size corrections from the 2026-11-14 audit are inside the builders (`GM`, `FM`, `FOLD` in batch1; `SS`/per-frame in batch2;
-`data/sheetscale.json`). After building, run `node build.mjs` from the repo root.
+`data/sheetscale.json`). After building, run `python3 tools/sprites/pack.py` (packs every sheet into a tight atlas in `assets/sprites_packed/` and writes `src/03b_pack.js`), then `node build.mjs`. The build stops if a sheet changed without re-packing.
+
+New wrestler: add his entry to `HD` in `src/03_assets.js` as `"<id>": {"src": "SPR(sprites/<id>.webp)", "names": [...], "cols": 8}` before packing.

@@ -9,7 +9,7 @@ P=frames('pin.webp');FR=frames('frog.webp');DU=frames('duck.webp');SV=frames('su
 new={'pinned_up':(P[0],sp,'lieback'),'pin_bs0':(P[1],sp,'stand'),'pin_bs1':(P[2],sp,'liefwd'),'pin_cx':(P[3],sp,'liefwd'),'pin_ru':(P[4],sp,'stand'),
      'sup0':(S[0],ss,'stand'),'sup1':(S[1],ss,'air'),'situp':(S[2],ss,'stand'),'sig':(S[3],ss,'stand'),'frog0':(FR[0],0.17,'stand'),'frog1':(FR[1],0.17,'air'),'frog_v0':(DU[0],0.17,'stand'),'frog_v1':(DU[1],0.17,'stand'),'sup_v0':(SV[0],0.28,'air'),'sup_v1':(SV[1],0.28,'air'),'pin_bsv0':(SV[2],0.28,'stand'),'pin_bsv1':(SV[3],0.28,'lieback'),'pin_cxv':(SV[4],0.28,'lieback')}
 A='/home/claude/ddgame/src/03_assets.js';js=open(A).read()
-m=re.search(r'("viral": \{"src": "__ASSET\(sprites/viral.webp\)__", "names": )(\[[^\]]*\])',js);names=json.loads(m.group(2))
+m=re.search(r'("viral": \{"src": "SPR\(sprites/viral.webp\)", "names": )(\[[^\]]*\])',js);names=json.loads(m.group(2))
 base=Image.open('/home/claude/ddgame/art_src/orig/viral.orig.webp')
 old=[n for n in names if n not in new][:43]
 cells={n:base.crop(((i%8)*320,(i//8)*224,(i%8)*320+320,(i//8)*224+224)) for i,n in enumerate(old)}

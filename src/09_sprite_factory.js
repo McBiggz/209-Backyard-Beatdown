@@ -68,6 +68,9 @@ const depthS=z=>wide()?clamp(1+(z-154)*0.0036,0.9,1.15):1;
 // ky: squash (<1) / stretch (>1) from the feet up; width changes the other way so the body keeps its bulk
 function drawSpr(set,name,sx,sy,dir,scale=1,ky=1){const c=set&&set[name];if(!c)return;sx=Math.round(sx);sy=Math.round(sy);
  const sh=scale*ky,sw=scale/Math.sqrt(ky);
+ if(c.a){if(!c.w)return;const fx=sw*SW/320,fy=sh*SH/224;   // packed atlas frame
+  if(dir>=0)ctx.drawImage(c.a,c.x,c.y,c.w,c.h,sx-AX*sw+c.ox*fx,sy-AY*sh+c.oy*fy,c.w*fx,c.h*fy);
+  else{ctx.save();ctx.translate(sx,0);ctx.scale(-1,1);ctx.drawImage(c.a,c.x,c.y,c.w,c.h,-AX*sw+c.ox*fx,sy-AY*sh+c.oy*fy,c.w*fx,c.h*fy);ctx.restore();}return;}
  if(dir>=0)ctx.drawImage(c,sx-AX*sw,sy-AY*sh,SW*sw,SH*sh);
  else{ctx.save();ctx.translate(sx,0);ctx.scale(-1,1);ctx.drawImage(c,-AX*sw,sy-AY*sh,SW*sw,SH*sh);ctx.restore();}}
 

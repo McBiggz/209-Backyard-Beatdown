@@ -1,7 +1,7 @@
 import json,re,numpy as np,sys
 from PIL import Image
 js=open('/home/claude/ddgame/src/03_assets.js').read()
-def names(w):return json.loads(re.search(r'"%s": \{"src": "__ASSET\(sprites/%s.webp\)__", "names": (\[[^\]]*\])'%(w,w),js).group(1))
+def names(w):return json.loads(re.search(r'"%s": \{"src": "SPR\(sprites/%s.webp\)", "names": (\[[^\]]*\])'%(w,w),js).group(1))
 DER={'idle1','downW','win1','stomp1','grap1','whiff','grabbed','held','fk0','fk1','fs0','fs1','fp0','fp1','fp2','fv0','fv1','hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose','pinning'}|{f'flip{i}' for i in range(8)}
 BASE=['idle0','walk0','walk2','punch0','win0']
 SA=['sup0','sup1','situp','sig','sup_v0','sup_v1'];SB=['pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv'];SC=['frog0','frog1','frog_v0','frog_v1']
