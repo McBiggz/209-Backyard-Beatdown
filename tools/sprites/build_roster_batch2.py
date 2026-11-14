@@ -9,7 +9,7 @@ SH={'A':['idle0','idle1','walk0','walk1','walk2','walk3','roar'],'B':['punch0','
 MODE={'jump':'air','dropkick':'air','dive':'air','fall':'lieback','down':'lieback','sup1':'air','sup_v0':'air','sup_v1':'air','pinned_up':'lieback','pin_bs1':'liefwd','pin_cx':'liefwd','pin_bsv1':'lieback','pin_cxv':'lieback','frog1':'air'}
 MIRROR={'pin_bs0'}
 out={}
-EXTRA={'razz':[('razz_pin.webp',['pinning'])],'frank':[('frank_pin.webp',['pinning']),('frank_br.webp',['br0','br1'])],'flaco':[('flaco_br.webp',['br0','br1'])],'jaguar':[('jaguar_br.webp',['br0','br1'])],'kruze':[('kruze_br.webp',['br0','br1']),('kruze_hub.webp',['hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose']),('kruze_X1.webp',['_a','perch0','_b','_c','situp','_d','sig']),('kruze_X2.webp',['_a','perch1','dive','_b','_c','_d','_e'])]}
+EXTRA={'razz':[('razz_pin.webp',['pinning'])],'frank':[('frank_pin.webp',['pinning']),('frank_br.webp',['br0','br1'])],'flaco':[('flaco_br.webp',['br0','br1'])],'jaguar':[('jaguar_br.webp',['br0','br1'])],'tripp':[('tripp_br.webp',['br0','br1'])],'jason':[('jason_br.webp',['br0','br1'])],'kruze':[('kruze_br.webp',['br0','br1']),('kruze_hub.webp',['hubw0','hubw1','hubw2','hubw3','hubwind','hubsmack','hubpose']),('kruze_X1.webp',['_a','perch0','_b','_c','situp','_d','sig']),('kruze_X2.webp',['_a','perch1','dive','_b','_c','_d','_e'])]}
 def get(w):
   F={}
   for L,names in SH.items():
