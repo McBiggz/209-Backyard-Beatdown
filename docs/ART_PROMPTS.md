@@ -109,3 +109,16 @@ Using the attached sprite as the exact reference for this wrestler (same face, l
 
 Solid flat magenta background (#FF00FF), no shadows, floor, motion lines or other people. No text.
 ```
+
+## 8. Counterpart: running under a leapfrog (2 frames) - The Viral Voice first
+The opponent's side of #4. Frame names in game: frog_v0, frog_v1. Same chat as #4.
+
+```
+Using the attached sprite as the exact reference for this wrestler (same face, long blond hair, beard, chest tattoo, arm tattoos, black elbow pads, black pants with teal and white stripes, black boots) and the exact same 16-bit SNES pixel-art style, size and outline, draw 2 new frames of him RUNNING UNDER an opponent who is leapfrogging over him, facing RIGHT like the reference. Draw ONLY him; the other wrestler is invisible.
+
+Lay the 2 frames side by side in one row, each frame the same size and scale as the reference, feet on the same baseline:
+1. DUCKING UNDER: mid-sprint, bent forward hard at the waist so his back is almost flat and level with his hips, head tucked down, one leg forward and one back in a running stride, arms tucked in.
+2. OVERSHOOT: still moving forward but skidding to a stop, upper body coming back up, front foot planted and braking, arms out for balance, head turning back over his shoulder with a confused, angry look.
+
+Solid flat magenta background (#FF00FF) behind both frames, with no shadow, floor, motion lines or other people. No text.
+```
