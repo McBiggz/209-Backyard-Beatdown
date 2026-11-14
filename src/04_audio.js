@@ -27,6 +27,7 @@ function bell(delay){if(!AC)return;const t=AC.currentTime+delay;[1,2.76,5.4].for
 function sfx(n){if(!AC||muted||G.resim)return;switch(n){
  case 'punch':noise(0.07,1900,1,0.55);tone(150,0.08,0.35,'square',60);break;
  case 'kick':noise(0.12,1300,1,0.7);tone(120,0.12,0.45,'triangle',45);break;
+ case 'clang':noise(0.25,4200,1.2,0.9,'bandpass');noise(0.12,900,0.7,0.6);[[523,1],[1187,0.7],[2093,0.5],[3290,0.35]].forEach(([f,v])=>tone(f,0.9,0.22*v,'triangle',f*0.985));tone(160,0.25,0.5,'square',90);break;
  case 'slam':noise(0.4,380,0.7,0.95);tone(75,0.45,0.8,'sine',32);break;
  case 'grab':noise(0.1,700,1,0.3,'bandpass');break;
  case 'block':noise(0.05,3200,1.5,0.35,'bandpass');tone(220,0.05,0.2,'square',140);break;

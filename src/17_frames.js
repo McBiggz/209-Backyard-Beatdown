@@ -1,5 +1,6 @@
 // ================= FRAME SELECTION =================
 function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
+ if(G.entrance){const h=hubFrame(f);if(h)return h;}
  switch(s){
  case 'idle':return 'idle'+(Math.floor(G.t*1.6+f.idx)%2);
  case 'walk':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
