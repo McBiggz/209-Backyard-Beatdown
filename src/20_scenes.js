@@ -187,13 +187,15 @@ function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[orde
   if(f.z>=158){f.mwA=1;f.dir=-1;f.state='entpose';f.t=0;E.phase='pose';E.t=0;sfx('roar');shake(3);heat(0.15);entFog.burst=1;
    pop(PX(533,158),92,pick(['2-0-9! 2-0-9!','LET\'S GO!','DEN! DEN!']),'#f1e6d0');}}
  else if(E.phase==='pose'){f.state='entpose';if(E.t>1.5){E.phase='walk';E.t=0;setState(f,'walk');}}
- else if(E.phase==='walk'){const hub=hubEnt(f),tx=hub?300:296,tz=168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*11;f.state='walk';f.dir=dx<0?-1:1;
+ else if(E.phase==='walk'){const hub=hubEnt(f)&&!E.hubDone,door=G.cage&&!hub,tx=door?DOOR_X:hub?300:296,tz=door?172:168,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);f.walkPh+=dt*11;f.state='walk';f.dir=dx<0?-1:1;
   if(d<3&&hub&&!E.hubDone){E.phase='hub';E.t=0;E.hubDone=true;f.dir=-1;}
+  else if(d<3&&door){E.phase='door';} // steel cage: walk in through the front door
   else if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*120*dt;f.z+=dz/d*120*dt;}}
+ else if(E.phase==='door'){f.state='walk';f.walkPh+=dt*11;f.dir=order[E.i]===0?-1:1;f.x=DOOR_X;f.z-=90*dt;if(f.z<=ZMAX-6){f.z=ZMAX-6;f.out=false;E.phase='place';}}
  else if(E.phase==='hub'){f.dir=-1;f.state='walk';  // wind up, SMACK the post, show it off
   if(E.t>=0.45&&E.t-dt<0.45){sfx('clang');shake(7);G.hitStop=0.08;heat(0.12);sfx('roar');
    const px=PX(f.x-30,f.z),py=PY(f.z)-62;for(let k=0;k<22;k++)part(px+rnd(-4,4),py+rnd(-6,6),rnd(-120,40),rnd(-110,30),rnd(0.25,0.6),pick(['#fff6c0','#ffd35a','#ff9a2a','#ffffff']),2,'spark');}
-  if(E.t>1.6){E.phase='walk';E.t=0;startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}}
+  if(E.t>1.6){E.t=0;if(G.cage){E.phase='walk';}else{startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}}}
  else if(E.phase==='roll'){f.t+=dt;updRoll(f,dt);if(f.state!=='roll')E.phase='place';}
  else if(E.phase==='place'){const tx=order[E.i]===0?110:205,tz=140,dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);
   if(d<2){f.dir=order[E.i]===0?1:-1;setState(f,'win');E.i++;E.t=0;if(E.i>=2){finishEntrance();}else E.phase='show';}
