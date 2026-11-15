@@ -150,7 +150,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
   else if((hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1])))&&G.fromSetup)mselOpen();
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[G.sel.picks[0],G.sel.picks[1]],stage:0,picks:[null,null]};}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2])))G.scene='title';}}
- if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*(E?3:5)));}
+ if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,...camLim()),1-Math.exp(-dt*(E?3:5)));}
  if(G.entrance){updEntrance(dt);updRef(dt);return;}
  if(G.hitStop>0){G.hitStop-=dt;return;}
  if(wide()&&!G.over&&!G.pin&&!G.hc&&!G.cage&&!G.mapWalk){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
@@ -229,9 +229,9 @@ function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance
 // Both wrestlers walk out to the entrance together and the fight moves inside the barn.
 // Inside, both walking to the barn door takes it back outside.
 // trigger areas: the open floor in front of the entrance / barn doors (any depth). Reaching it starts the walk-through.
-const MAPZONE={ranch:{x0:455,x1:600,z1:212},secret:{x0:520,x1:600,z1:212}};
+const MAPZONE={ranch:{x0:455,x1:600,z1:212},secret:{x0:520,x1:600,z1:212},barn:{x0:470,x1:575,z1:212}};
 const MAPOK=new Set(['idle','walk','run','punch','kick','stomp','hit','block','grab','grapple','grabbed','held','whiff','dazed']);
-function inMapZone(f){const Z=MAPZONE[G.map||'ranch'];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
+function inMapZone(f){const Z=MAPZONE[mapKey()];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
 function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G.entrance||G.mapWalk)return;
  const both=G.f.every(inMapZone);
  if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
@@ -245,25 +245,26 @@ function secretCheck(dt){if(!G.secretOn||!wide()||G.mm||G.cage||G.over||G.pin||G
  irpMark('big');}
 // door spots on each map (map x, depth z): walk to the threshold, then through it while fading
 const MW_DOOR={ranch:{door:[533,158],through:[533,139],out:[[512,164],[484,166]]},
- secret:{door:[588,170],through:[628,162],out:[[532,170],[502,172]]}};
+ secret:{door:[588,170],through:[628,162],out:[[532,170],[502,172]]},
+ barn:{door:[536,167],through:[566,159],out:[[500,170],[470,172]]}};
 function mwMove(f,tx,tz,dt,sp=62){const dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);if(d<1){f.x=tx;f.z=tz;return true;}
  const s=Math.min(d,sp*dt);f.x+=dx/d*s;f.z+=dz/d*s;if(Math.abs(dx)>0.5)f.dir=dx>0?1:-1;f.walkPh+=dt*11;f.state='walk';return false;}
 function updMapWalk(dt){const M=G.mapWalk;M.t+=dt;
- if(M.phase==='out'){const D=MW_DOOR[G.map==='secret'?'secret':'ranch'];let gone=0;
+ if(M.phase==='out'){const D=MW_DOOR[mapKey()];let gone=0;
   for(const f of G.f){if(M.t<f.mwD){f.state='idle';continue;}
    if(f.mwK===0){if(mwMove(f,D.door[0]+f.mwOff,D.door[1],dt))f.mwK=1;}
    else{const sx=D.door[0]+f.mwOff,tx=D.through[0]+f.mwOff,arrived=mwMove(f,tx,D.through[1],dt,48);
     const tot=Math.hypot(tx-sx,D.through[1]-D.door[1]),left=Math.hypot(tx-f.x,D.through[1]-f.z);f.mwA=clamp(left/tot,0,1);if(arrived){f.mwA=0;gone++;}}}
   if(gone===G.f.length||M.t>6){M.phase='black';M.t=0;for(const f of G.f){f.mwA=0;f.hidden=true;}}}
  else if(M.phase==='black'){G.mapFade=0.7;
-  if(M.t>=0.45){const toSecret=M.to==='secret';G.map=M.to;M.phase='in';M.t=0;const D=MW_DOOR[M.to];
+  if(M.t>=0.45){const toSecret=M.to==='secret';G.map=M.to;M.phase='in';M.t=0;const D=MW_DOOR[mapKey()];
    G.f.forEach((f,i)=>{f.hidden=false;f.mwA=0;f.mwK=0;f.x=D.through[0]+f.mwOff;f.z=D.through[1];f.mwD=(i===M.lead?0:0.7);});
-   G.cam=clamp(D.door[0]-230,0,MAPW-W);
+   G.cam=clamp(D.door[0]-230,...camLim());
    if(toSecret){if(!G.secretFound){G.secretFound=true;callout('SECRET MAP DISCOVERED!','#ffd35a',2.4);}else callout('INTO THE BARN!','#ffd35a',1.6);
     say(`They've taken this fight into the barn! Nobody's supposed to be back here!`);}
    else{callout('BACK OUTSIDE!','#ffd35a',1.6);say('And they spill back out to the BMF Ranch!');}
    sfx('roar');heat(0.25);}}
- else{const D=MW_DOOR[G.map];let done=0;
+ else{const D=MW_DOOR[mapKey()];let done=0;
   G.f.forEach((f,i)=>{if(M.t<f.mwD){f.mwA=0;return;}
    if(f.mwK===0){const sx=D.through[0]+f.mwOff;const ok=mwMove(f,D.door[0]+f.mwOff,D.door[1],dt,48);
     const tot=Math.hypot(D.door[0]-D.through[0],D.door[1]-D.through[1]);f.mwA=clamp(1-Math.hypot(D.door[0]+f.mwOff-f.x,D.door[1]-f.z)/tot,0,1);if(ok){f.mwK=1;f.mwA=1;}}

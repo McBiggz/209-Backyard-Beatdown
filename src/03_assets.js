@@ -11,7 +11,11 @@ const FOGV={img:new Image(),n:60,cols:10,w:256,h:144,fps:12};FOGV.img.src="__ASS
 // powder burst (Liam's clip): 48 frames at 12 fps, black = clear (drawn with 'screen'); goes off in the tunnel mouth
 const POWDER={img:new Image(),n:48,cols:8,w:224,h:126};POWDER.img.src="__ASSET(maps/powder_burst.webp)__";
 const SECRET=new Image();SECRET.src="__ASSET(maps/secret_full.webp)__";
-const SPOSTS={F:{src:"__ASSET(maps/secret_front.png)__",x:30,y:76,w:254,h:112}};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
+const SPOSTS={F:{src:"__ASSET(maps/secret_front.png)__",x:30,y:76,w:254,h:112}};
+// the Dragon's Den barn (new Secret Map, test link): built by tools/sprites/build_barn.py, placed in game px
+const BARN={full:{src:"__ASSET(maps/barn_full.webp)__",x:-119.8,y:-27.5,w:702,h:234},front:{src:"__ASSET(maps/barn_front.png)__",x:31.7,y:97.5,w:252.5,h:104},
+ panel:{src:"__ASSET(maps/barn_panel.png)__",x:160.2,y:60,w:25.5,h:65},diddy:{src:"__ASSET(maps/barn_diddy.png)__",x:185.7,y:65.5,w:25,h:59.5},rope:{src:"__ASSET(maps/barn_doorrope.png)__",x:160.2,y:65.5,w:50.5,h:59.5}};
+for(const k in BARN){BARN[k].img=new Image();BARN[k].img.src=BARN[k].src;}const BPOSTS={F:BARN.front};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";
 const HDKEYS=Object.keys(HD).filter(k=>k!=='arena'&&typeof PACK!=='undefined'&&PACK[k]);const HDIMG={};for(const k of HDKEYS){HDIMG[k]=new Image();HDIMG[k].src=PACK[k].src;}
 let hdWait=0;function hdReady(){if(hdWait>600)return true;return ARENA_IMG.complete&&ARENA_IMG.naturalWidth&&PANO.complete&&PANO.naturalWidth&&ENT.complete&&ENT.naturalWidth&&HDKEYS.every(k=>HDIMG[k].complete&&HDIMG[k].naturalWidth);}
 // Each frame is a spot in the wrestler's packed atlas (tools/sprites/pack.py): no per-frame canvases.

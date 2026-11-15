@@ -18,7 +18,7 @@ function drawFighters(pass){
  ents.sort((p,q)=>p.z-q.z);
  if(G.cage&&wide()&&pass!=='out')drawCageBack();
  const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide()||pass==='out';
- const drawPosts=()=>{postsDone=true;const PS=G.map==='secret'?SPOSTS:POSTS;for(const k in PS){const p=PS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
+ const drawPosts=()=>{postsDone=true;const PS=barnOn()?BPOSTS:G.map==='secret'?SPOSTS:POSTS;for(const k in PS){const p=PS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
  // Ranch entrance: whoever is deeper than the entrance (walking into the tunnel) goes behind its curtains and banner
  let entDone=!(wide()&&G.stage===3&&G.map!=='secret'&&G.scene==='fight')||pass==='out';
  const drawEnt=()=>{entDone=true;const E=ENTFRONT;if(E.img.complete&&E.img.naturalWidth)ctx.drawImage(E.img,E.x-G.cam,E.y,E.w,E.h);};

@@ -77,7 +77,7 @@ function aiInput(f,o,dt){
  if(wide()){
   // both outside: go get him and roll him back in (test link)
   if(f.out&&o.out)a.outT=(a.outT||0)+dt;else a.outT=0;
-  if(G.secretOn&&f.out&&o.out&&!G.mm&&o.x>=MAPZONE[G.map||'ranch'].x0-60){a.goal=null;
+  if(G.secretOn&&f.out&&o.out&&!G.mm&&o.x>=MAPZONE[mapKey()].x0-60){a.goal=null;
    if(ad>26||az>8){mv({x:Math.sign(dx)||1,z:Math.sign(o.z-f.z)});return inp;}
    if(arand()<0.04)inp.punchP=true;return inp;}
   if(G.rollInOn&&f.out&&o.out&&G.co.n<6&&!G.mm&&(a.outT>2.2||o.state==='down'||G.co.n>=3)){a.goal=null;const d=rollInDir(f,o);

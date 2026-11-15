@@ -15,7 +15,7 @@ function drawBarricade(dark){const top=60,bot=94;R(0,top,W,bot-top,dark?'#0a0710
  for(let x=1;x<W;x+=3)R(x,top+3,1,bot-top-3,dark?'#4a4a5a':'#6a6a74');
  [top,top+16,bot-3].forEach(y=>{R(0,y,W,3,'#a8a8b8');R(0,y,W,1,'#e8e8f0');R(0,y+2,W,1,'#5a5a68');});
  for(let x=12;x<W;x+=60){R(x,top,4,bot-top,'#8a8a98');R(x,top,1,bot-top,'#d8d8e4');R(x+3,top,1,bot-top,'#4a4a56');}}
-function drawArena(){if(G.stage===3){ctx.drawImage(G.map==='secret'&&SECRET.complete&&SECRET.naturalWidth?SECRET:PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
+function drawArena(){if(G.stage===3&&barnOn()){drawBarn();return;}if(G.stage===3){ctx.drawImage(G.map==='secret'&&SECRET.complete&&SECRET.naturalWidth?SECRET:PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
  R(0,0,W,H,'#0c0710');for(let y=0;y<60;y+=4)R(0,y,W,1,'rgba(255,255,255,0.015)');
  drawCrowd();drawBarricade(true);R(0,94,W,H-94,'#0a0610');}
 function drawOutdoor(){
@@ -53,3 +53,14 @@ function drawRingBack(){if(G.stage>=2)return;
 function drawRingFront(){if(G.stage>=2)return;const[flx,fly]=corner(-1,RZF),[frx,fry]=corner(1,RZF);
  for(let i=0;i<3;i++){const y=fly-ropeY(1,i);R(0,y,W,2,ropeCol(2-i));R(0,y+2,W,1,'rgba(0,0,0,0.4)');if(G.stage!==1)for(let x=(i*5)%8;x<W;x+=8)R(x,y,2,1,'rgba(255,255,255,0.35)');}
  post(flx,fly,48,5);post(frx,fry,48,5);for(let i=0;i<3;i++){pad(flx+2,fly-ropeY(1,i)-4,8,8);pad(frx-2,fry-ropeY(1,i)-4,8,8);}}
+
+// ---- the Dragon's Den barn (test link). C.Diddy slides the side door open every 30 seconds, peeks at the match, then shuts it.
+// Looks only: driven by the clock, not the sim. Layers: room -> C.Diddy (in the doorway) -> sliding panel -> back ropes across the doorway.
+function barnImg(k,dx=0){const b=BARN[k];if(b.img.complete&&b.img.naturalWidth)ctx.drawImage(b.img,Math.round((b.x+dx-G.cam)*2)/2,b.y,b.w,b.h);}
+function barnDoor(t){const c=t%30; // seconds into the cycle
+ const open=c<0.7?c/0.7:c<5.2?1:c<5.9?1-(c-5.2)/0.7:0;   // panel: slides open, stays, slides shut
+ const peek=c<0.7?0:c<1.1?(c-0.7)/0.4:c<4.8?1:c<5.2?1-(c-4.8)/0.4:0; // C.Diddy leans in and back out
+ return {open:open*open*(3-2*open),peek:peek*peek*(3-2*peek)};}
+function drawBarn(){barnImg('full');const d=barnDoor((G.t||0)+22),D=BARN.diddy; // +22: first peek about 8s after you walk in
+ if(d.peek>0){ctx.save();ctx.beginPath();ctx.rect(Math.round((D.x-G.cam)*2)/2,D.y,D.w,D.h);ctx.clip();barnImg('diddy',(1-d.peek)*D.w*0.9);ctx.restore();}
+ barnImg('panel',(1-d.open)*BARN.panel.w);barnImg('rope');}

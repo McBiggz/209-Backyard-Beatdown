@@ -107,6 +107,10 @@
    "secret": {
     "back": 63,
     "front": 72
+   },
+   "barn": {
+    "back": 36,
+    "front": 53
    }
   }
  },

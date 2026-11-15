@@ -4,13 +4,16 @@ let XMIN=-160,XMAX=160,ZMIN=3,ZMAX=61;const GRAV=1100,RX=175,RZB=-4,RZF=68;
 const GEO=[{yB:96,yF:182,cB:192,cF:192,hB:162,hF:198},{yB:96,yF:182,cB:192,cF:192,hB:162,hF:198},{yB:146,yF:199,cB:212,cF:194,hB:94,hF:168}];
 const geo=()=>GEO[G.stage]||GEO[0];
 const wide=()=>G.stage===3,MAPW=648;
+const barnOn=()=>G.map==='secret'&&!!G.windOn&&G.stage===3; // the real Dragon's Den barn (test link; windOn is in the replay so the sim agrees online)
+const camLim=()=>barnOn()?[-119,198]:[0,MAPW-W]; // the barn picture is wider on the left (couch) and stops short on the right
+const mapKey=()=>barnOn()?'barn':(G.map||'ranch');
 function ringX(z){const t=(z-121)/37;return[lerp(82,42,t)+18,lerp(227,271,t)-18];}
 function insideRing(x,z){if(z<119||z>160)return false;const t=(z-121)/37;return x>lerp(82,42,t)-2&&x<lerp(227,271,t)+2;}
 const RING_R=312;const footL=z=>31,footR=z=>RING_R;
 function clampPos(f){
  if(!wide()){f.x=clamp(f.x,XMIN,XMAX);f.z=clamp(f.z,ZMIN,ZMAX);return;}
  if(!f.out){f.z=clamp(f.z,ZMIN,ZMAX);const[a,b]=ringX(f.z);f.x=clamp(f.x,a,b);return;}
- f.z=clamp(f.z,150,212);f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);
+ f.z=clamp(f.z,150,212);if(barnOn()){f.x=clamp(f.x,10,572);return;}f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);
  if(f.z<190&&f.x<RING_R){const dr=RING_R-f.x,df=190-f.z;if(dr<df)f.x=RING_R;else f.z=190;}
  if(f.z<205&&(f.x<62||(f.x>250&&f.x<RING_R))){if(f.x>250&&f.z<190)f.x=RING_R;else f.z=205;}}
 function cx(f,x){const k={x,z:f.z,out:f.out};clampPos(k);return k.x;}
