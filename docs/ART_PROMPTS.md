@@ -152,3 +152,4 @@ Sheets D-H and P are in Backyard_Brawl_Move_Sheets.md; standalone Nano Banana ve
 Game names: chair = chcarry0, chcarry1, chraise, chhit, chjab, chdrop; table = tcarry0, tcarry1, tsetup, ttop, tcrash, twreck; ladder = lcarry0, lcarry1, lhit, lsetup, lclimb0, lclimb1, ltop, lfall.
 While a frame that includes the weapon plays, the game hides its own weapon sprite.
 - Weapons art in (art_src/props). Sizes are set in code by real inches (sheet scales disagree). Broken table pieces and a wrecked chair flicker out about 3 seconds after breaking (Liam 2026-11-15).
+- Tables (Liam 2026-11-15): the point is diving off the top rope onto someone laid on a table, or suplexing them through it.
