@@ -25,7 +25,7 @@ rgba = np.dstack([a, np.full((H, W), 255, np.int16)])
 
 # ---- front layer: 3 front ropes (rows found from the row profile), 2 front posts, front pads
 m = np.zeros((H, W), bool)
-for y0, y1 in [(265, 272), (302, 309), (337, 343)]: m[y0:y1, 303:808] = True
+for y0, y1 in [(265, 272), (302, 309), (337, 343)]: m[y0:y1, 303:808] = sat[y0:y1, 303:808] < 40   # rope pixels only (grey/black): C.Diddy's orange between the rope lines stays out
 for x0, x1 in [(303, 324), (787, 808)]:
     for y in range(250, 458):   # post: widest run of grey/black around the post's centre
         c = (x0 + x1) // 2
