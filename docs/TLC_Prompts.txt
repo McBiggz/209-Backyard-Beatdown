@@ -1,0 +1,88 @@
+BACKYARD BRAWL: TABLES, LADDERS & CHAIRS (Nano Banana 2.1)
+Replace [WRESTLER NAME] with the wrestler, and attach his standing sprite. Make the weapons sheet first.
+
+===== 1. THE WEAPONS (attach The Viral Voice standing sprite) =====
+
+Using the attached sprite of The Viral Voice (a 6 ft wrestler) as the size reference, in the exact same 16-bit SNES pixel-art style, outline thickness and scale, draw ONE sheet of wrestling weapons at real-life size.
+
+Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
+- Steel chair: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
+- Table: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
+- Ladder: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
+A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
+
+Row 1 (size check, one wide frame): The Viral Voice standing, facing right, next to an open steel chair, an open table and an open ladder, all four on the same floor line.
+Row 2 (table, no wrestler): 1. open table, long side facing us. 2. folded flat, lying down. 3. folded, standing up on its end, leaning slightly. 4. snapped in a V in the middle, still in one piece. 5. two broken halves lying flat with splinters.
+Row 3 (ladder, no wrestler): 1. open A-frame standing. 2. closed, standing straight up. 3. closed, lying flat. 4. closed, falling over at a 45° angle.
+Row 4 (chair, no wrestler): 1. open, standing, side view. 2. folded, standing upright. 3. folded, lying flat. 4. folded, badly dented in the middle.
+
+Solid flat magenta background (#FF00FF) everywhere. No floor, ring, ropes, referee, shadows, motion lines, borders, numbers, labels or text.
+
+===== 2. STEEL CHAIR (attach the wrestler's standing sprite) =====
+
+Using the attached sprite as the exact reference for [WRESTLER NAME] (same face, hair, body type, tattoos, gear and colors), and the exact same 16-bit SNES pixel-art style, outline thickness and scale, draw ONE sprite sheet of him. He must look like the same person in every frame. Any opponent is invisible. Side view, facing RIGHT. Every frame the same scale as the reference, with clear magenta space between frames so they never touch.
+
+WEAPON SIZE (most important): the weapon is real-life size next to him, never small or toy-sized.
+Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
+- Steel chair: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
+- Table: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
+- Ladder: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
+A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
+
+Sheet F: Steel chair (6 frames, 1 row). The chair IS drawn, folded, at real size.
+1. CARRY 1: walking right, holding the folded chair at his side by the backrest, right foot forward.
+2. CARRY 2: same, left foot forward.
+3. RAISE: folded chair raised high overhead with both hands, flat side facing forward, about to swing.
+4. CHAIR SHOT: swung down hard, arms straight out in front, chair flat and level at the height of an opponent's head.
+5. JAB: driving the folded chair's edge straight forward at chest height with both hands, like a battering ram.
+6. DROP: tossing the chair away; the chair has just left his hands and is falling in front of him, his hands open.
+
+Solid flat magenta background (#FF00FF) everywhere. No floor, ring, ropes, referee, shadows, motion lines, borders, numbers, labels or text.
+
+===== 3. TABLE (attach the wrestler's standing sprite) =====
+
+Using the attached sprite as the exact reference for [WRESTLER NAME] (same face, hair, body type, tattoos, gear and colors), and the exact same 16-bit SNES pixel-art style, outline thickness and scale, draw ONE sprite sheet of him. He must look like the same person in every frame. Any opponent is invisible. Side view, facing RIGHT. Every frame the same scale as the reference, with clear magenta space between frames so they never touch.
+
+WEAPON SIZE (most important): the weapon is real-life size next to him, never small or toy-sized.
+Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
+- Steel chair: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
+- Table: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
+- Ladder: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
+A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
+
+Sheet G: Table (6 frames, 1 row). The table IS drawn, at real size.
+1. CARRY 1: walking right, holding the folded table upright on its long edge beside him with one arm, right foot forward.
+2. CARRY 2: same, left foot forward.
+3. SET UP: bent over, flipping the legs of the table open; the table is on its side in front of him.
+4. ON TOP: standing on top of the open table, arms raised high, yelling.
+5. THROUGH THE TABLE: crashing back-first through the middle of the table: the table snapping into a V under his back, wood splinters flying, arms and legs flung up, head on the LEFT.
+6. IN THE WRECKAGE: flat on his back in the two broken halves of the table, head on the LEFT, eyes shut.
+
+Solid flat magenta background (#FF00FF) everywhere. No floor, ring, ropes, referee, shadows, motion lines, borders, numbers, labels or text.
+
+===== 4. LADDER (attach the wrestler's standing sprite) =====
+
+Using the attached sprite as the exact reference for [WRESTLER NAME] (same face, hair, body type, tattoos, gear and colors), and the exact same 16-bit SNES pixel-art style, outline thickness and scale, draw ONE sprite sheet of him. He must look like the same person in every frame. Any opponent is invisible. Side view, facing RIGHT. Every frame the same scale as the reference, with clear magenta space between frames so they never touch.
+
+WEAPON SIZE (most important): the weapon is real-life size next to him, never small or toy-sized.
+Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
+- Steel chair: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
+- Table: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
+- Ladder: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
+A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
+
+Sheet H: Ladder (8 frames, 2 rows of 4). The ladder IS drawn, at real size.
+Top row:
+1. CARRY 1: walking right with the closed ladder on his shoulder, front end pointing forward and slightly down, right foot forward.
+2. CARRY 2: same, left foot forward.
+3. LADDER SHOT: holding the closed ladder level with both hands, ramming the front end straight forward at chest height.
+4. SET UP: pulling the ladder open into an A-frame, one hand on each side.
+
+Bottom row (the ladder is open and standing, he is on its left side, facing right):
+5. CLIMBING 1: on the lower steps, one hand high, one knee up.
+6. CLIMBING 2: on the upper steps, other hand high, other knee up.
+7. AT THE TOP: standing on the top steps, stretching both arms straight up overhead, grabbing at something hanging above him (draw nothing above).
+8. KNOCKED OFF: falling backward through the air away from the ladder, arms and legs flailing (draw NO ladder in this frame).
+
+Solid flat magenta background (#FF00FF) everywhere. No floor, ring, ropes, referee, shadows, motion lines, borders, numbers, labels or text.
+

@@ -146,3 +146,8 @@ Draw ONLY him. Solid flat magenta background (#FF00FF), no shadows, floor, borde
 Game names: cage = cclimb0, cclimb1, ctop, cdrop, ccrawl0, ccrawl1; chair = chcarry0, chcarry1, chraise, chhit, chjab, chdrop.
 (Cage climb now uses the walk frames; chair swing uses grab/punch with the chair drawn by code. The art replaces both.)
 See the chat reply of 2026-11-14 for the full prompts.
+
+## 12. Tables, ladders, chairs (2026-11-15)
+Sheets D-H and P are in Backyard_Brawl_Move_Sheets.md; standalone Nano Banana version in TLC_Prompts.txt.
+Game names: chair = chcarry0, chcarry1, chraise, chhit, chjab, chdrop; table = tcarry0, tcarry1, tsetup, ttop, tcrash, twreck; ladder = lcarry0, lcarry1, lhit, lsetup, lclimb0, lclimb1, ltop, lfall.
+While a frame that includes the weapon plays, the game hides its own weapon sprite.
