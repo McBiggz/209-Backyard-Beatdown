@@ -54,6 +54,7 @@ for x in range(PX0, PX1): base[PY0:PY1, x] = wall[PY0:PY1, (x - PX0) % wall.shap
 dark = np.array([20, 15, 17], np.int16)
 base[PY0:PY1, PX1:GX1] = dark                                                                 # the empty doorway
 for y in rope_rows: base[y, PX1:GX1] = wall[y, (np.arange(PX1, GX1) - PX0) % wall.shape[1]]   # back ropes run across it
+for y in range(PY1, PY1 + 6): base[y, PX1:GX1] = base[y, PX1 - 5][None, :]   # below the doorway: C.Diddy's boots left a reddish smear here
 Image.fromarray(base.astype(np.uint8)).save(R + '/assets/maps/barn_full.webp', lossless=False, quality=92, method=6)
 out['barn_full'] = dict(x=OX, y=OY, w=W / 2, h=H / 2)
 # panel (ropes taken out: fill each rope row from the panel row just above it)
