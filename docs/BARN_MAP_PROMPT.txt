@@ -1,18 +1,21 @@
 BACKYARD BRAWL: SECRET MAP, INSIDE THE DRAGON'S DEN BARN (Nano Banana 2.1)
-Attach 3 images: Secret_Map_Current_Layout.png (FIRST), then both barn photos.
 
-Redraw the first attached image as the inside of the real barn in the two attached photos. Keep the first image's EXACT layout: same very wide side-on camera angle, the wrestling ring in exactly the same spot and the same size on the left, the same floor area, the side door with the man in the orange prison jumpsuit peeking out of it in the same spot on the back wall, and the big open doorway on the right side in the same spot. Same 16-bit SNES pixel-art style as the first image. Wide panorama, 3 times as wide as it is tall.
+STEP 1 – THE BARN (attach Secret_Map_Current_Layout.png FIRST, then both barn photos)
 
-Make it look like the real barn in the photos:
+Edit the first attached image. Keep its exact size, its very wide shape and its exact layout: the ring stays on the LEFT in exactly the same spot and size, the small side door stays on the back wall in the MIDDLE of the picture (to the right of the ring, NOT behind it), and the big open doorway stays on the far RIGHT. Only change how the room looks, so it looks like the real barn in the other two photos. Same 16-bit SNES pixel-art style.
+- The small side door is CLOSED, and nobody is in it.
 - Exposed wooden roof: big triangle wooden trusses and cross beams, raw plywood roof boards above them.
-- Long white fluorescent tube lights hanging under the beams, giving a cold white glow on the ring.
+- Long white fluorescent tube lights hanging under the beams.
 - Walls of dark vertical wooden planks.
-- On the back wall behind the ring: a tall black "209 DRAGONS DEN" banner with a red dragon, a red "BMF" sign, a red and white pro wrestling event poster, and a championship belt hanging on the wall.
-- A small corrugated metal awning over a side area on the back left wall.
-- A deep blue light glowing in the back right corner.
-- The ring: low to the ground, grey canvas mat, black ropes, steel corner posts, blue turnbuckle pads, a dark apron skirt.
+- On the back wall behind the ring: a tall black "209 DRAGONS DEN" banner with a red dragon, a red "BMF" sign, a red "PRO WRESTLING" poster and a championship belt hanging on the wall.
+- A small corrugated metal awning on the back left wall, and a blue couch.
+- A deep blue light glowing near the big doorway.
+- The ring: grey canvas, black ropes, steel posts, blue turnbuckle pads, black apron skirt.
 - Dirt and concrete floor.
 - Through the big open doorway on the right: a dark driveway at night with a chain-link fence.
-- Training night: nobody watching. A few empty folding chairs along the walls and some stacked folding chairs, a small table with a speaker on it.
-- A long screwdriver with a red handle lying on the floor near the ring.
-- The only person in the picture is the man in the orange jumpsuit peeking out of the side door. No wrestlers, no referee, no crowd, no text other than the signs.
+- Training night: nobody in the picture at all. A few empty folding chairs, some stacked folding chairs, a small table with a speaker.
+- A long screwdriver with a red handle lying on the floor.
+
+STEP 2 – C.DIDDY AT THE DOOR (attach the barn image from step 1)
+
+Edit the attached image. Change ONLY the small closed side door on the back wall: the door is now swung open and C.Diddy (bearded man in an orange prison jumpsuit with a name patch, a thick silver chain and a cigarette) is peeking out of the doorway, half his body showing, looking toward the ring. Change nothing else in the picture.
