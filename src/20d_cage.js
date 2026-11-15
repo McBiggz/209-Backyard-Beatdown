@@ -76,9 +76,23 @@ const lerpP=(A,B,u)=>({x:lerp(A.x,B.x,u),z:lerp(A.z,B.z,u)});
 function drawCageBack(){const h=CG().height||112,C=CAGE_C,P=CAGE_IMG.panel;ctx.save();ctx.imageSmoothingEnabled=true;
  const m=lerpP(C.BL,C.BR,0.5);cageWall(P,C.BL,m,h);cageWall(P,m,C.BR,h);cageWall(P,C.BL,C.FL,h);cageWall(P,C.BR,C.FR,h);
  cagePostAt(C.BL,h);cagePostAt(C.BR,h);cagePostAt(lerpP(C.BL,C.BR,0.5),h);ctx.restore();}
+// the front door slides open when someone walks in or forces his way out, then clangs shut. Looks only: not part of the sim.
+function cageDoorWant(){const E=G.entrance;
+ if(E){if(E.phase==='door')return 1;
+  for(const f of G.f){if(f.hidden)continue;
+   if(E.phase==='walk'&&f.out&&Math.abs(f.x-DOOR_X)<70&&f.z>ZMAX)return 1;            // walking up to it: open ahead of him
+   if(E.phase==='place'&&Math.abs(f.x-DOOR_X)<14&&f.z>ZMAX-14)return 1;}}            // just stepped in: shut behind him
+ if(G.over&&/DOOR/.test(G.over.how||''))return 1;
+ for(const f of G.f)if(f.state==='cdoor')return 0.2+0.8*clamp(f.esc||0,0,1);
+ return 0;}
+function cageDoorStep(){const t=G.t||0,dt=clamp(t-(G.doorT0==null?t:G.doorT0),0,0.1);G.doorT0=t;const want=cageDoorWant(),a=G.doorA||0;
+ const n=want>a?Math.min(want,a+dt*4):Math.max(want,a-dt*3);if(a>0.3&&n<=0.02)sfx('clang'); // shut!
+ G.doorA=n;return n;}
 function drawCageFront(){const h=CG().height||112,C=CAGE_C,P=CAGE_IMG.panel,D=CAGE_IMG.door,dw=(CG().doorW||58)/(C.FR.x-C.FL.x);
  ctx.save();ctx.imageSmoothingEnabled=true;ctx.globalAlpha=CG().frontAlpha||0.85;const u0=(DOOR_X-C.FL.x)/(C.FR.x-C.FL.x)-dw/2,u1=u0+dw;
- const d0=lerpP(C.FL,C.FR,u0),d1=lerpP(C.FL,C.FR,u1);cageWall(P,C.FL,d0,h);cageWall(D,d0,d1,h);cageWall(P,d1,C.FR,h);
+ const d0=lerpP(C.FL,C.FR,u0),d1=lerpP(C.FL,C.FR,u1);cageWall(P,C.FL,d0,h);cageWall(P,d1,C.FR,h);
+ const op=cageDoorStep(),sl=dw*0.92*op; // sliding gate: slides left along the front wall, leaving the doorway open
+ cageWall(D,lerpP(C.FL,C.FR,u0-sl),lerpP(C.FL,C.FR,u1-sl),h);
  ctx.globalAlpha=1;cagePostAt(C.FL,h);cagePostAt(C.FR,h);ctx.restore();}
 function drawCageHint(){const me=G.f[0];if(G.over)return;
  // escape progress over anyone escaping
