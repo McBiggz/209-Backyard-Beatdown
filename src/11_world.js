@@ -32,6 +32,8 @@ function tryRoll(f,mx,mz){
  if(f.z<190&&f.x<=footR(f.z)+3&&mx<0){startRoll(f,ringX(f.z)[1]-4,clamp(f.z,ZMIN,ZMAX),false);return true;}
  return false;}
 const PX=(x,z)=>{if(wide())return x-G.cam;const g=geo(),t=(z-RZB)/(RZF-RZB);return lerp(g.cB,g.cF,t)+x/RX*lerp(g.hB,g.hF,t);};
-const PY=z=>{if(wide())return z;const g=geo();return g.yB+(z-RZB)/(RZF-RZB)*(g.yF-g.yB);};
+// the barn's mat is drawn shallower than the game ring: squeeze the ring's depth onto it (looks only; the sim works in x/z)
+const barnY=z=>z>=158?z:158-(158-z)*0.759;
+const PY=z=>{if(wide())return barnOn()?barnY(z):z;const g=geo();return g.yB+(z-RZB)/(RZF-RZB)*(g.yF-g.yB);};
 const zAtY=y=>{const g=geo();return RZB+(y-g.yB)/(g.yF-g.yB)*(RZF-RZB);};
 

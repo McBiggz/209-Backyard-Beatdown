@@ -41,7 +41,17 @@ for bx0, bx1 in [(322, 366), (748, 790)]:
         y0, y1 = ry - 14, ry + 12; sub = blue[y0:y1, bx0:bx1]; d = ndimage.binary_dilation(sub, iterations=2)
         pads[y0:y1, bx0:bx1] |= sub | (d & (lum[y0:y1, bx0:bx1] < 70))
 m |= pads
-f = rgba.copy(); f[..., 3] = np.where(m, 255, 0)
+# where the front ropes cross the doorway the picture had C.Diddy behind them: use the same rope rows from the plain wall at x=540 instead
+GAP0, GAP1 = 609, 663
+fixed = {}
+for y0, y1 in [(265, 272), (302, 309), (337, 343)]:
+    for y in range(y0, y1):
+        pc = np.median(a[y, 663:676], axis=0); ref0 = np.median(a[186:216, 663:676].reshape(-1, 3), axis=0).mean()
+        if abs(pc.mean() - ref0) > 18: fixed[y] = pc.astype(np.int16)   # rope here (taken off the right door panel, like the door ropes)
+        m[y, GAP0:GAP1] = y in fixed
+f = rgba.copy()
+for y, c in fixed.items(): f[y, GAP0:GAP1, :3] = c
+f[..., 3] = np.where(m, 255, 0)
 ys, xs = np.nonzero(m); save('barn_front', f, (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 
 # ---- the doorway. Left panel x 560-611, gap (C.Diddy) 611-661, panel/gap rows 186-304
@@ -53,13 +63,20 @@ base = a.copy()
 for x in range(PX0, PX1): base[PY0:PY1, x] = wall[PY0:PY1, (x - PX0) % wall.shape[1]]   # where the open panel was: bare wall
 dark = np.array([20, 15, 17], np.int16)
 base[PY0:PY1, PX1:GX1] = dark                                                                 # the empty doorway
-for y in rope_rows: base[y, PX1:GX1] = wall[y, (np.arange(PX1, GX1) - PX0) % wall.shape[1]]   # back ropes run across it
+# each rope row as one clean colour (copying the wall brought along the dark seams between its planks)
+# taken from the right door panel (ropes over a grey panel, same as what the closed door shows), keeping only rows that really are rope there
+rpan = a[:, 663:676]   # right panel, left of the blue pads
+nonrope = [y for y in range(PY0, PY1) if y not in set(rope_rows)]
+ref = np.median(rpan[nonrope].reshape(-1, 3), axis=0).mean()
+rope_col = {y: np.median(rpan[y], axis=0).astype(np.int16) for y in rope_rows if abs(np.median(rpan[y], axis=0).mean() - ref) > 18}
+print('rope rows on the panel', sorted(rope_col))
+for y in rope_col: base[y, PX1:GX1] = rope_col[y]   # back ropes run across the doorway
 for y in range(PY1, PY1 + 6): base[y, PX1:GX1] = base[y, PX1 - 5][None, :]   # below the doorway: C.Diddy's boots left a reddish smear here
 Image.fromarray(base.astype(np.uint8)).save(R + '/assets/maps/barn_full.webp', lossless=False, quality=92, method=6)
 out['barn_full'] = dict(x=OX, y=OY, w=W / 2, h=H / 2)
 # panel (ropes taken out: fill each rope row from the panel row just above it)
 pan = rgba.copy()
-rr = set(rope_rows)
+rr = set(rope_col)
 for y in range(PY0, PY1):
     if y in rr:
         yy = y
@@ -73,9 +90,7 @@ dd = rgba.copy(); dd[..., 3] = 0; dd[PY0:PY1, PX1:GX1, 3] = np.where(dm, 255, 0)
 save('barn_diddy', dd, (PX1, PY0, GX1, PY1))
 # ropes across the doorway + the open panel's spot (so they stay in front of C.Diddy and the sliding panel)
 rp = rgba.copy(); rp[..., 3] = 0
-for y in rope_rows:
-    rp[y, PX0:GX1, :3] = wall[y, (np.arange(PX0, GX1) - PX0) % wall.shape[1]]
-    rp[y, PX0:GX1, 3] = np.where(wsat[y, (np.arange(PX0, GX1) - PX0) % wall.shape[1]] < 30, 255, 0)
+for y in rope_col: rp[y, PX0:GX1, :3] = rope_col[y]; rp[y, PX0:GX1, 3] = 255
 save('barn_doorrope', rp, (PX0, PY0, GX1, PY1))
 print('rope rows', rope_rows)
 print(json.dumps(out))
