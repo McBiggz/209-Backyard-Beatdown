@@ -9,19 +9,21 @@ function drawCtrIcon(f){if(f.cpu)return; if(f.state!=='whipped')return;let lbl=n
 function drawDodgeHint(){if(G.mm||G.over)return;const me=G.f[0],o=G.f[1];if(!me||me.cpu||!['idle','walk'].includes(me.state)||!runnerComing(me,o))return;
  const x=clamp(PX(me.x,me.z),80,W-80),y=PY(me.z)-me.y-86*(me.ch.size||1);
  T(coarse?'JUMP: LEAPFROG · DOWN+JUMP: DROP DOWN':'SPACE: LEAPFROG · S+SPACE: DROP DOWN',x,y,1,Math.floor(G.t*8)%2?'#ffd35a':'#fff','center','#000');}
-function drawFighters(){
- const R0=G.ref,ents=G.f.filter(f=>!f.hidden).map(f=>({f,z:f.z+(f.layer||0)+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden)ents.push({f:R0,z:R0.z,ref:true});
- if(G.props&&wide())for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});
+// pass: undefined = everyone; 'in' / 'out' = steel cage, split so whoever is still OUTSIDE the cage (walking up to the gate) is drawn over the cage front and ropes
+const outsideCage=f=>G.cage&&wide()&&f.z>ZMAX+1;
+function drawFighters(pass){
+ const R0=G.ref,ents=G.f.filter(f=>!f.hidden&&(pass==='out'?outsideCage(f):pass==='in'?!outsideCage(f):true)).map(f=>({f,z:f.z+(f.layer||0)+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden&&pass!=='out')ents.push({f:R0,z:R0.z,ref:true});
+ if(G.props&&wide()&&pass!=='out')for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});
  for(const e of ents)if(e.f&&!(e.f.mwA<0.6))shadowOf(e.f,e.ref?0.9:e.f.ch.size);
  ents.sort((p,q)=>p.z-q.z);
- if(G.cage&&wide())drawCageBack();
- const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide();
+ if(G.cage&&wide()&&pass!=='out')drawCageBack();
+ const front=e=>wide()&&(e.z>=180||(!e.ref&&!e.p&&e.f.state==='perch'));let postsDone=!wide()||pass==='out';
  const drawPosts=()=>{postsDone=true;const PS=G.map==='secret'?SPOSTS:POSTS;for(const k in PS){const p=PS[k];if(p.img.complete)ctx.drawImage(p.img,p.x-G.cam,p.y,p.w,p.h);}};
  // Ranch entrance: whoever is deeper than the entrance (walking into the tunnel) goes behind its curtains and banner
- let entDone=!(wide()&&G.stage===3&&G.map!=='secret'&&G.scene==='fight');
+ let entDone=!(wide()&&G.stage===3&&G.map!=='secret'&&G.scene==='fight')||pass==='out';
  const drawEnt=()=>{entDone=true;const E=ENTFRONT;if(E.img.complete&&E.img.naturalWidth)ctx.drawImage(E.img,E.x-G.cam,E.y,E.w,E.h);};
  for(const e of ents)if(e.f&&!e.ref){const L=lpOf(e.f,frameOf(e.f));if(L&&L.some(q=>!q.front)){fDraw(e.f,fArgs(e.f),L,'back');}} // body parts that go BEHIND the other wrestler
- for(const e of [...ents.filter(e=>!front(e)),null,...ents.filter(front)]){if(!entDone&&(e===null||e.z>=ENTFRONT.z))drawEnt();if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z)*REF_SCALE);continue;}
+ for(const e of [...ents.filter(e=>!front(e)),...(pass==='out'?[]:[null]),...ents.filter(front)]){if(!entDone&&(e===null||e.z>=ENTFRONT.z))drawEnt();if(e===null){drawPosts();continue;}if(e.p){drawProp(e.p);continue;}if(e.ref){drawSpr(SETS.ref,refFrame(R0),PX(R0.x,R0.z),PY(R0.z),R0.dir,depthS(R0.z)*REF_SCALE);continue;}
   const f=e.f,A=fArgs(f);if(f.mwA!=null&&f.mwA<1)ctx.globalAlpha=Math.max(0,f.mwA);
   const {fr,fx_,fy_,ds,dsc,ky}=A;
   // speed blur: fading copies trail behind a dropkick / dive

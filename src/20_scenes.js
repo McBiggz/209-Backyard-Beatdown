@@ -191,7 +191,8 @@ function updEntrance(dt){const E=G.entrance;E.t+=dt;const order=[1,0],f=G.f[orde
   if(d<3&&hub&&!E.hubDone){E.phase='hub';E.t=0;E.hubDone=true;f.dir=-1;}
   else if(d<3&&door){E.phase='door';} // steel cage: walk in through the front door
   else if(d<3){startRoll(f,ringX(150)[1]-6,150,false);E.phase='roll';}else{f.x+=dx/d*120*dt;f.z+=dz/d*120*dt;}}
- else if(E.phase==='door'){f.state='walk';f.walkPh+=dt*11;f.dir=order[E.i]===0?-1:1;f.x=DOOR_X;f.z-=90*dt;if(f.z<=ZMAX-6){f.z=ZMAX-6;f.out=false;E.phase='place';}}
+ else if(E.phase==='door'){f.state='walk';f.walkPh+=dt*11;f.dir=order[E.i]===0?-1:1;f.x=DOOR_X;f.z-=60*dt;f.y=Math.sin(clamp((172-f.z)/(178-ZMAX),0,1)*Math.PI)*12; // step up onto the apron and in
+  if(f.z<=ZMAX-6){f.z=ZMAX-6;f.y=0;f.out=false;E.phase='place';}}
  else if(E.phase==='hub'){f.dir=-1;f.state='walk';  // wind up, SMACK the post, show it off
   if(E.t>=0.45&&E.t-dt<0.45){sfx('clang');shake(7);G.hitStop=0.08;heat(0.12);sfx('roar');
    const px=PX(f.x-30,f.z),py=PY(f.z)-62;for(let k=0;k<22;k++)part(px+rnd(-4,4),py+rnd(-6,6),rnd(-120,40),rnd(-110,30),rnd(0.25,0.6),pick(['#fff6c0','#ffd35a','#ff9a2a','#ffffff']),2,'spark');}
@@ -204,7 +205,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3;for(const f of G.f)f.mwA=1; //
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters();if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];if(G.entFx){drawEntranceShowFx(E,f);return;}ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
