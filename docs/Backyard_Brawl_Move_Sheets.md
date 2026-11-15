@@ -131,7 +131,7 @@ Sheets A–L are the wrestler alone. Sheets N, O and P have him using a weapon, 
 Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
 - **Steel chair**: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
 - **Table**: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
-- **Ladder**: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
+- **Ladder**: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about as tall as he is. Closed, it is a little longer than he is tall. It is ALWAYS this same size in every frame.
 A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 
 ## Sheet N: Steel chair (6 frames, 2 rows of 3). The chair IS drawn at real size.
@@ -155,19 +155,17 @@ Bottom row:
 5. THROUGH THE TABLE: crashing back-first through the middle of the table: the table snapping into a V under his back, wood splinters flying, arms and legs flung up, head on the LEFT.
 6. IN THE WRECKAGE: flat on his back in the two broken halves of the table, head on the LEFT, eyes shut.
 
-## Sheet P: Ladder (8 frames, 2 rows of 4). The ladder IS drawn, at real size.
+## Sheet P: Ladder (6 frames, 2 rows of 3). The ladder IS drawn, always the same size: about as tall as he is.
 
 Top row:
-1. CARRY 1: walking right with the closed ladder on his shoulder, front end pointing forward and slightly down, right foot forward.
-2. CARRY 2: same, left foot forward.
-3. LADDER SHOT: holding the closed ladder level with both hands, ramming the front end straight forward at chest height.
-4. SET UP: pulling the ladder open into an A-frame, one hand on each side.
+1. PICK UP: crouched, both hands grabbing a closed ladder lying flat on the mat in front of him. The WHOLE ladder is in the frame.
+2. CARRY: standing, holding the closed ladder level across his waist with both hands.
+3. SET UP: standing beside the open ladder, one hand on it, pulling it open.
 
-Bottom row (the ladder is open and standing, he is on its left side, facing right):
-5. CLIMBING 1: on the lower steps, one hand high, one knee up.
-6. CLIMBING 2: on the upper steps, other hand high, other knee up.
-7. AT THE TOP: standing on the top steps, stretching both arms straight up overhead, grabbing at something hanging above him (draw nothing above).
-8. KNOCKED OFF: falling backward through the air away from the ladder, arms and legs flailing (draw NO ladder in this frame).
+Bottom row:
+4. CLIMBING: on the left side of the open ladder, halfway up, hands gripping the top.
+5. ON TOP: standing on the top of the open ladder, both fists raised, yelling. The ladder is the SAME size as in frames 3 and 4, so his feet are about as high as his own head would be standing.
+6. KNOCKED OFF: falling backward through the air, arms and legs flailing. Draw NO ladder in this frame.
 
 ## Sheet W: Weapons alone (attach The Viral Voice's standing sprite for size)
 

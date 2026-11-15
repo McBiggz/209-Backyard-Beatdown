@@ -12,6 +12,6 @@ Rules for EVERY sheet (never break these):
 4. Side view. He faces RIGHT unless the frame says otherwise.
 5. Solid flat magenta background (#FF00FF) everywhere. No floor, ring, ropes, turnbuckles, cage, referee, shadows, motion lines, stars, effects, borders, numbers, labels or text.
 6. Lay the frames out exactly as the sheet says (rows and order), with clear magenta space between frames so they never touch or overlap.
-7. Weapons are ALWAYS real-life size, following the "Weapon sizes" section: a chair seat at his knees, a table as long as he is tall, a ladder one and a half times his height. Never small or toy-sized.
+7. Weapons are ALWAYS real-life size, following the "Weapon sizes" section: a chair seat at his knees, a table as long as he is tall, a ladder as tall as he is. Never small or toy-sized.
 
 If the result has the wrong face, wrong colors, frames touching, or the wrong number of frames, redo it when I say "again".
