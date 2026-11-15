@@ -134,14 +134,17 @@ Weapons are real-life size next to the wrestler. NEVER draw them small or toy-si
 - **Ladder**: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
 A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 
-## Sheet N: Steel chair (6 frames). The chair IS drawn, folded, at real size.
+## Sheet N: Steel chair (6 frames, 2 rows of 3). The chair IS drawn at real size.
 
-1. CARRY 1: walking right, holding the folded chair at his side by the backrest, right foot forward.
-2. CARRY 2: same, left foot forward.
-3. RAISE: folded chair raised high overhead with both hands, flat side facing forward, about to swing.
-4. CHAIR SHOT: swung down hard, arms straight out in front, chair flat and level at the height of an opponent's head.
-5. JAB: driving the folded chair's edge straight forward at chest height with both hands, like a battering ram.
-6. DROP: tossing the chair away; the chair has just left his hands and is falling in front of him, his hands open.
+Top row:
+1. PICK UP: crouched low, both hands grabbing a folded chair lying on the mat in front of him.
+2. LEAN: standing behind an open chair, both hands on top of its backrest, yelling.
+3. RAISE: folded chair held high overhead with both hands, flat side forward.
+
+Bottom row:
+4. WIND-UP: folded chair cocked back over his shoulder with both hands, like a baseball bat, ready to swing.
+5. CHAIR SHOT: swung forward, arms straight out, folded chair level at chest height.
+6. DROP: empty hands clenched at his sides, the folded chair lying on the mat in front of him.
 
 ## Sheet O: Table (6 frames). The table IS drawn, at real size.
 
