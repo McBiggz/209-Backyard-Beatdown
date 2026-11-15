@@ -1,7 +1,8 @@
 # Backyard Brawl Move Sheets
 
-Use with the project instructions. Each sheet = one image.
-Sheets A–E are the wrestler alone. Sheets F–H have him using a weapon, and the weapon IS drawn, at the real size in the "Weapon sizes" section. Sheet P is the weapons alone.
+Use with the project instructions. Each sheet = one image, one row unless it says otherwise.
+The Viral Voice's finished sheets are the pose guide: "Pose_Sheet_A.png" goes with Sheet A, "Pose_Sheet_B.png" with Sheet B, and so on. Copy those poses, frame for frame, but draw the wrestler I name, from his own attached sprite.
+Sheets A–L are the wrestler alone. Sheets N, O and P have him using a weapon, and the weapon IS drawn at real size. Sheet W is the weapons alone.
 
 ## Wrestler descriptions
 
@@ -32,46 +33,91 @@ Sheets A–E are the wrestler alone. Sheets F–H have him using a weapon, and t
 - **The Delta Kid**: yellow-gold lucha mask covering his whole head with a big black mesh panel over the entire face and wavy yellow trim around it, long wavy brown hair falling from under the mask past his shoulders, tall lean build, black t-shirt with a big red "209" inside a red rectangle outline, black compression sleeves to the wrists, shiny black tights, black wrestling boots
 - **209 Kliq Enforcer**: go by the attached sprite.
 
-## Sheet A: Suplex (6 frames, 2 rows)
+## Sheet A: Standing and walking (6 frames)
 
-Top row, 4 frames, he is DOING the suplex:
-1. SUPLEX LIFT: standing, leaning back, arms locked around an invisible opponent's head and waist as if lifting him straight up overhead.
-2. SUPLEX GOING OVER: falling backward in mid-air, back arched, arms still wrapped around the invisible opponent above him.
-3. SITTING UP: sitting on the mat, one hand on the mat, the other hand on his head, shaking it off.
-4. SIGNATURE POSE: standing tall, chest out, both arms raised overhead, mouth open yelling at the crowd.
+1. STANCE: fighting stance, knees bent, fists clenched low in front of him, yelling.
+2. BREATHING: exactly the same as frame 1, same size and same feet, shoulders 1-2 pixels lower, chest slightly deflated.
+3. WALK 1: walking right, right foot forward, fists clenched at his sides.
+4. WALK 2: feet passing under him.
+5. WALK 3: left foot forward.
+6. WALK 4: feet passing, slight bounce.
 
-Bottom row, 2 frames, he is RECEIVING the suplex:
-5. LIFTED: completely upside down and straight up and down (head toward the ground, boots pointing at the sky), legs together, arms hanging.
-6. GOING OVER: flat and horizontal in mid-air, back facing the ground, head on the right, legs straight, arms flung out, hair flying.
+## Sheet B: Attacks (5 frames)
 
-## Sheet B: Pins (8 frames, 2 rows)
+1. PUNCH WIND-UP: fist pulled back by his ear, other fist forward.
+2. PUNCH: arm fully extended forward, fist closed.
+3. KICK WIND-UP: front knee raised high, fists up.
+4. KICK: leg fully extended forward at waist height, boot sole forward.
+5. STOMP: standing on one leg, other knee raised with the boot hovering, about to stomp down.
 
-Top row, 5 frames, he is DOING the pin (except frame 1):
-1. BEING PINNED: lying on his back, head on the left, shoulders flat, both legs up in the air and bent at the knees, arms out at his sides.
-2. BACKSLIDE SET-UP: standing, facing LEFT, back pressed against an invisible opponent's back, both arms reaching back over his own shoulders hooking the opponent's arms.
-3. BACKSLIDE PIN: bridging backward, feet planted, back arched up high, arms reaching back over his head holding an opponent's arms down.
-4. CRUCIFIX PIN: lying on his back at an angle, legs bent and spread as if trapping an opponent's arm, one arm hooking the other arm.
-5. ROLL-UP: crouched low over an invisible opponent, one arm around the opponent's head, the other hooking a leg, leaning forward.
+## Sheet C: Damage (4 frames)
 
-Bottom row, 3 frames, he is RECEIVING the pin:
-6. BEING BACKSLID, SET-UP: standing, leaning backward against an invisible opponent's back, both arms pulled up and back over his head as if hooked, feet coming off the mat.
-7. BEING BACKSLID, PINNED: flat on his back, head on the left, both arms stretched straight up over his head along the mat, legs flat, grimacing.
-8. BEING CRUCIFIXED: flat on his back, head on the left, both arms spread straight out to the sides like a cross, legs slightly bent, grimacing.
+1. HIT: recoiling backward, head snapped back, mouth open, arms flung out low.
+2. FALLING: falling backward through the air, back toward the mat, legs up and bent.
+3. DOWN: lying flat on his back, head on the LEFT, legs straight, arms at his sides, mouth open.
+4. GETTING UP: on one knee, facing right, one hand pushing on the mat, the other on his knee.
 
-## Sheet C: Leapfrog (4 frames, 1 row)
+## Sheet D: Airborne and top rope (5 frames). Draw NO ropes or turnbuckle.
 
-1. LEAPFROG TAKE-OFF: just jumped, leaning forward, legs swinging out wide, arms reaching forward and down as if pushing off someone's back.
-2. LEAPFROG STRADDLE: high in the air, legs spread wide in a straddle (knees straight, toes pointed), arms out to the sides, chest up, yelling.
-3. DUCKING UNDER: mid-sprint, bent forward hard at the waist so his back is almost flat, head tucked down, running stride, arms tucked in.
-4. SKID: skidding to a stop, upper body coming back up, front foot planted and braking, arms out for balance, angry look (masked wrestlers: fists clenched instead).
+1. JUMP: in the air, knees tucked up to his chest, fists clenched.
+2. DROPKICK: leaning back in mid-air, both legs straight out in front, boots forward.
+3. TOP ROPE CROUCH: crouched low, both hands gripping between his feet, as if on top of a turnbuckle.
+4. TOP ROPE STAND: crouched on the top, arms spread wide overhead, yelling.
+5. DIVE: flying forward through the air, body flat, arms stretched out in front.
 
-## Sheet D: Pin cover, being pinned, breathing (3 frames, 1 row)
+## Sheet E: Grappling (5 frames)
+
+1. GRAB: leaning forward, both hands reaching out to lock up with someone.
+2. LIFTED BACKWARD: back bent backward, arms up and clawing the air, head thrown back, as if being lifted.
+3. WORN DOWN: standing, slumped forward, arms hanging, head down, exhausted.
+4. ON ALL FOURS: low on the mat, propped on both hands, legs behind him, head up and yelling.
+5. CARRIED: lying horizontal in mid-air, back arched up, head on the left, arms hanging down, as if held up for a slam.
+
+## Sheet F: Taunts (4 frames)
+
+1. ROCKED: head thrown back, chest out, fists clenched at his sides.
+2. TAUNT: crouched wide, both arms spread out, palms open, yelling.
+3. DAZED: hunched over, arms hanging, wobbly, eyes half shut (draw no stars).
+4. VICTORY: standing tall, both fists raised high overhead, yelling.
+
+## Sheet G: Doing the suplex (4 frames)
+
+1. SUPLEX LIFT: standing, leaning back, arms locked up and over as if lifting an invisible opponent straight up.
+2. GOING OVER: falling backward in mid-air, back toward the mat, arms still wrapped around the invisible opponent.
+3. SITTING UP: sitting on the mat, one hand on the mat, the other on his head.
+4. SIGNATURE POSE: standing tall, both arms raised overhead with hands together, yelling.
+
+## Sheet H: Receiving the suplex and pins (5 frames)
+
+1. LIFTED: completely upside down, straight up and down, boots to the sky, arms hanging.
+2. GOING OVER: flat and horizontal in mid-air, back to the ground, head on the LEFT, arms flung out.
+3. BEING BACKSLID, SET-UP: in the air leaning backward, both arms pulled up over his head as if hooked, knees bent.
+4. BEING BACKSLID, PINNED: flat on his back, head on the LEFT, arms stretched up over his head along the mat, legs flat.
+5. BEING CRUCIFIXED: on his back, head on the LEFT, arms spread out to the sides, knees bent up, feet flat.
+
+## Sheet I: Doing pins (5 frames)
+
+1. BEING PINNED, KNEES UP: on his back, head on the LEFT, shoulders flat, both knees bent and up in the air.
+2. BACKSLIDE SET-UP: standing, facing LEFT, back against an invisible opponent's back, arms reaching back over his shoulders.
+3. BACKSLIDE PIN: bridging backward, feet planted, back arched high, arms reaching back over his head.
+4. CRUCIFIX PIN: on his back at an angle, legs bent and spread as if trapping an arm.
+5. ROLL-UP: crouched low over an invisible opponent, cradling a leg and the head.
+
+## Sheet J: Leapfrog (2 frames)
+
+1. LEAPFROG TAKE-OFF: crouched, leaning forward, legs wide, both hands reaching down as if pushing off someone's back.
+2. LEAPFROG STRADDLE: high in the air, legs spread wide in a straddle, arms out to the sides, yelling.
+
+## Sheet K: Duck and skid (2 frames)
+
+1. DUCKING UNDER: mid-sprint, bent forward hard at the waist, back almost flat, fists tucked in.
+2. SKID: braking to a stop, front foot planted, upper body coming back up, arms out (masked wrestlers: fists clenched).
+
+## Sheet L: Pin cover (1 frame)
 
 1. PIN COVER: lying chest-down across an invisible opponent who is flat on his back, his body draped across at a slight angle, one arm hooked around the opponent's leg pulling it up, the other arm pressing down on the opponent's chest, head up looking at the referee. His body is no longer than in his standing reference.
-2. BEING PINNED, KNEES UP: flat on his back, head on the LEFT, shoulders and whole back flat on the mat, both knees bent and pointing up with BOTH FEET FLAT on the mat, arms out at his sides.
-3. BREATHING: exactly his reference stance, same size and same feet, but shoulders 1-2 pixels lower and chest slightly deflated, as if breathing out. Same face and expression as the reference.
 
-## Sheet E: Cage escape (6 frames, 1 row). The cage is NOT drawn.
+## Sheet M: Cage escape (6 frames). The cage is NOT drawn.
 
 1. CLIMBING 1: facing right, climbing up an invisible chain-link wall in front of him, right hand reaching high, left hand gripping at chest height, right knee raised with the toe pushed into the wall.
 2. CLIMBING 2: same, opposite side: left hand reaching high, right hand at chest height, left knee raised.
@@ -88,7 +134,7 @@ Weapons are real-life size next to the wrestler. NEVER draw them small or toy-si
 - **Ladder**: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about ONE AND A HALF TIMES his height. Closed, it is almost twice his height long.
 A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 
-## Sheet F: Steel chair (6 frames, 1 row). The chair IS drawn, folded, at real size.
+## Sheet N: Steel chair (6 frames). The chair IS drawn, folded, at real size.
 
 1. CARRY 1: walking right, holding the folded chair at his side by the backrest, right foot forward.
 2. CARRY 2: same, left foot forward.
@@ -97,7 +143,7 @@ A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 5. JAB: driving the folded chair's edge straight forward at chest height with both hands, like a battering ram.
 6. DROP: tossing the chair away; the chair has just left his hands and is falling in front of him, his hands open.
 
-## Sheet G: Table (6 frames, 1 row). The table IS drawn, at real size.
+## Sheet O: Table (6 frames). The table IS drawn, at real size.
 
 1. CARRY 1: walking right, holding the folded table upright on its long edge beside him with one arm, right foot forward.
 2. CARRY 2: same, left foot forward.
@@ -106,7 +152,7 @@ A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 5. THROUGH THE TABLE: crashing back-first through the middle of the table: the table snapping into a V under his back, wood splinters flying, arms and legs flung up, head on the LEFT.
 6. IN THE WRECKAGE: flat on his back in the two broken halves of the table, head on the LEFT, eyes shut.
 
-## Sheet H: Ladder (8 frames, 2 rows of 4). The ladder IS drawn, at real size.
+## Sheet P: Ladder (8 frames, 2 rows of 4). The ladder IS drawn, at real size.
 
 Top row:
 1. CARRY 1: walking right with the closed ladder on his shoulder, front end pointing forward and slightly down, right foot forward.
@@ -120,9 +166,9 @@ Bottom row (the ladder is open and standing, he is on its left side, facing righ
 7. AT THE TOP: standing on the top steps, stretching both arms straight up overhead, grabbing at something hanging above him (draw nothing above).
 8. KNOCKED OFF: falling backward through the air away from the ladder, arms and legs flailing (draw NO ladder in this frame).
 
-## Sheet P: Weapons alone (attach The Viral Voice's standing sprite for size)
+## Sheet W: Weapons alone (attach The Viral Voice's standing sprite for size)
 
-Same 16-bit style and the same scale as the attached wrestler. Use the "Weapon sizes" section.
+Same 16-bit style and the same scale as the attached wrestler. Use the "Weapon sizes" section. Draw no wrestler except in Row 1.
 Row 1 (size check, one wide frame): The Viral Voice standing, facing right, next to an open steel chair, an open table and an open ladder, all four on the same floor line.
 Row 2 (table, no wrestler): 1. open table, long side facing us. 2. folded flat, lying down. 3. folded, standing up on its end, leaning slightly. 4. snapped in a V in the middle, still in one piece. 5. two broken halves lying flat with splinters.
 Row 3 (ladder, no wrestler): 1. open A-frame standing. 2. closed, standing straight up. 3. closed, lying flat. 4. closed, falling over at a 45° angle.
