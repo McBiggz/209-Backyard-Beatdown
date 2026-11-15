@@ -23,8 +23,10 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
  case 'elim':return 'fall';
  case 'dropdown':return f.t<CTR.dodge.dropTime-0.15?'pinning':'getup'; // flat on the stomach (the pin cover pose)
- case 'cclimb':return 'walk'+(Math.floor((f.walkPh||0)/1.5708)%4);
- case 'cdoor':return f.wiggle>0?'grap1':'grap0';
+ case 'cclimb':if(TEST_MODES&&hasArt(f,'cclimb0'))return (f.esc||0)>0.88?'ctop':'cclimb'+(Math.floor((f.walkPh||0)/3.1416)%2); // Sheet M art (test link)
+  return 'walk'+(Math.floor((f.walkPh||0)/1.5708)%4);
+ case 'cdoor':if(TEST_MODES&&hasArt(f,'ccrawl0'))return 'ccrawl'+(Math.floor((f.esc||0)*14+(f.wiggle>0?1:0))%2);
+  return f.wiggle>0?'grap1':'grap0';
  case 'wswing':return t<0.18?'grap0':'punch1';
  case 'lclimb':return 'walk'+(Math.floor(f.walkPh/1.5708)%4);
  case 'ltop':return 'perch'+blink;
@@ -37,7 +39,8 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'grappled':if(f.supF&&hasArt(f,f.supF))return f.supF; // suplex art: upside down overhead, then flat going over
  {const k=((Math.round((f.spin||0)/(Math.PI/4))%8)+8)%8;return 'flip'+k;}
  case 'perch':return 'perch'+blink;
- case 'win':return 'win'+blink;
+ case 'win':if(TEST_MODES&&G.over&&G.over.w===f&&G.over.t<0.45&&/OVER THE TOP/.test(G.over.how||'')&&hasArt(f,'cdrop'))return 'cdrop'; // just dropped off the cage
+  return 'win'+blink;
  case 'finished':return f.finBy==='slam'?'held':'dazed';
  case 'finisher':{const ty=f.ch.finType;
   if(ty==='kick')return t<0.6?'fk0':(t<0.85?'fk1':'idle0');

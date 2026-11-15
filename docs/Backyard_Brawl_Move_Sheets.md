@@ -146,14 +146,17 @@ Bottom row:
 5. CHAIR SHOT: swung forward, arms straight out, folded chair level at chest height.
 6. DROP: empty hands clenched at his sides, the folded chair lying on the mat in front of him.
 
-## Sheet O: Table (6 frames). The table IS drawn, at real size.
+## Sheet O: Table (6 frames, 2 rows of 3). The table IS drawn at real size: as long as he is tall.
 
-1. CARRY 1: walking right, holding the folded table upright on its long edge beside him with one arm, right foot forward.
-2. CARRY 2: same, left foot forward.
-3. SET UP: bent over, flipping the legs of the table open; the table is on its side in front of him.
-4. ON TOP: standing on top of the open table, arms raised high, yelling.
-5. THROUGH THE TABLE: crashing back-first through the middle of the table: the table snapping into a V under his back, wood splinters flying, arms and legs flung up, head on the LEFT.
-6. IN THE WRECKAGE: flat on his back in the two broken halves of the table, head on the LEFT, eyes shut.
+Top row:
+1. PICK UP: crouched, both hands grabbing a folded table lying flat on the mat in front of him.
+2. CARRY: standing, holding the folded table upright in front of him with both hands, legs showing.
+3. SET UP: leaning forward, pushing the open table into place with both hands.
+
+Bottom row:
+4. LEAN: standing behind the open table, both hands planted on top of it, yelling.
+5. SMASH: the table snapping into a V in front of him, wood splinters flying, his fists clenched.
+6. OVER THE WRECKAGE: standing tall, fists clenched, the two broken halves on the mat at his feet.
 
 ## Sheet P: Ladder (6 frames, 2 rows of 3). The ladder IS drawn, always the same size: about as tall as he is.
 
