@@ -131,7 +131,7 @@ Sheets A–L are the wrestler alone. Sheets N, O and P have him using a weapon, 
 Weapons are real-life size next to the wrestler. NEVER draw them small or toy-sized. For a 6 ft wrestler:
 - **Steel chair**: grey steel folding chair. Open: the seat is at his knee height and the top of the backrest reaches his hip. Folded flat: about half his height long, as wide as his shoulders.
 - **Table**: classic folding wrestling table, brown wood top with black metal folding legs. As long as he is tall (6 ft). Standing open, the tabletop reaches just below his belt. Folded: a flat board as long as he is tall.
-- **Ladder**: tall silver aluminum A-frame ladder with yellow side rails and black rubber feet. Standing open it is about as tall as he is. Closed, it is a little longer than he is tall. It is ALWAYS this same size in every frame.
+- **Ladder**: silver aluminum A-frame ladder with black rubber feet. Standing open it is about as tall as he is. Closed, it is a little longer than he is tall. It is ALWAYS this same size in every frame.
 A shorter wrestler gets the same real-size weapon, so it looks bigger on him.
 
 ## Sheet N: Steel chair (6 frames, 2 rows of 3). The chair IS drawn at real size.
