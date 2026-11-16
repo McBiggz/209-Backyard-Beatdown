@@ -4,7 +4,7 @@ let XMIN=-160,XMAX=160,ZMIN=3,ZMAX=61;const GRAV=1100,RX=175,RZB=-4,RZF=68;
 const GEO=[{yB:96,yF:182,cB:192,cF:192,hB:162,hF:198},{yB:96,yF:182,cB:192,cF:192,hB:162,hF:198},{yB:146,yF:199,cB:212,cF:194,hB:94,hF:168}];
 const geo=()=>GEO[G.stage]||GEO[0];
 const wide=()=>G.stage===3,MAPW=648;
-const barnOn=()=>G.map==='secret'&&!!G.windOn&&G.stage===3; // the real Dragon's Den barn (test link; windOn is in the replay so the sim agrees online)
+const barnOn=()=>G.map==='secret'&&G.stage===3; // the real Dragon's Den barn (the map is in the replay, so the sim agrees)
 const camLim=()=>barnOn()?[-119,198]:[0,MAPW-W]; // the barn picture is wider on the left (couch) and stops short on the right
 const mapKey=()=>barnOn()?'barn':(G.map||'ranch');
 function ringX(z){const t=(z-121)/37;return[lerp(82,42,t)+18,lerp(227,271,t)-18];}
