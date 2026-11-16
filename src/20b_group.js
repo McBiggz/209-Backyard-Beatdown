@@ -25,7 +25,8 @@ function startGroup(cfg){G.mm=null;G.mmCfg=cfg;const seed=G.forceSeed!=null?G.fo
  // test-only moves come from the match config (online: the host's link decides, so everyone runs the same rules)
  const tf=cfg.testFx!=null?cfg.testFx:TEST_MODES;G.dodgeOn=tf;G.rollInOn=tf;G.windOn=tf;G.styleOn=true;G.diff=cfg.diff!=null?cfg.diff:savedDiff;
  G.f=cfg.ids.map((id,i)=>{const ch=ROSTER.find(c=>c.id===id);const ctl=cfg.ctl?cfg.ctl[i]:(i!==0||cfg.cpuAll?'cpu':0);const f=makeFighter(ch,110,140,1,ctl==='cpu',i);f.ctl=ctl;f.set=SETS[ch.id];f.tgt=-1;f.out=false;return f;});
- G.me=cfg.me!=null?cfg.me:0;G.map=cfg.map||'ranch';G.mapT=0;G.mapArm=false;G.mapFade=0;G.secretOn=false;G.hc=G.cage=false;G.props=[];
+ G.me=cfg.me!=null?cfg.me:0;G.map=cfg.map||'ranch';G.mapT=0;G.mapArm=true;G.mapFade=0;G.mapWalk=null;G.secretOn=cfg.type==='multi'&&cfg.ids.length===2; // 1 on 1: walk into the barn (online too)
+G.hc=G.cage=false;G.props=[];
  G.ghost=makeFighter(G.f[0].ch,300,150,1,true,-1);G.ghost.ghost=true;G.ghost.hidden=true;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4);G.rec={v:1,seed,group:cfg.type,ids:cfg.ids,inp:[]};G.fstep=0;G.co={t:0,n:0};G.entrance=null;
  G.ref={x:157,z:127,y:0,dir:1,mode:'idle',walkPh:0,slap:0,moving:false,hidden:cfg.type==='rumble'};G.rec.ctl=cfg.ctl;G.rec.elim=cfg.elim;G.rec.order=cfg.order;
@@ -72,10 +73,11 @@ function updGroupFight(dt){const mm=G.mm;
  else if(mm.p1Out&&!mm.ff&&!G.net&&(confirmP()||clickQ)){mm.ff=true;callout('FAST FORWARD','#fff',0.8);}
  // camera: follow you; if you're out, follow the action
  {const me=G.f[G.me||0],act=G.f.filter(isActive);let fx=157;if(isActive(me))fx=me.x;else if(act.length)fx=act.reduce((s,f)=>s+f.x,0)/act.length;
-  const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;G.cam=lerp(G.cam,clamp(fx-192,0,MAPW-W),1-Math.exp(-dt*4));}
+  const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;if(!G.mapWalk)G.cam=lerp(G.cam,clamp(fx-192,...camLim()),1-Math.exp(-dt*4));}
  if(G.hitStop>0){G.hitStop-=dt;return;}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
  const sdt=dt*G.slow;G.rope.t+=sdt;
+ if(G.mapWalk){G.curInp=G.f.map(()=>0);G.f.forEach(f=>f.inp=blank());updMapWalk(sdt);updRef(sdt);return;} // walking through the barn door together
  if(mm.type==='rumble')rumbleClock(sdt);
  for(const f of G.f){if(f.entering)updEntering(f,sdt);if(f.state==='elim'||f.state==='elimdown')updElim(f,sdt);if(f.saving)updSave(f,sdt);}
  // who's fighting whom
@@ -95,6 +97,7 @@ function updGroupFight(dt){const mm=G.mm;
   updFighter(f,o,f.inp,sdt);}
  const act=G.f.filter(isActive);for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++)if(act[i].out===act[j].out)separate(act[i],act[j]);
  for(const f of G.f)if(f.toss)updToss(f,sdt);
+ if(G.secretOn&&!G.pin)secretCheck(sdt);
  if(mm.type==='tag'){const[a,b]=[G.f[mm.legal[0]],G.f[mm.legal[1]]];updRef(sdt,a,b);}
  if(mm.type==='multi'){const P=G.pin,ac=G.f.filter(isActive);const a=P?P.a:ac[0]||G.f[0],b=P?P.d:ac[1]||ac[0]||G.f[1];updRef(sdt,a,b);}
  // crowd
