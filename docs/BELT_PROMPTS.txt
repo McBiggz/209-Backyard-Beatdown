@@ -1,0 +1,42 @@
+BACKYARD BRAWL: CHAMPIONSHIP BELTS (Nano Banana / ChatGPT)
+One chat per belt.
+
+===== WORLD HEAVYWEIGHT CHAMPIONSHIP =====
+Attach 3 images: the color photo of the belt (FIRST), the black-and-white design drawing of the same belt, and one of your standing wrestler sprites.
+
+Using the first attached photo for the colors and the second attached drawing for the exact design and lettering, draw this championship belt as a 16-bit SNES pixel-art game sprite in the exact same style, outline thickness and scale as the attached wrestler sprite. 
+The belt: Black leather strap. A big eight-sided shiny GOLD center plate covered in engraved swirling scrollwork, with a small gold crown on top. Across the top, a red "[BMF]" logo. Then a black banner reading "WORLD HEAVYWEIGHT". In the middle, a blue globe with gold continents held up by a crouching gold strongman. Then a black banner at the bottom reading "WRESTLING CHAMPION". Two gold side plates on each side, each with a small red "[BMF]" and colored country flags: left side Japan and Mexico, then USA and Canada; right side United Kingdom and Italy, then the Philippines and India.
+
+Draw ONE sheet with 3 versions of the same belt, spaced apart so they never touch:
+1. FLAT: the whole belt laid out flat and straight across, center plate facing us, both straps and all side plates fully shown.
+2. ON THE SHOULDER: the belt draped over a shoulder as seen from the side, the center plate facing right, the strap hanging down at the front and back. Draw NO person, just the belt in that shape.
+3. HELD UP: the belt held up high, the center plate facing right and tilted up, the straps hanging down on both sides. Draw NO hands or person.
+Real size: the center plate is about as wide as the wrestler's face is tall, and the whole belt laid flat is about as long as the wrestler's arm. The same size in all 3 versions.
+Solid flat magenta background (#FF00FF). No floor, stand, shadows, people, or any text other than what is on the real belt.
+
+===== TAG TEAM CHAMPIONSHIP =====
+Attach 3 images: the color photo of the belt (FIRST), the black-and-white design drawing of the same belt, and one of your standing wrestler sprites.
+
+Using the first attached photo for the colors and the second attached drawing for the exact design and lettering, draw this championship belt as a 16-bit SNES pixel-art game sprite in the exact same style, outline thickness and scale as the attached wrestler sprite. 
+The belt: Black leather strap. A large shiny SILVER center plate with GOLD trim, a rope-pattern border and gold scrollwork. A red "[BMF]" logo at the top. In the middle, a blue globe with gold continents and a rope ring around it, with the word "WORLD" across the globe. Two gold old-time wrestlers in fighting stances on each side of the globe. At the bottom, a black banner reading "TAG TEAM" with small stars, and "WRESTLING CHAMPIONS" under it. Two silver-and-gold side plates on each side, each with a red "[BMF]" and a blue-and-gold globe.
+
+Draw ONE sheet with 3 versions of the same belt, spaced apart so they never touch:
+1. FLAT: the whole belt laid out flat and straight across, center plate facing us, both straps and all side plates fully shown.
+2. ON THE SHOULDER: the belt draped over a shoulder as seen from the side, the center plate facing right, the strap hanging down at the front and back. Draw NO person, just the belt in that shape.
+3. HELD UP: the belt held up high, the center plate facing right and tilted up, the straps hanging down on both sides. Draw NO hands or person.
+Real size: the center plate is about as wide as the wrestler's face is tall, and the whole belt laid flat is about as long as the wrestler's arm. The same size in all 3 versions.
+Solid flat magenta background (#FF00FF). No floor, stand, shadows, people, or any text other than what is on the real belt.
+
+===== SOCIAL MEDIA CHAMPIONSHIP =====
+Attach 3 images: the color photo of the belt (FIRST), the black-and-white design drawing of the same belt, and one of your standing wrestler sprites.
+
+Using the first attached photo for the colors and the second attached drawing for the exact design and lettering, draw this championship belt as a 16-bit SNES pixel-art game sprite in the exact same style, outline thickness and scale as the attached wrestler sprite. 
+The belt: RED leather strap. A big ROUND shiny SILVER center plate with gold lines: a silver globe made of gold grid lines, a small computer icon and a wifi icon at the top, a big red "[BMF]" logo in the middle with a dripping melted look, and a silver banner at the bottom reading "SOCIAL MEDIA CHAMPION". Two side plates on each side, each a social media icon with a short banner: blue "MOST LIKED" (thumbs up), purple-orange-yellow "MOST TRENDING" (camera icon), red "MOST POPULAR" (play button), and dark "MOST FOLLOWERS" (music note).
+
+Draw ONE sheet with 3 versions of the same belt, spaced apart so they never touch:
+1. FLAT: the whole belt laid out flat and straight across, center plate facing us, both straps and all side plates fully shown.
+2. ON THE SHOULDER: the belt draped over a shoulder as seen from the side, the center plate facing right, the strap hanging down at the front and back. Draw NO person, just the belt in that shape.
+3. HELD UP: the belt held up high, the center plate facing right and tilted up, the straps hanging down on both sides. Draw NO hands or person.
+Real size: the center plate is about as wide as the wrestler's face is tall, and the whole belt laid flat is about as long as the wrestler's arm. The same size in all 3 versions.
+Solid flat magenta background (#FF00FF). No floor, stand, shadows, people, or any text other than what is on the real belt.
+
