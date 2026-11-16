@@ -4,7 +4,7 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 // the test link gets the new menu: every match type is set up on one screen, and online takes up to 4 players
 // (Universe is still test-link only)
-const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6],['MOVE CHECKER','viewer']]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
+const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6],['FREE ROAM',7],['MOVE CHECKER','viewer']]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
@@ -72,7 +72,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
    if(lk){lockIn(0);S.stage=1;NET.pick(S.c[0]);}}return;}
  if(G.mode>=3){nav(0,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   let lk=confirmP();if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[0]=i;lk=true;break;}
-  if(lk){lockIn(0);if(G.mode===6){uniStart(S.c[0]);return;}if(G.mode===4){startRumble(S.c[0]);return;}if(G.mode===5){startTag(S.c[0]);return;}const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
+  if(lk){lockIn(0);if(G.mode===7){freeStart(S.c[0]);return;}if(G.mode===6){uniStart(S.c[0]);return;}if(G.mode===4){startRumble(S.c[0]);return;}if(G.mode===5){startTag(S.c[0]);return;}const dum=ROSTER.findIndex(c=>c.id===(ROSTER[S.c[0]].id==='bigmf'?'papi':'bigmf'));S.picks[1]=dum;startIntro();G.scene='fight';tutStart();}return;}
  if(G.mode===0){const w=S.stage;nav(w,['KeyA','ArrowLeft'],['KeyD','ArrowRight'],['KeyW','ArrowUp'],['KeyS','ArrowDown']);
   if(confirmP()||hit(['KeyJ'])){lockIn(w);S.stage++;if(S.stage<2)S.page=pageOf(S.c[1]);}
   if(clickQ)for(let i=S.page*PER;i<Math.min(n,S.page*PER+PER);i++)if(inRect(clickQ,cardRect(i))){S.c[w]=i;lockIn(w);S.stage++;break;}
@@ -84,7 +84,7 @@ function updSelect(){const S=G.sel,n=ROSTER.length;
 function drawSelect(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.sel;
  BOX(...SEL_BACK,'#140a0c','#5a4a40');T('< BACK',SEL_BACK[0]+15,SEL_BACK[1]+3,1,'#bfae98','center',null);
  T('CHOOSE YOUR WRESTLER',130,4,2,'#ffd35a','center','#5a0608');
- T(G.mode===6?'UNIVERSE: PICK YOUR WRESTLER':G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',130,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
+ T(G.mode===7?'FREE ROAM: PICK YOUR WRESTLER':G.mode===6?'UNIVERSE: PICK YOUR WRESTLER':G.mode===4?'ROYAL RUMBLE: PICK YOUR WRESTLER':G.mode===5?'TAG TEAM: PICK YOUR WRESTLER':G.mode===3?'TUTORIAL: PICK YOUR WRESTLER':G.mode===2?(S.picks[0]==null?'ONLINE: PICK YOUR WRESTLER':'LOCKED IN • WAITING FOR OPPONENT...'):G.mode===0?(S.stage===0?'PLAYER 1: PICK YOUR WRESTLER':'NOW PICK YOUR CPU OPPONENT'):'P1: WASD + F     P2: ARROWS + J',130,15,1,G.mode===2&&S.picks[0]!=null?'#ffd35a':'#e9dcc6','center',null);
  BOX(...STAGE_BTN,'#8f0f14','#ffd35a');T('LEVEL: '+['THE DEN','OUTDOOR','BMF RANCH','RANCH: FULL'][G.stage],STAGE_BTN[0]+42,STAGE_BTN[1]+3,1,'#fff','center',null);
  if(S.page==null)S.page=0;
  {const P=PAGES();BOX(...PAGE_BTN,'#140a0c','#ffd35a');T('< PAGE '+(S.page+1)+'/'+P+' >',PAGE_BTN[0]+PAGE_BTN[2]/2,PAGE_BTN[1]+3,1,'#ffd35a','center',null);}
@@ -106,7 +106,7 @@ function startIntro(){const S=G.sel;const c0=ROSTER[S.picks[0]],c1=ROSTER[S.pick
  G.f=[makeFighter(c0,-40,32,1,false,0),makeFighter(c1,40,32,-1,G.mode===0,1)];G.f.forEach(f=>f.set=SETS[f.ch.id]);
  if(c0.id===c1.id){const alt=Object.assign({},c1,{trunks:c1.accent,accent:c1.trunks,name:c1.name+' II',short:c1.short+' II',id:c1.id+'_alt'});if(!SETS[alt.id])buildWrestler(alt);G.f[1].ch=alt;G.f[1].set=SETS[alt.id];}
  G.scene='intro';G.introT=0;sfx('roar');}
-function beginFight(){G.mm=null;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);const[a,b]=G.f;if(G.hc||G.cage)G.stage=3;
+function beginFight(){G.mm=null;G.free=false;if(!G.uniMatch)G.f.forEach(f=>f.uniDef=null);const[a,b]=G.f;if(G.hc||G.cage)G.stage=3;
  // every match gets a seed; a replay re-uses the recorded one
  const seed=G.replay&&G.replay.seed!=null?G.replay.seed:G.forceSeed!=null?G.forceSeed:G.net?G.net.seed:(Math.random()*4294967296)>>>0;SIM.seed=seed;if(G.net)G.net.onBegin();AIR.seed=seed^0x9E3779B9;
  G.t=0;G.rope={side:0,t:9};irpReset();musStop(0.4); // the match clock starts at zero for everyone, so online players stay in step
@@ -139,7 +139,7 @@ function drawIntro(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.75)');const t=G.introT,
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',192,206,1,'#7a6a5a','center',null);}
 const OVER_BTNS=[[122,128,140,14],[122,146,140,14],[122,164,140,14]];
 const PAUSE_BTNS=[[132,136,120,14],[132,156,120,14],[132,176,120,14]];
-function updFight(dt){if(G.mm)return updGroupFight(dt);
+function updFight(dt){if(G.mm)return updGroupFight(dt);if(freeTap())clickQ=null;
  if(G.net){if(G.net.updFightMeta)G.net.updFightMeta();}
  else if(!G.over&&hit(['Escape','KeyP']))G.paused=!G.paused;
  if(G.paused){if(hit(['KeyQ'])){G.paused=false;G.scene='title';}if(hit(['KeyC'])||(clickQ&&inRect(clickQ,PAUSE_BTNS[2])))cycleDiff();if(clickQ){if(inRect(clickQ,PAUSE_BTNS[0]))G.paused=false;else if(inRect(clickQ,PAUSE_BTNS[1])){G.paused=false;G.scene='title';}}return;}
@@ -150,10 +150,10 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
   else if((hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1])))&&G.fromSetup)mselOpen();
   else if(hit(['Escape'])||(clickQ&&inRect(clickQ,OVER_BTNS[1]))){G.scene='select';G.sel={c:[G.sel.picks[0],G.sel.picks[1]],stage:0,picks:[null,null]};}
   else if(hit(['KeyQ'])||(clickQ&&inRect(clickQ,OVER_BTNS[2])))G.scene='title';}}
- if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,...camLim()),1-Math.exp(-dt*(E?3:5)));}
+ if(wide()&&!G.paused){const E=G.entrance,ef=E?G.f[[1,0][Math.min(E.i,1)]]:null;const fx=E?(E.phase==='show'?513:ef.x):G.free?G.f[0].x:(G.f[0].x+G.f[1].x)/2;G.cam=lerp(G.cam,clamp(fx-192,...camLim()),1-Math.exp(-dt*(E?3:5)));}
  if(G.entrance){updEntrance(dt);updRef(dt);return;}
  if(G.hitStop>0){G.hitStop-=dt;return;}
- if(wide()&&!G.over&&!G.pin&&!G.hc&&!G.cage&&!G.mapWalk){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
+ if(wide()&&!G.over&&!G.pin&&!G.hc&&!G.cage&&!G.mapWalk&&!G.free){if(G.f[0].out||G.f[1].out){G.co.t+=dt;if(G.co.t>=1){G.co.t-=1;G.co.n++;sfx('count');pop(PX(G.ref.x,G.ref.z),G.ref.z-78,G.co.n+'!','#fff');
    if(G.co.n>=10){const[a,b]=G.f;if(a.out&&b.out){G.over={w:null,l:null,t:0,how:'DOUBLE COUNT-OUT'};callout('DOUBLE COUNT-OUT!','#ff4a3a',1.6);}else{const w=a.out?b:a,l=a.out?a:b;G.over={w,l,t:0,how:'COUNT-OUT'};setState(w,'win');G.ref.mode='raise';callout('COUNT-OUT!','#ff4a3a',1.6);say(`${l.ch.short} is counted out! Your winner... ${w.ch.name}!`);}setTimeout(()=>sfx('bell'),200);sfx('roar');}}}
   else G.co={t:0,n:0};}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
@@ -163,6 +163,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  let inp=G.stepInp?[unpackInp(G.stepInp[0]),unpackInp(G.stepInp[1])]:[G.f[0].cpu?aiInput(G.f[0],G.f[1],sdt):humanInput(0),G.f[1].cpu?aiInput(G.f[1],G.f[0],sdt):humanInput(1)];
  if(G.over)inp=[blank(),blank()];
  if(G.tut&&!G.stepInp&&!G.over)inp[1]=tutDummyInput();
+ if(G.free)inp[1]=blank();
  if(G.hc&&G.props&&!G.stepInp)hcCpuAll(inp,sdt);
  if(G.cage&&!G.stepInp)cageCpuAll(inp,sdt);
  G.curInp=[packInp(inp[0]),packInp(inp[1])];G.f[0].inp=inp[0];G.f[1].inp=inp[1];
@@ -170,7 +171,7 @@ function updFight(dt){if(G.mm)return updGroupFight(dt);
  if(G.cage)cagePre(inp,sdt);
  if(G.pin)updPin(sdt,inp);
  if(G.scene!=='fight')return;
- updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);separate(G.f[0],G.f[1]);if(G.hc&&G.props)hcPost(sdt);if(G.cage)cagePost(sdt);secretCheck(sdt);updRef(sdt);
+ updFighter(G.f[0],G.f[1],inp[0],sdt);updFighter(G.f[1],G.f[0],inp[1],sdt);if(G.free)freePark();else separate(G.f[0],G.f[1]);if(G.hc&&G.props)hcPost(sdt);if(G.cage)cagePost(sdt);secretCheck(sdt);updRef(sdt);
  // the crowd gets hotter as the match goes on and the wrestlers wear down
  {const[a,b]=G.f,floor=0.15+Math.min(0.25,G.fstep/12000)+clamp((200-a.hp-b.hp)/200,0,1)*0.25;G.hype=Math.max(floor,G.hype-sdt*(CTR.crowd.cool+Math.max(0,G.hype-floor)*CTR.crowd.coolHot));}
  if(!G.crowdHot&&G.hype>=CTR.crowd.hot&&!G.entrance&&!G.over){G.crowdHot=true;say('Listen to this crowd! The Ranch is ON FIRE!');sfx('roar');}else if(G.crowdHot&&G.hype<CTR.crowd.hot-0.15)G.crowdHot=false;
@@ -205,7 +206,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3;for(const f of G.f)f.mwA=1; //
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();drawFreeHud();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];if(G.entFx){drawEntranceShowFx(E,f);return;}ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
@@ -233,7 +234,8 @@ const MAPZONE={ranch:{x0:455,x1:600,z1:212},secret:{x0:520,x1:600,z1:212},barn:{
 const MAPOK=new Set(['idle','walk','run','punch','kick','stomp','hit','block','grab','grapple','grabbed','held','whiff','dazed']);
 function inMapZone(f){const Z=MAPZONE[mapKey()];return f.out&&!f.hidden&&MAPOK.has(f.state)&&f.y<2&&f.x>=Z.x0&&f.x<=Z.x1&&f.z<=Z.z1;}
 function secretCheck(dt){if(!G.secretOn||!wide()||G.cage||G.over||G.pin||G.entrance||G.mapWalk)return;
- const both=G.f.every(inMapZone);
+ if(G.free&&inMapZone(G.f[0])){const d=G.f[1];d.x=G.f[0].x;d.z=G.f[0].z;d.out=true;setState(d,'idle');} // free roam: only you need to reach the door
+ const both=G.free?inMapZone(G.f[0]):G.f.every(inMapZone);
  if(!both){G.mapT=0;if(!G.f.some(inMapZone))G.mapArm=true;return;}
  if(!G.mapArm)return;
  G.mapT+=dt;if(G.mapT<0.4)return;
@@ -258,7 +260,7 @@ function updMapWalk(dt){const M=G.mapWalk;M.t+=dt;
   if(gone===G.f.length||M.t>6){M.phase='black';M.t=0;for(const f of G.f){f.mwA=0;f.hidden=true;}}}
  else if(M.phase==='black'){G.mapFade=0.7;
   if(M.t>=0.45){const toSecret=M.to==='secret';G.map=M.to;M.phase='in';M.t=0;const D=MW_DOOR[mapKey()];
-   G.f.forEach((f,i)=>{f.hidden=false;f.mwA=0;f.mwK=0;f.x=D.through[0]+f.mwOff;f.z=D.through[1];f.mwD=(i===M.lead?0:0.7);});
+   G.f.forEach((f,i)=>{f.hidden=!!f.freeHide;f.mwA=0;f.mwK=0;f.x=D.through[0]+f.mwOff;f.z=D.through[1];f.mwD=(i===M.lead?0:0.7);});
    G.cam=clamp(D.door[0]-230,...camLim());
    if(toSecret){if(!G.secretFound){G.secretFound=true;callout('SECRET MAP DISCOVERED!','#ffd35a',2.4);}else callout('INTO THE BARN!','#ffd35a',1.6);
     say(`They've taken this fight into the barn! Nobody's supposed to be back here!`);}
