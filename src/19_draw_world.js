@@ -74,14 +74,16 @@ function fArgs(f){const ds=depthS(f.z);
  return {fr,fx_,fy_,ds,dsc,ky:ky*(pa[3]||1),gx:fx_+((f.dox||0)+pa[0])*ds,gy:fy_-((f.doy||0)+pa[1])*ds,gd};}
 // pin cover: lay the pinner's body over the pinned man's body, measured from the art itself (some covers are drawn left of the
 // wrestler's spot, some right; some on the mat, some propped on top). Looks only.
+let BS_HIP=0.15;
 function frameBox(f,n,gd){const q=f.set&&f.set[n];if(!q||!q.w)return null;const k=f.ch.drawScale||1,l=(q.ox*0.5-AX)*k,r=(q.ox*0.5+q.w*0.5-AX)*k;
  return {c:gd>=0?(l+r)/2:-(l+r)/2,b:(q.oy*0.5+q.h*0.5-AY)*k,w:r-l,h:q.h*0.5*k};}
 function pinAlign(f,fr,gd){const P=G.pin;if(!P||P.a!==f||f.state!=='pinning')return [0,0];
  const d=P.d,dfr=frameOf(d),dg=d.dir*(d.turn||1)*(d.flipX?-1:1),D=frameBox(d,dfr,dg);if(!D)return [0,0];
  if(P.type==='cover'&&fr==='pinning'){const A=frameBox(f,fr,gd);if(!A)return [0,0];return [D.c-A.c+(d.x-f.x),A.b>-4?A.b+5.5:0];}
- if(P.type==='backslide'&&fr==='ccrawl0'){ // facing his head, head and shoulders on the man's chest, the raised legs over his back
+ if(P.type==='backslide'&&(fr==='ccrawl0'||fr==='pin_bsk')){ // facing his head, head and shoulders on the man's chest, the raised legs over his back
   const head=dg>=0?-1:1,m=head*gd>0?1:-1,A=frameBox(f,fr,gd*m);if(!A)return [0,0];
-  return [(D.c+head*D.w*0.08)-(A.c+head*A.w/2)+(d.x-f.x),0,m];}
+  const at=dfr==='pin_bsu'?D.c-head*D.w*BS_HIP:D.c+head*D.w*0.08; // his face at the man's hips (new art) or chest
+  return [at-(A.c+head*A.w/2)+(d.x-f.x),0,m];}
  if(P.type==='backslide'&&fr==='pin_bs1'){ // bridged back-down across his chest, both heads the same way (his head is on the art's left)
   const g2=-gd,A=frameBox(f,fr,g2);if(!A)return [0,0];const head=dg>=0?-1:1,ky=Math.min(1,42/A.h); // a bridge drawn taller than ~42 gets flattened
   return [(D.c+head*D.w/2)-(A.c+head*A.w/2)+(d.x-f.x),A.b*ky,-1,ky];}  // his hands land at the downed man's head

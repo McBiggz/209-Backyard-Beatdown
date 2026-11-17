@@ -172,12 +172,12 @@ function hasArt(f,n){return !!(f&&f.set&&f.set[n])&&artOn(f);}
 function pinTypes(a,d){const out=['cover'];const ok=f=>LIVE_ART.has(artId(f))||G.windOn;if(!(d.set&&d.set.pinned_up&&ok(d)&&ok(a)))return out;
  for(const t in PIN_FRAMES)if(PIN_FRAMES[t].every(n=>a.set&&a.set[n]))out.push(t);return out;}
 // backslide finish (test link): pinner in his cage crawl frame over the man rolled up with his legs in the air
-function bsCrawl(){const P=G.pin;return !!(P&&TEST_MODES&&P.a.set&&P.a.set.ccrawl0&&P.d.set&&P.d.set.pinned_up);}
+function bsCrawl(){const P=G.pin;return !!(P&&TEST_MODES&&P.a.set&&(P.a.set.pin_bsk||P.a.set.ccrawl0)&&P.d.set&&(P.d.set.pin_bsu||P.d.set.pinned_up));}
 function pinFrame(f){const P=G.pin;if(!P||P.type==='cover')return null;
  if(f===P.d){const s=artOn(f)?(f.set||{}):{},early=P.t<PIN_SETUP; // the pinned man's side, when he has the art
-  if(P.type==='backslide'&&!early&&bsCrawl())return 'pinned_up'; // rolled up, legs in the air
+  if(P.type==='backslide'&&!early&&bsCrawl())return f.set.pin_bsu?'pin_bsu':'pinned_up'; // rolled up, legs in the air
   if(P.type==='backslide')return early?(s.pin_bsv0?'pin_bsv0':'grabbed'):(s.pin_bsv1?'pin_bsv1':'pinned_up');
   if(P.type==='crucifix'&&s.pin_cxv&&!(P.t<PIN_SETUP*0.5))return 'pin_cxv';
   return P.t<PIN_SETUP*0.5?'grabbed':'pinned_up';}
- if(P.type==='backslide'&&P.t>=PIN_SETUP&&bsCrawl())return 'ccrawl0'; // hunched on his knees over him (the cage crawl frame)
+ if(P.type==='backslide'&&P.t>=PIN_SETUP&&bsCrawl())return f.set.pin_bsk?'pin_bsk':'ccrawl0'; // kneeling over him (his own backslide art, else the cage crawl frame)
  const fr=PIN_FRAMES[P.type];return fr.length>1&&P.t<PIN_SETUP?fr[0]:fr[fr.length-1];}
