@@ -70,9 +70,21 @@ function fArgs(f){const ds=depthS(f.z);
    if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
   const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
- return {fr,fx_,fy_,ds,dsc,ky,gx:fx_+(f.dox||0)*ds,gy:fy_-(f.doy||0)*ds,gd:f.dir*(f.turn||1)*(f.flipX?-1:1)*(FLIP_FR[artId(f)]&&FLIP_FR[artId(f)][fr]?-1:1)};}
+ const gd0=f.dir*(f.turn||1)*(f.flipX?-1:1)*(FLIP_FR[artId(f)]&&FLIP_FR[artId(f)][fr]?-1:1),pa=pinAlign(f,fr,gd0),gd=gd0*(pa[2]||1);
+ return {fr,fx_,fy_,ds,dsc,ky:ky*(pa[3]||1),gx:fx_+((f.dox||0)+pa[0])*ds,gy:fy_-((f.doy||0)+pa[1])*ds,gd};}
+// pin cover: lay the pinner's body over the pinned man's body, measured from the art itself (some covers are drawn left of the
+// wrestler's spot, some right; some on the mat, some propped on top). Looks only.
+function frameBox(f,n,gd){const q=f.set&&f.set[n];if(!q||!q.w)return null;const k=f.ch.drawScale||1,l=(q.ox*0.5-AX)*k,r=(q.ox*0.5+q.w*0.5-AX)*k;
+ return {c:gd>=0?(l+r)/2:-(l+r)/2,b:(q.oy*0.5+q.h*0.5-AY)*k,w:r-l,h:q.h*0.5*k};}
+function pinAlign(f,fr,gd){const P=G.pin;if(!P||P.a!==f||f.state!=='pinning')return [0,0];
+ const d=P.d,dfr=frameOf(d),dg=d.dir*(d.turn||1)*(d.flipX?-1:1),D=frameBox(d,dfr,dg);if(!D)return [0,0];
+ if(P.type==='cover'&&fr==='pinning'){const A=frameBox(f,fr,gd);if(!A)return [0,0];return [D.c-A.c+(d.x-f.x),A.b>-4?A.b+5.5:0];}
+ if(P.type==='backslide'&&fr==='pin_bs1'){ // bridged back-down across his chest, both heads the same way (his head is on the art's left)
+  const g2=-gd,A=frameBox(f,fr,g2);if(!A)return [0,0];const head=dg>=0?-1:1,ky=Math.min(1,42/A.h); // a bridge drawn taller than ~42 gets flattened
+  return [(D.c+head*D.w/2)-(A.c+head*A.w/2)+(d.x-f.x),A.b*ky,-1,ky];}  // his hands land at the downed man's head
+ return [0,0];}
 // frames drawn mirrored for one wrestler (Viral's pin cover faces the other way so the bodies line up)
-const FLIP_FR={viral:{pinning:1}};
+const FLIP_FR={viral:{pinning:1}}; // (Viral's cover art faces the other way; pinAlign then slides it onto the body)
 // the transform drawSpr uses, as a matrix from sprite units (0..SW, 0..SH) to the canvas
 function sprM(f,A){let m=ctx.getTransform(),sx=A.gx,sy=A.gy;
  if(f.rot){m=m.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc)).rotate(f.rot*f.dir);sx=0;sy=28*A.dsc;}
