@@ -1,0 +1,10 @@
+BACKSLIDE PIN – 2 FRAMES (ChatGPT)
+Attach: the wrestler's standing sprite, then the backslide photo.
+
+Using the attached sprite as the exact reference for this wrestler (same face, hair, body, tattoos, gear and colors) and the exact same 16-bit SNES pixel-art style, outline thickness and scale, draw ONE sheet with 2 frames side by side, spaced apart. Copy the POSE from the attached photo, mirrored so it reads left to right. Draw ONLY this wrestler in each frame; the other man is invisible.
+
+1. DOING THE BACKSLIDE: on both knees, facing RIGHT, leaning far BACK so his back and shoulders press against an invisible opponent behind him on the left, head tucked down toward his chest, both arms hooked back behind him around the invisible opponent's arms. Low to the mat, like the man in the flame tights in the photo, but mirrored.
+
+2. BEING BACKSLID: rolled up onto his upper back and shoulders with his head on the mat on the LEFT, hips raised, both legs pointing straight up in the air, arms trapped at his sides, like the man in the blue and red tights in the photo, but mirrored.
+
+Same scale as the reference. Solid flat magenta background (#FF00FF). No ring, ropes, floor, shadows, referee, text or other people.

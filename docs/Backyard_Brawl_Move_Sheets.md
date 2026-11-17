@@ -92,14 +92,14 @@ Sheets A–L are the wrestler alone. Sheets N, O and P have him using a weapon, 
 1. LIFTED: completely upside down, straight up and down, boots to the sky, arms hanging.
 2. GOING OVER: flat and horizontal in mid-air, back to the ground, head on the LEFT, arms flung out.
 3. BEING BACKSLID, SET-UP: in the air leaning backward, both arms pulled up over his head as if hooked, knees bent.
-4. BEING BACKSLID, PINNED: flat on his back, head on the LEFT, arms stretched up over his head along the mat, legs flat.
+4. BEING BACKSLID, PINNED: rolled up onto his upper back and shoulders, head on the mat on the LEFT, hips up, both legs pointing straight up in the air, arms pinned at his sides.
 5. BEING CRUCIFIXED: on his back, head on the LEFT, arms spread out to the sides, knees bent up, feet flat.
 
 ## Sheet I: Doing pins (5 frames)
 
 1. BEING PINNED, KNEES UP: on his back, head on the LEFT, shoulders flat, both knees bent and up in the air.
 2. BACKSLIDE SET-UP: standing, facing LEFT, back against an invisible opponent's back, arms reaching back over his shoulders.
-3. BACKSLIDE PIN: bridging backward, feet planted, back arched high, arms reaching back over his head.
+3. BACKSLIDE PIN: on both knees, facing RIGHT, leaning far BACK so his back and shoulders rest against an invisible opponent behind him, head tucked down, both arms hooked back behind him around the opponent's arms. Low to the mat, not a high bridge.
 4. CRUCIFIX PIN: on his back at an angle, legs bent and spread as if trapping an arm.
 5. ROLL-UP: crouched low over an invisible opponent, cradling a leg and the head.
 
