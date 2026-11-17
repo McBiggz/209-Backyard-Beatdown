@@ -248,7 +248,7 @@ function secretCheck(dt){if(!G.secretOn||!wide()||G.cage||G.over||G.pin||G.entra
 // door spots on each map (map x, depth z): walk to the threshold, then through it while fading
 const MW_DOOR={ranch:{door:[533,158],through:[533,139],out:[[512,164],[484,166]]},
  secret:{door:[588,170],through:[628,162],out:[[532,170],[502,172]]},
- barn:{door:[536,167],through:[566,159],out:[[500,170],[470,172]]}};
+ barn:{door:[536,161.6],through:[566,158.4],out:[[500,162.8],[470,163.6]]}}; // depths picked so they draw where the doorway is (see barnY)
 function mwMove(f,tx,tz,dt,sp=62){const dx=tx-f.x,dz=tz-f.z,d=Math.hypot(dx,dz);if(d<1){f.x=tx;f.z=tz;return true;}
  const s=Math.min(d,sp*dt);f.x+=dx/d*s;f.z+=dz/d*s;if(Math.abs(dx)>0.5)f.dir=dx>0?1:-1;f.walkPh+=dt*11;f.state='walk';return false;}
 function updMapWalk(dt){const M=G.mapWalk;M.t+=dt;

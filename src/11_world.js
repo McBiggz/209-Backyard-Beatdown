@@ -33,7 +33,10 @@ function tryRoll(f,mx,mz){
  return false;}
 const PX=(x,z)=>{if(wide())return x-G.cam;const g=geo(),t=(z-RZB)/(RZF-RZB);return lerp(g.cB,g.cF,t)+x/RX*lerp(g.hB,g.hF,t);};
 // the barn's mat is drawn shallower than the game ring: squeeze the ring's depth onto it (looks only; the sim works in x/z)
-const barnY=z=>z>=158?z:158-(158-z)*0.759;
+// the barn: the mat is shallower than the game ring (squeeze it), and the black apron skirt in front is tall, so the floor in front of the
+// ring is drawn on the strip below the skirt (rolling out drops you down off the apron). Looks only.
+const BARN_FLOOR=[[158,158],[170,188],[188,198],[212,211]];
+const barnY=z=>{if(z<158)return 158-(158-z)*0.759;const P=BARN_FLOOR;for(let i=1;i<P.length;i++)if(z<=P[i][0]||i===P.length-1){const[a,b]=[P[i-1],P[i]];return a[1]+(z-a[0])/(b[0]-a[0])*(b[1]-a[1]);}};
 const PY=z=>{if(wide())return barnOn()?barnY(z):z;const g=geo();return g.yB+(z-RZB)/(RZF-RZB)*(g.yF-g.yB);};
 const zAtY=y=>{const g=geo();return RZB+(y-g.yB)/(g.yF-g.yB)*(RZF-RZB);};
 
