@@ -1,7 +1,7 @@
 // ---- MOVE CHECKER (test link only): step through the new move art one frame at a time.
 // Uses the real fight drawing, but nothing is simulated: every frame the two wrestlers are posed from the viewer clock.
 const VMOVES=[['SUPLEX',-1],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
-const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','frog0','frog1','frog_v0','frog_v1'];
+const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','pin_bsk','pin_bsu','cclimb0','cclimb1','ctop','cdrop','ccrawl0','ccrawl1','frog0','frog1','frog_v0','frog_v1'];
 const VSPD=[0.1,0.25,0.5,1];
 let V=null;
 // tap targets: [x,y,w,h]
