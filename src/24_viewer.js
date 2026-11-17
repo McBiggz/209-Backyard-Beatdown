@@ -1,6 +1,7 @@
 // ---- MOVE CHECKER (test link only): step through the new move art one frame at a time.
 // Uses the real fight drawing, but nothing is simulated: every frame the two wrestlers are posed from the viewer clock.
-const VMOVES=[['SUPLEX',-1],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
+const VPINS=['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP'];
+const VMOVES=[['SUPLEX',-1],['COVER',1.6],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
 const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','pin_bsk','pin_bsu','cclimb0','cclimb1','ctop','cdrop','ccrawl0','ccrawl1','frog0','frog1','frog_v0','frog_v1'];
 const VSPD=[0.1,0.25,0.5,1];
 let V=null;
@@ -18,12 +19,12 @@ function vSetup(){const ia=V.ids[V.a],ib=V.ids[V.b];
  V.x0=G.f[0].x;V.z0=G.f[0].z;G.f[1].z=V.z0;V.t=0;V.pinMade=false;G.scene='viewer';vPose();}
 function vPose(){const[f,o]=G.f,mv=VMOVES[V.m][0],t=V.t,x=V.x0;
  f.x=x;f.z=o.z=V.z0;f.y=o.y=0;f.spin=o.spin=0;f.dir=1;o.dir=-1;f.leap=false;f.dodge=null;o.r5t=null;f.hidden=o.hidden=false;
- if(mv!=='BACKSLIDE'&&mv!=='CRUCIFIX'&&mv!=='ROLL-UP')G.pin=null;
+ if(!VPINS.includes(mv))G.pin=null;
  if(mv==='SUPLEX'){
   const art=supArt(o),tl=art?supKF()[supKF().length-1].t:0.65;
   if(t<tl){setState(f,'grapple');f.t=t;setState(o,'grappled');o.dir=-1;updGrapple(f,o);}
   else{setState(f,'grapple');f.t=t;f.supAF=art?'situp':null;setState(o,'down');o.downDur=99;o.x=x-f.dir*(art?12+SUP_LAND*o.ch.size:20);o.dir=art?-f.dir:f.dir;o.supLand=art;}
- }else if(mv==='BACKSLIDE'||mv==='CRUCIFIX'||mv==='ROLL-UP'){
+ }else if(VPINS.includes(mv)){
   if(!G.pin||G.pin.type!==mv.toLowerCase().replace('-','')){G.pin=null;setState(f,'idle');setState(o,'down');o.downDur=99;o.x=x+24;startPin(f,o);}
   if(G.pin){G.pin.type=mv.toLowerCase().replace('-','');G.pin.t=t;}
  }else if(mv==='LEAPFROG'){
@@ -46,7 +47,7 @@ function updViewer(){const q=clickQ;clickQ=null;const mv=VMOVES[V.m],len=vLen();
  if(tap('m0')||hit(['ArrowUp'])){V.m=(V.m+VMOVES.length-1)%VMOVES.length;V.t=0;V.fi=0;re=true;}
  if(tap('m1')||hit(['ArrowDown'])){V.m=(V.m+1)%VMOVES.length;V.t=0;V.fi=0;re=true;}
  if(tap('play')||hit(['Space','Enter']))V.play=!V.play;
- if(mv[0]==='SUPLEX'&&tap('edit')){V.edit=true;V.play=false;V.t=Math.max(V.t,0.3);vPose();return;}
+ if(mv[1]!==0&&tap('edit')){vOpenTrack(mv[0]);V.edit=true;V.play=false;V.t=Math.max(V.t,vT0());vPose();return;}
  if(tap('spd')||hit(['KeyF']))V.spd=(V.spd+1)%VSPD.length;
  const step=1/30;
  if(len===0){if(tap('back')||hit(['ArrowLeft']))V.fi=(V.fi+VNEW.length-1)%VNEW.length;if(tap('fwd')||hit(['ArrowRight']))V.fi=(V.fi+1)%VNEW.length;}
@@ -64,7 +65,7 @@ function drawViewer(){const mv=VMOVES[V.m],[f,o]=G.f;
   if(set&&set[n])drawSpr(set,n,270,170,-1,1);
   T(vName(n)+'  ('+(V.fi+1)+'/'+VNEW.length+')',192,24,1,'#ffd35a','center');T('FACING RIGHT',120,182,1,'#aaa','center');T('FACING LEFT',270,182,1,'#aaa','center');}
  else{const mx=mv[0]==='SUPLEX'?f.x-10:(f.x+o.x)/2,mz=(f.z+o.z)/2,px=PX(mx,mz),py=PY(mz)-(VMOVES[V.m][0]==='SUPLEX'?40:30),Z=2;
-  ctx.save();ctx.translate(192,108);ctx.scale(Z,Z);ctx.translate(-Math.round(px),-Math.round(py));drawFight();if(V.edit&&V.ghost)vGhost();ctx.restore();
+  ctx.save();ctx.translate(192,108);ctx.scale(Z,Z);ctx.translate(-Math.round(px),-Math.round(py));drawFight();if(V.edit&&V.ghost&&vSup())vGhost();ctx.restore();
   const fa=(pinFrame(f)||frameOf(f)),fb=(pinFrame(o)||frameOf(o));
   R(0,170,W,26,'rgba(0,0,0,0.6)');
   T(f.ch.short+': '+vName(fa),6,174,1,'#fff','left');T(o.ch.short+': '+vName(fb),378,174,1,'#fff','right');
@@ -72,7 +73,7 @@ function drawViewer(){const mv=VMOVES[V.m],[f,o]=G.f;
  R(0,0,W,17,'#0b0608');
  vBtn('a0','<');T(ROSTER[V.ids[V.a]].short,70,5,1,'#fff','center');vBtn('a1','>');
  vBtn('b0','<');T(ROSTER[V.ids[V.b]].short,314,5,1,'#9cf','center');vBtn('b1','>');
- if(mv[0]==='SUPLEX')vBtn('edit',V.edit?'EDITING':'EDIT',V.edit);else T('MOVE CHECKER',192,5,1,'#ffd35a','center');
+ if(mv[1]!==0)vBtn('edit',V.edit?'EDITING':'EDIT',V.edit);else T('MOVE CHECKER',192,5,1,'#ffd35a','center');
  if(V.edit){vEditDraw();return;}
  R(0,198,W,18,'#0b0608');
  vBtn('m0','<');T(mv[0],67,203,1,'#ffd35a','center');vBtn('m1','>');
@@ -81,14 +82,18 @@ function drawViewer(){const mv=VMOVES[V.m],[f,o]=G.f;
 // ---- keyframe editor (suplex): drag the man being suplexed, add/delete keys, pick frames, copy the result
 const VE={sel:[2,19,58,12],flip:[62,19,40,12],front:[104,19,68,12],ghost:[174,19,48,12],cpy:[224,19,34,12],pst:[260,19,36,12],nl:[298,19,16,12],nu:[316,19,22,12],nd:[340,19,22,12],nr:[364,19,18,12],rl:[2,168,40,11],rr:[342,168,40,11],back:[2,200,24,14],fwd:[28,200,24,14],add:[54,200,34,14],del:[90,200,28,14],vf:[120,200,52,14],af:[174,200,52,14],copy:[228,200,40,14],reset:[270,200,44,14],done:[316,200,32,14],lay:[350,200,32,14],tl:[20,180,344,12]};
 const VF_OPTS=['sup_v0','sup_v1','flip0'],AF_OPTS=['sup0','sup1','grap1'];
+const vSup=()=>!V.track||V.track==='SUPLEX';
+const vT0=()=>vSup()?0.3:0;   // the suplex grab (0..0.3) is not editable; every other move is from the start
 function vLoadKF(){try{const j=localStorage.getItem('bb_kf_suplex');if(j){const k=JSON.parse(j);if(Array.isArray(k)&&k.length>=2)return k;}}catch(e){}return SUP_KF.map(k=>({...k}));}
-function vSaveKF(){try{localStorage.setItem('bb_kf_suplex',JSON.stringify(V.kf));}catch(e){}}
+function vSaveKF(){try{if(vSup())localStorage.setItem('bb_kf_suplex',JSON.stringify(V.kf));else{localStorage.setItem('bb_kf_'+V.track,JSON.stringify(V.kf));MOVE_OV[V.track]=V.kf;}}catch(e){}}
+function vOpenTrack(name){if(name==='SUPLEX'){V.track='SUPLEX';V.kf=V.supKf||vLoadKF();return;}
+ if(V.track==='SUPLEX'||!V.track)V.supKf=V.kf;V.track=name;V.kf=ovTrack(name).map(k=>({...k}));}
 const vKeyAt=()=>V.kf.findIndex(k=>Math.abs(k.t-V.t)<0.017);
-function vEnsureKey(){let i=vKeyAt();if(i>=0)return i;if(V.t<0.3)return -1;const k=kfAt(V.kf,V.t);
+function vEnsureKey(){let i=vKeyAt();if(i>=0)return i;if(V.t<vT0())return -1;const k=kfAt(V.kf,V.t);
  V.kf.push({...k,t:+V.t.toFixed(3)});V.kf.sort((a,b)=>a.t-b.t);vSaveKF();return vKeyAt();}
-const vKFtext=()=>JSON.stringify(V.kf.map(k=>{const o={t:+k.t.toFixed(3),dx:+k.dx.toFixed(1),dy:+k.dy.toFixed(1),r:Math.round(k.r||0),vf:k.vf,af:k.af};
- if(k.ax||k.ay){o.ax=+(k.ax||0).toFixed(1);o.ay=+(k.ay||0).toFixed(1);}if(k.ar)o.ar=Math.round(k.ar);if(k.fh)o.fh=1;if(k.fa)o.fa=1;if(k.lay==='you')o.lay='you';return o;}));
-function vCopy(){const txt='SUPLEX KEYS '+vKFtext();let ok=false;
+const vKFtext=()=>JSON.stringify(V.kf.map(k=>{const o={t:+k.t.toFixed(3),dx:+(k.dx||0).toFixed(1),dy:+(k.dy||0).toFixed(1),r:Math.round(k.r||0),vf:k.vf,af:k.af};
+ if(k.ax||k.ay){o.ax=+(k.ax||0).toFixed(1);o.ay=+(k.ay||0).toFixed(1);}if(k.ar)o.ar=Math.round(k.ar);if(k.fh)o.fh=1;if(k.fa)o.fa=1;if(k.lay)o.lay=k.lay;return o;}));
+function vCopy(){const txt=(vSup()?'SUPLEX':V.track)+' KEYS '+vKFtext();let ok=false;
  try{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand('copy');ta.remove();}catch(e){}
  try{if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>{},()=>{});ok=true;}}catch(e){}
  V.msg=ok?'COPIED! PASTE IT TO CLAUDE':'COPY FAILED';V.msgT=2.5;}
@@ -98,14 +103,15 @@ function vPt(e){const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)/
 cv.addEventListener('pointerdown',e=>{if(G.scene!=='viewer'||!V||!V.edit)return;const p=vPt(e);
  if(V.lay){vLayTap(p);return;}
  if(inRect(p,VE.copy)){vCopy();return;}
- if(p.y>33&&p.y<166&&V.t>=0.3&&V.t<supKF()[supKF().length-1].t+0.001){const i=vEnsureKey();if(i<0)return;const k=V.kf[i],me=V.sel==='you';vDrag={i,x:p.x,y:p.y,dx:me?(k.ax||0):k.dx,dy:me?(k.ay||0):k.dy};}});
+ if(p.y>33&&p.y<166&&V.t>=vT0()&&(!vSup()||V.t<supKF()[supKF().length-1].t+0.001)){const i=vEnsureKey();if(i<0)return;const k=V.kf[i],me=V.sel==='you';vDrag={i,x:p.x,y:p.y,dx:me?(k.ax||0):(k.dx||0),dy:me?(k.ay||0):(k.dy||0)};}});
 cv.addEventListener('pointermove',e=>{if(!vDrag||G.scene!=='viewer'||!V)return;const p=vPt(e),f=G.f[0],s=f.ch.size,Z=2,k=V.kf[vDrag.i];if(!k)return;
  const nx=vDrag.dx+(p.x-vDrag.x)/Z/s*f.dir,ny=vDrag.dy-(p.y-vDrag.y)/Z/s;if(V.sel==='you'){k.ax=nx;k.ay=ny;}else{k.dx=nx;k.dy=ny;}vPose();});
 addEventListener('pointerup',()=>{if(vDrag){vDrag=null;vSaveKF();}});
+function vFrames(f){return f&&f.set?Object.keys(f.set).filter(n=>f.set[n]&&(f.set[n].w||f.set[n].width)):[];}
 function vEditUpd(q){const tap=k=>q&&inRect(q,VE[k]);if(V.msgT>0)V.msgT-=STEP;
  if(V.lay){vLayUpd(q);return;}
  if(tap('lay')){V.lay=true;V.lp=0;vPose();return;}
- const last=V.kf[V.kf.length-1].t,step=1/30;
+ const last=vSup()?V.kf[V.kf.length-1].t:vLen()-0.3,step=1/30;
  if(hit(['Escape'])||tap('done')){V.edit=false;vPose();return;}
  if(tap('back')||hit(['ArrowLeft']))V.t=Math.max(0,+(V.t-step).toFixed(4));
  if(tap('fwd')||hit(['ArrowRight']))V.t=Math.min(last+0.3,+(V.t+step).toFixed(4));
@@ -118,28 +124,30 @@ function vEditUpd(q){const tap=k=>q&&inRect(q,VE[k]);if(V.msgT>0)V.msgT-=STEP;
  if(tap('ghost'))V.ghost=!V.ghost;
  if(tap('cpy')){const i=vKeyAt();const k=i>=0?V.kf[i]:kfAt(V.kf,Math.max(0.3,V.t));V.clip={...k};V.msg='POSE COPIED';V.msgT=1.2;}
  if(tap('pst')&&V.clip){const i=vEnsureKey();if(i>=0){V.kf[i]={...V.clip,t:V.kf[i].t};vSaveKF();V.msg='POSE PASTED';V.msgT=1.2;}}
- {const s=G.f[0].ch.size,u=1/s;for(const[n,ddx,ddy]of[['nl',-u,0],['nr',u,0],['nu',0,u],['nd',0,-u]])if(tap(n)){const i=vEnsureKey();if(i>=0){const k=V.kf[i];if(V.sel==='you'){k.ax=(k.ax||0)+ddx;k.ay=(k.ay||0)+ddy;}else{k.dx+=ddx;k.dy+=ddy;}vSaveKF();}}}
+ {const s=G.f[0].ch.size,u=1/s;for(const[n,ddx,ddy]of[['nl',-u,0],['nr',u,0],['nu',0,u],['nd',0,-u]])if(tap(n)){const i=vEnsureKey();if(i>=0){const k=V.kf[i];if(V.sel==='you'){k.ax=(k.ax||0)+ddx;k.ay=(k.ay||0)+ddy;}else{k.dx=(k.dx||0)+ddx;k.dy=(k.dy||0)+ddy;}vSaveKF();}}}
  if((tap('del')||hit(['Delete','Backspace']))&&V.kf.length>2){const i=vKeyAt();if(i>=0){V.kf.splice(i,1);vSaveKF();}}
- if(tap('vf')){const i=vEnsureKey();if(i>=0){const k=V.kf[i];k.vf=VF_OPTS[(VF_OPTS.indexOf(k.vf)+1)%VF_OPTS.length];vSaveKF();}}
- if(tap('af')){const i=vEnsureKey();if(i>=0){const k=V.kf[i];k.af=AF_OPTS[(AF_OPTS.indexOf(k.af)+1)%AF_OPTS.length];vSaveKF();}}
- if(tap('reset')){V.kf=SUP_KF.map(k=>({...k}));V.sel='him';try{localStorage.removeItem('bb_kf_suplex');}catch(e){}V.msg='BACK TO THE GAME\'S VERSION';V.msgT=2;}
+ for(const[n,fld,who]of[['vf','vf',1],['af','af',0]])if(tap(n)){const i=vEnsureKey();if(i>=0){const k=V.kf[i];
+  const L=vSup()?(fld==='vf'?VF_OPTS:AF_OPTS):[undefined,...vFrames(G.f[who])],back=q&&q.x<VE[n][0]+12;  // tap the left end to go back
+  k[fld]=L[((L.indexOf(k[fld])+(back?-1:1))%L.length+L.length)%L.length];vSaveKF();}}
+ if(tap('reset')){V.sel='him';if(vSup()){V.kf=SUP_KF.map(k=>({...k}));try{localStorage.removeItem('bb_kf_suplex');}catch(e){}}
+  else{try{localStorage.removeItem('bb_kf_'+V.track);}catch(e){}delete MOVE_OV[V.track];V.kf=ovTrack(V.track).map(k=>({...k}));}V.msg='BACK TO THE GAME\'S VERSION';V.msgT=2;}
  vPose();}
 function B2(n,s){const r=VE[n];BOX(...r,'#140a0c','#9cf');T(s,r[0]+r[2]/2,r[1]+2,1,'#9cf','center',null);}
-function vEditDraw(){if(V.lay){vLayDraw();return;}const tl=VE.tl,last=V.kf[V.kf.length-1].t,span=last+0.3,i=vKeyAt(),k=i>=0?V.kf[i]:kfAt(V.kf,Math.max(0.3,V.t));
+function vEditDraw(){if(V.lay){vLayDraw();return;}const tl=VE.tl,last=vSup()?V.kf[V.kf.length-1].t:vLen(),span=vSup()?last+0.3:last,i=vKeyAt(),k=i>=0?V.kf[i]:kfAt(V.kf,Math.max(vT0(),V.t));
  R(0,17,W,16,'rgba(0,0,0,0.7)');const me=V.sel==='you';
- B2('sel',me?'MOVE: YOU':'MOVE: HIM');B2('flip',(me?k.fa:k.fh)?'FLIP ON':'FLIP');B2('front',(k.lay==='you'?'YOU':'HIM')+' IN FRONT');B2('ghost',V.ghost?'GHOST ON':'GHOST');
+ B2('sel',me?'MOVE: YOU':'MOVE: HIM');B2('flip',(me?k.fa:k.fh)?'FLIP ON':'FLIP');B2('front',vSup()?(k.lay==='you'?'YOU':'HIM')+' IN FRONT':k.lay?(k.lay==='you'?'YOU':'HIM')+' IN FRONT':'AUTO FRONT');B2('ghost',V.ghost?'GHOST ON':'GHOST');
  B2('cpy','COPY');B2('pst','PASTE');B2('nl','<');B2('nu','UP');B2('nd','DN');B2('nr','>');
  R(0,168,W,30,'rgba(0,0,0,0.75)');
- T(i>=0?'KEY '+(i+1)+'/'+V.kf.length+'  - DRAG '+(V.sel==='you'?'YOURSELF':'HIM')+' TO MOVE':(V.t<0.3?'GRAB (NOT EDITABLE)':V.t>=last?'LANDED':'BETWEEN KEYS - DRAG TO ADD ONE'),192,170,1,i>=0?'#ffd35a':'#ccc','center');
+ T(i>=0?'KEY '+(i+1)+'/'+V.kf.length+'  - DRAG '+(V.sel==='you'?'YOURSELF':'HIM')+' TO MOVE':(V.t<vT0()?'GRAB (NOT EDITABLE)':vSup()&&V.t>=last?'LANDED':'BETWEEN KEYS - DRAG TO ADD ONE'),192,170,1,i>=0?'#ffd35a':'#ccc','center');
  B2('rl','<ROT');B2('rr','ROT>');T(Math.round((V.sel==='you'?k.ar:k.r)||0)+' DEG',330,170,1,'#9cf','right');
  R(tl[0],tl[1]+5,tl[2],2,'#666');
- R(tl[0]+0.3/span*tl[2],tl[1]+2,1,8,'#888');
+ if(vSup())R(tl[0]+0.3/span*tl[2],tl[1]+2,1,8,'#888');
  V.kf.forEach((q,j)=>{const x=tl[0]+q.t/span*tl[2];R(x-2,tl[1]+1,5,10,j===i?'#ffd35a':'#c84');});
  R(tl[0]+V.t/span*tl[2],tl[1]-1,1,14,'#fff');
  T(V.t.toFixed(2)+'s',366,182,1,'#fff','left');
  R(0,198,W,18,'#0b0608');
  const B=(n,s,on)=>{const r=VE[n];BOX(...r,on?'#3a1a10':'#140a0c','#ffd35a');T(s,r[0]+r[2]/2,r[1]+4,1,'#fff','center',null);};
- B('back','<');B('fwd','>');B('add','KEY+');B('del','DEL');B('vf','HIM:'+(k.vf||'').replace('sup_','').replace('flip0','STAND').toUpperCase());B('af','YOU:'+(k.af||'').toUpperCase());
+ B('back','<');B('fwd','>');B('add','KEY+');B('del','DEL');B('vf','HIM:'+(vSup()?(k.vf||'').replace('sup_','').replace('flip0','STAND'):(k.vf||'AUTO')).toUpperCase().slice(0,8));B('af','YOU:'+(vSup()?(k.af||''):(k.af||'AUTO')).toUpperCase().slice(0,8));
  B('copy','SEND');B('reset','RESET');B('done','DONE');B('lay','PARTS');
  if(V.msgT>0){BOX(92,90,200,18,'#140a0c','#ffd35a');T(V.msg,192,96,1,'#fff','center');}}
 

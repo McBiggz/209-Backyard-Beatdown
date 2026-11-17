@@ -57,7 +57,7 @@ function tryGrab(f,o,mx){if(o.ghost){setState(f,'whiff');return;}
 // Snap suplex (no hold at the top). The suplex with the new art runs off keyframes: where the man being suplexed is (dx forward, dy up, in units of
 // the attacker's size), and which frame each of them shows from that moment on. Edit them in the Move Checker.
 const SUP_KF=[{"t":0.3,"dx":14,"dy":22,"r":0,"vf":"sup_v0","af":"sup0"},{"t":0.331,"dx":1.3,"dy":46.4,"r":0,"vf":"sup_v0","af":"sup0"},{"t":0.365,"dx":-0.2,"dy":45.6,"r":0,"vf":"sup_v0","af":"sup0"},{"t":0.398,"dx":-0.4,"dy":46.4,"r":0,"vf":"sup_v0","af":"sup0"},{"t":0.4,"dx":0,"dy":45.3,"r":0,"vf":"sup_v0","af":"sup0"},{"t":0.443,"dx":0.4,"dy":44,"r":0,"vf":"sup_v0","af":"sup1"},{"t":0.467,"dx":-22.8,"dy":26.2,"r":30,"vf":"sup_v0","af":"sup1"},{"t":0.503,"dx":-24,"dy":20,"r":60,"vf":"sup_v1","af":"sup1"},{"t":0.533,"dx":-28.1,"dy":23.1,"r":-21,"vf":"sup_v1","af":"sup1"},{"t":0.553,"dx":-38,"dy":6,"r":0,"vf":"sup_v1","af":"sup1"}];
-function supKF(){return (G.scene==='viewer'&&typeof V!=='undefined'&&V&&V.kf)||SUP_KF;}
+function supKF(){if(G.scene==='viewer'&&typeof V!=='undefined'&&V){if(V.kf&&(!V.track||V.track==='SUPLEX'))return V.kf;if(V.supKf)return V.supKf;}return SUP_KF;}
 function kfAt(K,t){let i=0;while(i<K.length-1&&K[i+1].t<=t)i++;const a=K[i],b=K[i+1];
  if(!b||t<=a.t)return a;const p=(t-a.t)/(b.t-a.t);const L=n=>(a[n]||0)+((b[n]||0)-(a[n]||0))*p;return {...a,t,dx:L('dx'),dy:L('dy'),r:L('r'),ax:L('ax'),ay:L('ay'),ar:L('ar')};}
 function updGrapple(f,o){

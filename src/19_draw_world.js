@@ -12,7 +12,7 @@ function drawDodgeHint(){if(G.mm||G.over)return;const me=G.f[0],o=G.f[1];if(!me|
 // pass: undefined = everyone; 'in' / 'out' = steel cage, split so whoever is still OUTSIDE the cage (walking up to the gate) is drawn over the cage front and ropes
 const outsideCage=f=>G.cage&&wide()&&f.z>ZMAX+1;
 function drawFighters(pass){
- const R0=G.ref,ents=G.f.filter(f=>!f.hidden&&(pass==='out'?outsideCage(f):pass==='in'?!outsideCage(f):true)).map(f=>({f,z:f.z+(f.layer||0)+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden&&pass!=='out')ents.push({f:R0,z:R0.z,ref:true});
+ const R0=G.ref,ents=G.f.filter(f=>!f.hidden&&(pass==='out'?outsideCage(f):pass==='in'?!outsideCage(f):true)).map(f=>({f,z:f.z+(f.layer||0)+((o=>o&&o.front!=null?(o.front?2:-2):0)(moveOv(f)))+(f.state==='pinning'?0.5:0)+(f.state==='finished'&&f.y>4?0.5:0)}));if(!R0.hidden&&pass!=='out')ents.push({f:R0,z:R0.z,ref:true});
  if(G.props&&wide()&&pass!=='out')for(const p of G.props)if(p.held<0)ents.push({p,z:p.z-0.3});
  for(const e of ents)if(e.f&&!(e.f.mwA<0.6))shadowOf(e.f,e.ref?0.9:e.f.ch.size);
  ents.sort((p,q)=>p.z-q.z);
@@ -69,9 +69,22 @@ function fArgs(f){const ds=depthS(f.z);
    if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);                                                                        // squash as it lands
    if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
-  const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),fr=frameOf(f),dsc=ds*(f.ch.drawScale||1);
+  const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),ov=moveOv(f),fr=ov&&ov.fr&&f.set&&f.set[ov.fr]?ov.fr:frameOf(f),dsc=ds*(f.ch.drawScale||1);
  const gd0=f.dir*(f.turn||1)*(f.flipX?-1:1)*(FLIP_FR[artId(f)]&&FLIP_FR[artId(f)][fr]?-1:1),pa=pinAlign(f,fr,gd0),gd=gd0*(pa[2]||1);
- return {fr,fx_,fy_,ds,dsc,ky:ky*(pa[3]||1),gx:fx_+((f.dox||0)+pa[0])*ds,gy:fy_-((f.doy||0)+pa[1])*ds,gd};}
+ const rot0=pa[4]!=null?pa[4]:null,orot=ov&&ov.r?ov.r:0;
+ return {fr,fx_,fy_,ds,dsc,ky:ky*(pa[3]||1),gx:fx_+((f.dox||0)+pa[0]+(ov?ov.x:0))*ds,gy:fy_-((f.doy||0)+pa[1]+(ov?ov.y:0))*ds,gd:gd*(ov&&ov.fl?-1:1),rot:orot?(rot0!=null?rot0:(f.rot||0))+orot:rot0};}
+// ---- Move Checker edits for every move but the suplex: an overlay of keys (move, rotate, flip, swap frame, who's in front) on top of
+// how the game poses the move. Saved per device; pins use them in real matches too. Looks only: the sim never reads them.
+const MOVE_KF={};   // baked-in versions (paste SEND results here)
+const MOVE_OV={};{for(const n of ['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP','LEAPFROG','ENTRANCE POSE'])try{const j=localStorage.getItem('bb_kf_'+n);if(j){const k=JSON.parse(j);if(Array.isArray(k)&&k.length)MOVE_OV[n]=k;}}catch(e){}}
+function ovTrack(n){return MOVE_OV[n]||MOVE_KF[n]||[{t:0,dx:0,dy:0,r:0},{t:1.6,dx:0,dy:0,r:0}];}
+const PIN_OVN={cover:'COVER',backslide:'BACKSLIDE',crucifix:'CRUCIFIX',rollup:'ROLL-UP'};
+function moveOv(f){let n,t,att;const inV=G.scene==='viewer'&&typeof V!=='undefined'&&V;
+ if(inV){n=VMOVES[V.m][0];t=V.t;att=G.f[0];if(n==='SUPLEX'||VMOVES[V.m][1]===0)return null;}
+ else if(G.pin&&(f===G.pin.a||f===G.pin.d)){n=PIN_OVN[G.pin.type];t=G.pin.t;att=G.pin.a;}else return null;
+ const K=inV&&V.edit&&V.track===n?V.kf:(MOVE_OV[n]||MOVE_KF[n]);if(!K||!K.length)return null;
+ const k=kfAt(K,t),you=f===att,s=att.ch.size||1;
+ return {x:((you?k.ax:k.dx)||0)*s*att.dir,y:((you?k.ay:k.dy)||0)*s,r:(you?k.ar:k.r)||0,fl:!!(you?k.fa:k.fh),fr:you?k.af:k.vf,front:k.lay?(k.lay==='you')===you:null};}
 // pin cover: lay the pinner's body over the pinned man's body, measured from the art itself (some covers are drawn left of the
 // wrestler's spot, some right; some on the mat, some propped on top). Looks only.
 let BS_HIP=0.15;
@@ -92,13 +105,13 @@ function pinAlign(f,fr,gd){const P=G.pin;if(!P||P.a!==f||f.state!=='pinning')ret
 const FLIP_FR={viral:{pinning:1}}; // (Viral's cover art faces the other way; pinAlign then slides it onto the body)
 // the transform drawSpr uses, as a matrix from sprite units (0..SW, 0..SH) to the canvas
 function sprM(f,A){let m=ctx.getTransform(),sx=A.gx,sy=A.gy;
- if(f.rot){m=m.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc)).rotate(f.rot*f.dir);sx=0;sy=28*A.dsc;}
+ if(A.rot!=null?A.rot:f.rot){m=m.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc)).rotate((A.rot!=null?A.rot:f.rot)*f.dir);sx=0;sy=28*A.dsc;}
  sx=Math.round(sx);sy=Math.round(sy);const sh=A.dsc*A.ky,sw=A.dsc/Math.sqrt(A.ky);
  if(A.gd>=0)return m.translate(sx-AX*sw,sy-AY*sh).scale(sw,sh);
  return m.translate(sx,0).scale(-1,1).translate(-AX*sw,sy-AY*sh).scale(sw,sh);}
 function lpPath(L,pick){for(const q of L)if(pick(q)&&q.pts.length>2){ctx.moveTo(q.pts[0][0],q.pts[0][1]);for(const p of q.pts.slice(1))ctx.lineTo(p[0],p[1]);ctx.closePath();}}
 function fDraw(f,A,L,mode){const M=sprM(f,A),prev=ctx.getTransform();
- const raw=()=>{if(f.rot){ctx.save();ctx.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc));ctx.rotate(f.rot*Math.PI/180*f.dir);drawSpr(f.set,A.fr,0,28*A.dsc,A.gd,A.dsc,A.ky);ctx.restore();}
+ const raw=()=>{const rr=A.rot!=null?A.rot:f.rot;if(rr){ctx.save();ctx.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc));ctx.rotate(rr*Math.PI/180*f.dir);drawSpr(f.set,A.fr,0,28*A.dsc,A.gd,A.dsc,A.ky);ctx.restore();}
   else drawSpr(f.set,A.fr,A.gx,A.gy,A.gd,A.dsc,A.ky);};
  if(mode==='main'){f._M=M;f._fr=A.fr;f._A=A;}
  const back=L&&L.some(q=>!q.front);
