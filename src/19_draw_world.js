@@ -79,6 +79,9 @@ function frameBox(f,n,gd){const q=f.set&&f.set[n];if(!q||!q.w)return null;const 
 function pinAlign(f,fr,gd){const P=G.pin;if(!P||P.a!==f||f.state!=='pinning')return [0,0];
  const d=P.d,dfr=frameOf(d),dg=d.dir*(d.turn||1)*(d.flipX?-1:1),D=frameBox(d,dfr,dg);if(!D)return [0,0];
  if(P.type==='cover'&&fr==='pinning'){const A=frameBox(f,fr,gd);if(!A)return [0,0];return [D.c-A.c+(d.x-f.x),A.b>-4?A.b+5.5:0];}
+ if(P.type==='backslide'&&fr==='ccrawl0'){ // facing his head, head and shoulders on the man's chest, the raised legs over his back
+  const head=dg>=0?-1:1,m=head*gd>0?1:-1,A=frameBox(f,fr,gd*m);if(!A)return [0,0];
+  return [(D.c+head*D.w*0.08)-(A.c+head*A.w/2)+(d.x-f.x),0,m];}
  if(P.type==='backslide'&&fr==='pin_bs1'){ // bridged back-down across his chest, both heads the same way (his head is on the art's left)
   const g2=-gd,A=frameBox(f,fr,g2);if(!A)return [0,0];const head=dg>=0?-1:1,ky=Math.min(1,42/A.h); // a bridge drawn taller than ~42 gets flattened
   return [(D.c+head*D.w/2)-(A.c+head*A.w/2)+(d.x-f.x),A.b*ky,-1,ky];}  // his hands land at the downed man's head
