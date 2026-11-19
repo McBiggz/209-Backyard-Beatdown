@@ -153,3 +153,4 @@ Game names: chair = chcarry0, chcarry1, chraise, chhit, chjab, chdrop; table = t
 While a frame that includes the weapon plays, the game hides its own weapon sprite.
 - Weapons art in (art_src/props). Sizes are set in code by real inches (sheet scales disagree). Broken table pieces and a wrecked chair flicker out about 3 seconds after breaking (Liam 2026-11-15).
 - Tables (Liam 2026-11-15): the point is diving off the top rope onto someone laid on a table, or suplexing them through it.
+- TO DO (Liam 2026-11-18): running frames (Sheet Q, 4 frames) for every wrestler. The game currently runs with the walk cycle sped up. The Viral Voice already has running poses in art_src/pose/extra_misc_try.png to use as the pose guide.

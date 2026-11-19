@@ -13,7 +13,10 @@ const RING_R=312;const footL=z=>31,footR=z=>RING_R;
 function clampPos(f){
  if(!wide()){f.x=clamp(f.x,XMIN,XMAX);f.z=clamp(f.z,ZMIN,ZMAX);return;}
  if(!f.out){f.z=clamp(f.z,ZMIN,ZMAX);const[a,b]=ringX(f.z);f.x=clamp(f.x,a,b);return;}
- f.z=clamp(f.z,150,212);if(barnOn())f.x=clamp(f.x,10,572);else{f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);}
+ f.z=clamp(f.z,150,212);
+ if(barnOn()){ // the barn: open floor beside the ring too (the couch side and the right side); the ring + apron (x 8..304, in front of z 190) is solid
+  f.x=clamp(f.x,-92,572);if(f.z<190&&f.x>8&&f.x<304){const dl=f.x-8,dr=304-f.x,df=190-f.z,m=Math.min(dl,dr,df);if(m===df)f.z=190;else if(m===dl)f.x=8;else f.x=304;}return;}
+ {f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);}
  // the ring itself is solid from outside, on every map (same footprint: the barn ring is fitted to the ranch ring)
  if(f.z<190&&f.x<RING_R){const dr=RING_R-f.x,df=190-f.z;if(dr<df)f.x=RING_R;else f.z=190;}
  if(f.z<205&&(f.x<62||(f.x>250&&f.x<RING_R))){if(f.x>250&&f.z<190)f.x=RING_R;else f.z=205;}}
@@ -30,6 +33,8 @@ function tryRoll(f,mx,mz){
   if(f.x>=b-3&&mx>0){startRoll(f,footR(f.z)+9,Math.max(f.z,132),true);return true;}
   return false;}
  if(f.z>=188&&mz<0&&f.x>20&&f.x<280){startRoll(f,clamp(f.x,ringX(ZMAX)[0],ringX(ZMAX)[1]),ZMAX-2,false);return true;}
+ if(barnOn()&&f.z<190&&f.x>=4&&f.x<=12&&mx>0){startRoll(f,ringX(clamp(f.z,ZMIN,ZMAX))[0]+4,clamp(f.z,ZMIN,ZMAX),false);return true;} // barn: roll in from the couch side
+ if(barnOn()&&f.z<190&&f.x>=300&&f.x<=308&&mx<0){startRoll(f,ringX(clamp(f.z,ZMIN,ZMAX))[1]-4,clamp(f.z,ZMIN,ZMAX),false);return true;}
  if(f.z<190&&f.x<=footR(f.z)+3&&mx<0){startRoll(f,ringX(f.z)[1]-4,clamp(f.z,ZMIN,ZMAX),false);return true;}
  return false;}
 const PX=(x,z)=>{if(wide())return x-G.cam;const g=geo(),t=(z-RZB)/(RZF-RZB);return lerp(g.cB,g.cF,t)+x/RX*lerp(g.hB,g.hF,t);};

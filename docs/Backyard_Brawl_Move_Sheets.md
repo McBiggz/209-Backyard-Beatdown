@@ -177,3 +177,11 @@ Row 1 (size check, one wide frame): The Viral Voice standing, facing right, next
 Row 2 (table, no wrestler): 1. open table, long side facing us. 2. folded flat, lying down. 3. folded, standing up on its end, leaning slightly. 4. snapped in a V in the middle, still in one piece. 5. two broken halves lying flat with splinters.
 Row 3 (ladder, no wrestler): 1. open A-frame standing. 2. closed, standing straight up. 3. closed, lying flat. 4. closed, falling over at a 45° angle.
 Row 4 (chair, no wrestler): 1. open, standing, side view. 2. folded, standing upright. 3. folded, lying flat. 4. folded, badly dented in the middle.
+
+## Sheet Q: Running (4 frames, 1 row) — TO DO FOR EVERY WRESTLER
+
+1. RUN 1: sprinting to the RIGHT, leaning forward, right knee driving up high, left leg pushing off behind, fists pumping (left fist forward).
+2. RUN 2: both feet off the ground mid-stride, legs scissored wide, body leaning forward.
+3. RUN 3: same as frame 1 on the other side: left knee up, right leg back, right fist forward.
+4. RUN 4: same as frame 2 on the other side.
+Same size as his standing sprite (he stays as tall as his stance, just leaning forward). Used when running the ropes and charging across the ring.
