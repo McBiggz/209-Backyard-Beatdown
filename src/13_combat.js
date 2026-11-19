@@ -106,7 +106,8 @@ function updFinisher(f,o,dt){
   else if(t-f.landT>0.45)setState(f,'idle');
  }
 }
-function startDive(f,o){link(f,o);irpMark('big');heat(CTR.crowd.dive);tutEv('dive',f);setState(f,'dive');const T0=0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;f.vy=(0.5*GRAV*T0*T0-f.y)/T0;sfx('whoosh');callout('OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
+function startDive(f,o,label,T,peak){link(f,o);irpMark('big');heat(CTR.crowd.dive);tutEv('dive',f);setState(f,'dive');const T0=T||0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;
+ f.vy=(0.5*GRAV*T0*T0-f.y)/T0;if(peak)f.vy=Math.max(f.vy,Math.sqrt(2*GRAV*peak));sfx('whoosh');callout(label||'OFF THE TOP!','#fff',1.0);crowdReact(f,true);line('dive',f,o);}
 function landDive(f,o){
  f.y=0;f.vx=f.vz=0;if(wide())f.out=!insideRing(f.x,f.z);clampPos(f);
  const hitIt=Math.abs(bodyX(o)-f.x)<28&&Math.abs(o.z-f.z)<12&&(HITTABLE.has(o.state)||o.state==='down'||o.state==='getup');

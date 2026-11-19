@@ -53,6 +53,9 @@ function updFighter(f,o,inp,dt){
   f.walkPh+=dt*22;if(f.t>1.9+CTR.whipReverse){f.vx=0;setState(f,'idle');}break;}
  case 'run':{const mxh=(inp.right?1:0)-(inp.left?1:0);f.walkPh+=dt*20;if(TEST_MODES&&Math.floor(f.walkPh/Math.PI)!==f.puff){f.puff=Math.floor(f.walkPh/Math.PI);runPuff(f);}f.vz=((inp.down?1:0)-(inp.up?1:0))*40*f.ch.spd;f.vx=f.runDir*CTR.run.speed*f.ch.spd;f.dir=f.runDir;
   if(inp.punchP){setState(f,'runline');sfx('whoosh');tutEv('runattack',f);break;}
+  // test link: running at the ropes with him down on the floor outside that side = dive over the top rope onto him
+  if(G.windOn&&(inp.kickP||inp.jumpP)&&!f.out&&o&&o.out){const[wb0,wb1]=wbounds(f);
+   if((f.runDir>0&&f.x>wb1-45&&o.x>wb1)||(f.runDir<0&&f.x<wb0+45&&o.x<wb0)){f.y=1;startDive(f,o,'OVER THE TOP ROPE!',0.55,34);tutEv('runattack',f);break;}}
   if(inp.kickP||inp.jumpP){setState(f,'dropkick');f.vy=230;f.y=0.5;sfx('whoosh');tutEv('runattack',f);break;}
   if(inp.grabP){f.vx=f.vz=0;setState(f,'idle');break;}
   if(!f.out){const nx=f.x+f.vx*dt,[wb0,wb1]=wbounds(f);if((nx>wb1&&f.vx>0)||(nx<wb0&&f.vx<0)){f.runDir=-f.runDir;f.vx=-f.vx;f.dir=f.runDir;G.rope={side:f.vx<0?1:-1,t:0};ropeSfx();shake(1);f.autoRun=CTR.run.afterRopes;}}
