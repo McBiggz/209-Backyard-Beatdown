@@ -133,7 +133,8 @@ function updElim(f,dt){if(f.state==='elim'){const p=clamp(f.t/0.7,0,1);f.x=f.ex0
  else if(f.t>1.6){f.elim=true;f.hidden=true;}}
 
 // ---------- Tag team pieces ----------
-const apronSpot=t=>({x:t?ringX(158)[1]+12:ringX(158)[0]-12,z:160});
+// the partner waits on the floor at his corner, by the front post (the art has no side apron to stand on in this view)
+const apronSpot=t=>({x:t?ringX(158)[1]+6:ringX(158)[0]-6,z:186});
 // the team's corner, just inside the ropes where a fighter can actually stand
 const cornerSpot=t=>{const r=ringX(146);return{x:t?r[1]-2:r[0]+2,z:146};};
 function toApron(f){const a=apronSpot(f.team);f.x=a.x;f.z=a.z;f.out=true;f.dir=f.team?-1:1;f.legal=false;setState(f,'apron');}
