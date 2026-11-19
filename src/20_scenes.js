@@ -206,7 +206,7 @@ function finishEntrance(){musStop(1.2);G.hype=0.3;for(const f of G.f)f.mwA=1; //
 const[a,b]=G.f;a.x=110;b.x=205;a.z=b.z=140;a.dir=1;b.dir=-1;for(const f of G.f){f.hidden=false;f.out=false;f.y=0;setState(f,'idle');}G.entrance=null;sfx('bell');callout('DING DING DING!','#fff',1.3);
  say(coarse?'Roll out of the ring: push into the ropes + JUMP.':'WASD MOVE · SPACE JUMP · F/G/H ATTACK · R FINISHER · ROPES+SPACE: ROLL OUT');}
 function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMute();}
-function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();drawFreeHud();}
+function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();drawFreeHud();drawTeamRad();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];if(G.entFx){drawEntranceShowFx(E,f);return;}ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
  if(E.t>0.5)drawSpr(f.set,entPose(f)!=='win0'?entPose(f):'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
@@ -312,7 +312,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  const x=lerp(194,ENT_SPOT[0],e),y=lerp(170,ENT_SPOT[1]+4,e),sc=lerp(0.95,1.5,e)*ds,inside=k<0.55;
  // he comes through the powder: invisible at first, fading in as the cloud blooms around him
  if(t>0.3){ctx.globalAlpha=clamp((t-0.42)/0.6,0,1);
-  {const hb=hubEnt(f);drawSpr(f.set,pose?(hb?'hubpose':entPose(f)):(hb?'hubw':'walk')+(Math.floor(t*9)%4),x,y,dir,sc);}ctx.globalAlpha=1;
+  {const hb=hubEnt(f),fr=pose?(hb?'hubpose':entPose(f)):(hb?'hubw':'walk')+(Math.floor(t*9)%4);if(pose)dazBehind(f,fr,x,y,sc,t);drawSpr(f.set,fr,x,y,dir,sc);G._entFr=[fr,x,y,sc];}ctx.globalAlpha=1;
   // while he's still in the tunnel, the curtains and banners are in front of him
   if(inside){ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(ENT_GAP[0],ENT_GAP[1],ENT_GAP[2]-ENT_GAP[0],ENT_GAP[3]-ENT_GAP[1]);ctx.clip('evenodd');ctx.drawImage(ENT,0,0,W,H);
    R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`);ctx.restore();}}
@@ -337,6 +337,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  for(const p of entFog.p){p.t+=1/60;p.x+=p.vx/60;p.y+=p.vy/60;p.r+=5/60;const a=Math.sin(Math.min(1,p.t/p.life)*Math.PI)*p.a;if(a<=0.005)continue;
   const fg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);fg.addColorStop(0,`rgba(${p.c},${a})`);fg.addColorStop(1,`rgba(${p.c},0)`);ctx.fillStyle=fg;ctx.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2);}
  entFog.p=entFog.p.filter(p=>p.t<p.life);
+ if(G._entFr&&pose)dazFront(f,...G._entFr,t);
  // name card at the top so the pose isn't covered
  if(t>0.5){const a=clamp((t-0.5)/0.3,0,1);ctx.globalAlpha=a;{const g=ctx.createLinearGradient(0,0,0,42);g.addColorStop(0,'rgba(6,2,3,0.8)');g.addColorStop(0.55,'rgba(6,2,3,0.55)');g.addColorStop(1,'rgba(6,2,3,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,42);}T(f.ch.name,192,8,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');
   T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,22,1,'#bfae98','center',null);ctx.globalAlpha=1;}
