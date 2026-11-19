@@ -185,3 +185,68 @@ Row 4 (chair, no wrestler): 1. open, standing, side view. 2. folded, standing up
 3. RUN 3: same as frame 1 on the other side: left knee up, right leg back, right fist forward.
 4. RUN 4: same as frame 2 on the other side.
 Same size as his standing sprite (he stays as tall as his stance, just leaning forward). Used when running the ropes and charging across the ring.
+
+## Sheet R: Lifting and slamming, doing the move (8 frames, 2 rows of 4). The other wrestler is NOT drawn.
+
+Every frame is the same size as his standing sprite; he only bends, he never shrinks or grows. His hands hold an invisible opponent, so leave empty space where that body would be.
+
+Top row:
+1. LOCK-UP: collar-and-elbow tie-up, leaning forward and driving with his legs, one hand gripping the back of an invisible neck, the other gripping an invisible elbow, teeth gritted.
+2. WAIST LOCK: knees bent deep, chest low, both arms wrapped low around an invisible waist in front of him, head turned to the side.
+3. LIFTING: halfway up from frame 2, knees still bent, back straightening, arms cradling an invisible body at chest height, straining.
+4. PRESS OVERHEAD: standing tall, legs wide, both arms locked straight up overhead, palms up as if holding a body flat above his head.
+
+Bottom row:
+5. SHOULDER CARRY: standing, slightly hunched, as if a body is draped across both shoulders: one arm hooked over the invisible legs in front of him, the other hooked over the invisible neck.
+6. SLAMMING DOWN: deep crouch, one knee nearly on the mat, both arms driven down hard in front of him at knee height, yelling.
+7. SIT-OUT: sitting on the mat, legs straight out in front of him and spread, both hands down between his knees as if holding an invisible head there.
+8. PICK-UP: bent forward at the waist, knees bent, both hands reaching down low in front of him as if grabbing a downed man by the head to pull him up.
+
+## Sheet S: Taking the move (8 frames, 2 rows of 4). The other wrestler is NOT drawn.
+
+Same size rules as always: his body is no longer and no bigger than in his standing reference. When he is horizontal, his head is on the LEFT.
+
+Top row:
+1. LOCK-UP: tie-up, leaning forward and pushing back, one hand on an invisible neck, the other on an invisible elbow, grimacing.
+2. DOUBLED OVER: bent forward at the waist, both arms clutching his stomach, knees buckled, mouth open in pain.
+3. HALF LIFTED: in the air, body tilted at about 45° with his head higher than his feet, legs dangling, arms flailing, shocked.
+4. FOLDED UPSIDE DOWN: upside down, head pointing at the mat, body folded at the waist so his legs hang back over the top, arms hanging (the piledriver hold).
+
+Bottom row:
+5. ACROSS THE SHOULDERS: horizontal, stomach down, bent over an invisible pair of shoulders, head and arms hanging down on the LEFT, legs hanging on the right.
+6. FALLING: in mid-air at a steep diagonal, head lower than his feet, back toward the mat, arms flung out wide, yelling.
+7. IMPACT: just landed flat on his back, head on the LEFT, back of the head and shoulders on the mat, both legs kicked up off the mat with the knees bent, arms flung out, mouth wide open screaming.
+8. BEING PICKED UP: limp, half way up off the mat, sitting up at an angle, knees bent, arms hanging, head drooping forward, eyes half shut.
+
+## Sheet T: On the mat and in the ropes (6 frames, 2 rows of 3). The other wrestler is NOT drawn.
+
+Top row:
+1. ELBOW DROP, IN THE AIR: falling sideways in mid-air, body flat, one elbow pointed straight down at the mat, the other arm back, yelling.
+2. ELBOW DROP, LANDED: lying on his side on the mat, head on the LEFT, elbow driven into the mat under him.
+3. KNEE DROP: dropping down onto one knee, the other leg stretched behind him, both fists up.
+
+Bottom row:
+4. MOUNTED PUNCHES: kneeling upright with his knees wide apart (straddling an invisible man on the mat), one fist cocked high above his head, the other hand pressing down.
+5. IRISH WHIP: twisted at the waist, back foot planted, one arm extended out in front of him gripping an invisible wrist, slinging it forward.
+6. STAGGER: stumbling backward off balance, one foot off the mat, arms windmilling, mouth open.
+
+## Sheet U: Finisher and signature (one sheet per move, 6 frames, 2 rows of 3). Custom for each wrestler.
+
+Fill in the move, then describe the 6 key moments in order, first touch to final pose. Draw BOTH wrestlers in every frame: the one doing the move (attach his sprite) and the one taking it (attach The Viral Voice's sprite unless it's his own move, then attach any other wrestler). Both are full size, the same size as their standing sprites, and the man doing the move faces right.
+
+Template:
+"Sheet U for [WRESTLER]: his [finisher/signature], the [MOVE NAME] ([what the move is in plain words]). 6 frames, 2 rows of 3, same 16-bit style and size as the attached sprites, no background.
+1. SET-UP: [how he grabs him]
+2. [next moment]
+3. [next moment]
+4. [top of the move / the moment before impact]
+5. IMPACT: [the moment it hits]
+6. AFTER: [the man taking it lying on the mat, the man doing it in his pose]"
+
+Example, The Viral Voice's finisher, GOING VIRAL (hammerlock DDT):
+1. SET-UP: Viral behind his opponent, twisting the opponent's right arm up behind his back in a hammerlock.
+2. FRONT FACELOCK: Viral now in front, the opponent bent forward, his head trapped under Viral's left arm, the right arm still wrenched behind him.
+3. FALLING BACK: Viral falling backward, body leaning back at 45°, dragging the opponent's head down with him.
+4. JUST BEFORE IMPACT: Viral almost flat on his back in mid-air, the opponent's head inches from the mat, legs in the air behind him.
+5. IMPACT: the opponent's head driven into the mat, his legs sticking straight up, Viral on his back underneath.
+6. AFTER: the opponent lying flat on his back, head on the LEFT, out cold; Viral sitting up, one fist raised, yelling.
