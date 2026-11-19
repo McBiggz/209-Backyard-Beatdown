@@ -13,7 +13,8 @@ const RING_R=312;const footL=z=>31,footR=z=>RING_R;
 function clampPos(f){
  if(!wide()){f.x=clamp(f.x,XMIN,XMAX);f.z=clamp(f.z,ZMIN,ZMAX);return;}
  if(!f.out){f.z=clamp(f.z,ZMIN,ZMAX);const[a,b]=ringX(f.z);f.x=clamp(f.x,a,b);return;}
- f.z=clamp(f.z,150,212);if(barnOn()){f.x=clamp(f.x,10,572);return;}f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);
+ f.z=clamp(f.z,150,212);if(barnOn())f.x=clamp(f.x,10,572);else{f.x=clamp(f.x,10,594);if(f.x>410&&f.x<476)f.z=Math.max(f.z,152);if(f.x>=476)f.z=Math.max(f.z,156);if(f.x>578)f.z=Math.min(f.z,168);}
+ // the ring itself is solid from outside, on every map (same footprint: the barn ring is fitted to the ranch ring)
  if(f.z<190&&f.x<RING_R){const dr=RING_R-f.x,df=190-f.z;if(dr<df)f.x=RING_R;else f.z=190;}
  if(f.z<205&&(f.x<62||(f.x>250&&f.x<RING_R))){if(f.x>250&&f.z<190)f.x=RING_R;else f.z=205;}}
 function cx(f,x){const k={x,z:f.z,out:f.out};clampPos(k);return k.x;}

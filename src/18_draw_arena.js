@@ -15,7 +15,7 @@ function drawBarricade(dark){const top=60,bot=94;R(0,top,W,bot-top,dark?'#0a0710
  for(let x=1;x<W;x+=3)R(x,top+3,1,bot-top-3,dark?'#4a4a5a':'#6a6a74');
  [top,top+16,bot-3].forEach(y=>{R(0,y,W,3,'#a8a8b8');R(0,y,W,1,'#e8e8f0');R(0,y+2,W,1,'#5a5a68');});
  for(let x=12;x<W;x+=60){R(x,top,4,bot-top,'#8a8a98');R(x,top,1,bot-top,'#d8d8e4');R(x+3,top,1,bot-top,'#4a4a56');}}
-function drawArena(){if(G.stage===3&&barnOn()){if(barn2())drawBarn2();else drawBarn();return;}if(G.stage===3){ctx.drawImage(G.map==='secret'&&SECRET.complete&&SECRET.naturalWidth?SECRET:PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
+function drawArena(){if(G.stage===3&&barnOn()){if(barn2())drawBarn2();else drawBarn();return;}if(ranch2()){drawRanch2();return;}if(G.stage===3){ctx.drawImage(G.map==='secret'&&SECRET.complete&&SECRET.naturalWidth?SECRET:PANO,-Math.round(G.cam*2)/2,0,MAPW,H);if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}return;}if(G.stage===2){ctx.drawImage(ARENA_IMG,0,0,W,H);return;}if(G.stage===1){drawOutdoor();return;}
  R(0,0,W,H,'#0c0710');for(let y=0;y<60;y+=4)R(0,y,W,1,'rgba(255,255,255,0.015)');
  drawCrowd();drawBarricade(true);R(0,94,W,H-94,'#0a0610');}
 function drawOutdoor(){
@@ -67,7 +67,7 @@ function drawBarn(){barnImg('full');const d=barnDoor((G.t||0)+22),D=BARN.diddy; 
 // ---- side ropes stretch when someone bounces off them (wide maps; test link). G.rope = {side:+1 right / -1 left, t: seconds since}.
 // Paint the ropes out, then draw them back bent outward: the bend peaks where he hit (his depth) and is zero at the turnbuckles.
 let ropeZ=140;
-function drawRopeFx(){if(!TEST_MODES||G.stage!==3||!G.rope||G.rope.t>0.75||!G.rope.side||barn2())return;
+function drawRopeFx(){if(!TEST_MODES||G.stage!==3||!G.rope||G.rope.t>0.75||!G.rope.side||barn2()||ranch2())return;
  const key=(barnOn()?'barn':G.map==='secret'?null:'ranch');if(!key)return;const q=ROPEFX[key+(G.rope.side>0?'R':'L')];
  if(!q||!q.ri.complete||!q.ri.naturalWidth||!q.ci.complete)return;const t=G.rope.t,amp=(q.amp||13)*Math.exp(-t*5.5)*Math.cos(t*20);
  if(t<0.02){const h=G.f.filter(f=>f&&f.ch).reduce((b,f)=>{const d=Math.abs(f.x-(G.rope.side>0?XMAX:XMIN));return !b||d<b.d?{f,d}:b;},null);if(h)ropeZ=h.f.z;}
@@ -81,20 +81,31 @@ function drawRopeFx(){if(!TEST_MODES||G.stage!==3||!G.rope||G.rope.t>0.75||!G.ro
 // Ropes are drawn by the game: 3 per side, strung pad to pad. Back + side ropes go behind the wrestlers, front ropes in front of them
 // (under the front posts). When someone bounces off a side rope, that side's ropes stretch out where he hit and spring back.
 const barn2=()=>TEST_MODES&&barnOn()&&BARN2.full.img.complete&&BARN2.full.img.naturalWidth>0;
-const RP_COL=['#141416','#5c5c64','#a9a9b3']; // outline, cable, shine
-function ropeLine(x0,y0,x1,y1,bend,bx){ // bend: how far the middle is pushed (x), peaking at fraction bx along the rope
- const N=24,P=[];for(let i=0;i<=N;i++){const u=i/N,p=u<bx?u/bx:(1-u)/(1-bx);P.push([x0+(x1-x0)*u+bend*p*Math.sin(p*Math.PI/2),y0+(y1-y0)*u]);}
- const st=(w,c)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();P.forEach(([x,y],i)=>i?ctx.lineTo(x-G.cam,y):ctx.moveTo(x-G.cam,y));ctx.stroke();};
- ctx.save();ctx.lineCap='round';st(2.2,RP_COL[0]);st(1.3,RP_COL[1]);ctx.translate(0,-0.4);st(0.5,RP_COL[2]);ctx.restore();}
-function ropeBend(side){const r=G.rope;if(!r||r.side!==side||r.t>0.75)return [0,0.5];
- if(r.t<0.03){const h=G.f.filter(f=>f&&f.ch).reduce((b,f)=>{const d=Math.abs(f.x-(side>0?XMAX:XMIN));return !b||d<b.d?{f,d}:b;},null);if(h)ropeZ=h.f.z;}
- const t=r.t,amp=7*Math.exp(-t*5.5)*Math.cos(t*20),bx=clamp(1-(ropeZ-ZMIN)/(ZMAX-ZMIN),0.15,0.85);return [amp*side,bx];}
-function drawBarn2Back(){const P=BARN2.pads;
- for(let i=0;i<3;i++)ropeLine(P.BL[i][0],P.BL[i][1],P.BR[i][0],P.BR[i][1],0,0.5);             // back
- const[bl,bxl]=ropeBend(-1),[br,bxr]=ropeBend(1);
- for(let i=0;i<3;i++){ropeLine(P.BL[i][0],P.BL[i][1],P.FL[i][0],P.FL[i][1],bl,bxl);ropeLine(P.BR[i][0],P.BR[i][1],P.FR[i][0],P.FR[i][1],br,bxr);}}
-function drawBarn2Front(){const P=BARN2.pads;for(let i=0;i<3;i++)ropeLine(P.FL[i][0],P.FL[i][1],P.FR[i][0],P.FR[i][1],0,0.5);
- const F=BARN2.front;if(F.img.complete)ctx.drawImage(F.img,Math.round((F.x-G.cam)*2)/2,F.y,F.w,F.h);}
+// rope looks per map: [outline, body, shine, width scale, top-rope colours or null]
+const RP_STYLE={barn:{c:['#141416','#5c5c64','#a9a9b3'],w:1,top:null},
+ ranch:{c:['#4a1a04','#e07a1e','#ffc27a'],w:1.75,top:['#2a2a30','#b9b9c3','#f4f4fa']}};
+function ropeLine(x0,y0,x1,y1,bend,bx,st,top){ // bend: how far (x) the rope is pushed out at fraction bx along it - a straight V, like a real rope pushed at one spot
+ const c=top&&st.top?st.top:st.c,w=st.w,P=[[x0,y0]];if(bend)P.push([x0+(x1-x0)*bx+bend,y0+(y1-y0)*bx]);P.push([x1,y1]);
+ const go=(lw,col,dy)=>{ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();P.forEach(([x,y],i)=>i?ctx.lineTo(x-G.cam,y+dy):ctx.moveTo(x-G.cam,y+dy));ctx.stroke();};
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';go(2.2*w,c[0],0);go(1.3*w,c[1],0);go(0.5*w,c[2],-0.45*w);ctx.restore();}
+// a bounce: the rope snaps out to where his body is, then springs back with two quick wobbles (crisp, ~0.4s)
+const ROPE_K=[1,1.15,0.9]; // top / middle / bottom: the middle rope takes most of the body
+function ropeBend(side,i){const r=G.rope;if(!r||r.side!==side||r.t>0.45)return [0,0.5];
+ if(r.t<0.03){const h=G.f.filter(f=>f&&f.ch&&!f.out).reduce((b,f)=>{const d=Math.abs(f.x-(side>0?XMAX:XMIN));return !b||d<b.d?{f,d}:b;},null);if(h)ropeZ=h.f.z;}
+ const t=r.t,a=t<0.05?t/0.05:Math.exp(-(t-0.05)*9)*Math.cos((t-0.05)*26);
+ return [6*a*side*ROPE_K[i],clamp(1-(ropeZ-ZMIN)/(ZMAX-ZMIN),0.12,0.88)];}
+function ringRopesBack(R,st){const P=R.pads;
+ for(let i=0;i<3;i++)ropeLine(P.BL[i][0],P.BL[i][1],P.BR[i][0],P.BR[i][1],0,0.5,st,i===0);
+ for(let i=0;i<3;i++){const[bl,xl]=ropeBend(-1,i),[br,xr]=ropeBend(1,i);
+  ropeLine(P.BL[i][0],P.BL[i][1],P.FL[i][0],P.FL[i][1],bl,xl,st,i===0);ropeLine(P.BR[i][0],P.BR[i][1],P.FR[i][0],P.FR[i][1],br,xr,st,i===0);}
+ const B=R.bpads;if(B&&B.img.complete)ctx.drawImage(B.img,Math.round((B.x-G.cam)*2)/2,B.y,B.w,B.h);}
+function ringRopesFront(R,st){const P=R.pads;for(let i=0;i<3;i++)ropeLine(P.FL[i][0],P.FL[i][1],P.FR[i][0],P.FR[i][1],0,0.5,st,i===0);
+ const F=R.front;if(F.img.complete)ctx.drawImage(F.img,Math.round((F.x-G.cam)*2)/2,F.y,F.w,F.h);}
+function drawBarn2Back(){ringRopesBack(BARN2,RP_STYLE.barn);}
+function drawBarn2Front(){ringRopesFront(BARN2,RP_STYLE.barn);}
+const ranch2=()=>TEST_MODES&&G.stage===3&&!barnOn()&&G.map!=='secret'&&RANCH2.full.img.complete&&RANCH2.full.img.naturalWidth>0;
+function drawRanch2(){ctx.drawImage(RANCH2.full.img,-Math.round(G.cam*2)/2,0,MAPW,H);
+ if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}ringRopesBack(RANCH2,RP_STYLE.ranch);}
 // C.Diddy in the doorway: his own game sprite (idle frame), clipped to the doorway, sliding in from the side
 function drawBarn2(){const B=BARN2;ctx.drawImage(B.full.img,Math.round((B.full.x-G.cam)*2)/2,B.full.y,B.full.w,B.full.h);
  const d=barnDoor((G.t||0)+22),g=B.gap,S=SETS.cdiddy,ch=ROSTER.find(c=>c.id==='cdiddy');
