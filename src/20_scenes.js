@@ -209,7 +209,7 @@ function toggleMute(){muted=!muted;if(master)master.gain.value=muted?0:0.5;musMu
 function drawFight(){if(G.entrance&&G.entrance.phase==='show'){drawEntranceShow();return;}const efx=G.entrance&&G.entFx&&G.map!=='secret';drawArena();drawRingBack();if(efx)R(0,0,W,H,`rgba(5,2,12,${(0.45*entK()).toFixed(2)})`);drawFighters(G.cage?'in':undefined);if(efx)drawEntFx();if(G.mm)drawGroupMarkers();drawDodgeHint();if(G.hc&&G.props)drawHCHint();if(G.mapFade>0){R(0,0,W,H,`rgba(0,0,0,${Math.min(1,G.mapFade*1.6).toFixed(2)})`);G.mapFade=Math.max(0,G.mapFade-1/60);}if(G.cage){drawCageFront();drawFighters('out');drawCageHint();}G.f.forEach(drawCtrIcon);drawParts();drawRingFront();drawPops();drawCallout();drawFreeHud();}
 function drawEntranceShow(){const E=G.entrance,f=G.f[[1,0][E.i]];if(G.entFx){drawEntranceShowFx(E,f);return;}ctx.drawImage(ENT,0,0,W,H);
  const a=clamp(E.t/0.6,0,1);for(let k=0;k<5;k++){ctx.globalAlpha=0.18*a;ELL(192,186,60+k*6,10,'#c070ff');}ctx.globalAlpha=1;
- if(E.t>0.5)drawSpr(f.set,'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
+ if(E.t>0.5)drawSpr(f.set,entPose(f)==='sig'?'sig':'win'+(Math.floor(G.t*2.5)%2),192,196,f.idx===1?-1:1,1.5*(f.ch.drawScale||1));
  if(E.t>0.4){R(0,170,W,30,'rgba(6,2,3,0.72)');T(f.ch.name,192,176,2,f.ch.align==='heel'?'#9cff57':'#ffd35a','center','#000');T(f.cpu?'CPU':(f.idx===0?'PLAYER 1':'PLAYER 2'),192,190,1,'#bfae98','center',null);}
  T(coarse?'TAP TO SKIP':'ENTER TO SKIP',W-4,206,1,'#7a6a5a','right',null);}
 function drawOverlays(){if(G.scene!=='fight')return;if(G.entrance){if(G.entrance.phase!=='show'){R(0,207,W,9,'#0a0506');T('ENTRANCE • '+G.f[[1,0][Math.min(G.entrance.i,1)]].ch.name,192,209,1,'#ffd35a','center',null);}return;}drawHUD();
@@ -299,6 +299,8 @@ function drawEntFx(){const E=G.entrance,ph=E.phase,cx=533-G.cam,pose=ph==='pose'
 function newFog(burst){return{x:533+rnd(-22,22),y:rnd(146,166),vx:rnd(-16,16)*(burst?2:1),vy:rnd(-2,3),r:rnd(9,16),t:0,life:rnd(1.6,3.2),a:rnd(0.18,0.32),c:pick(['220,200,255','190,150,255','240,235,255'])};}
 
 // ---------- the entrance close-up (test link): out through the curtains, into the light, hit the pose ----------
+// entrance pose: the signature pose (standing, arms up) when the win pose is a crouch, so nobody squats behind the name bar
+function entPose(f){const s=f.set||{},w=s.win0,g=s.sig;if(hasArt(f,'sig'))return 'sig';if(g&&g.h&&(!w||!w.h||w.h<g.h*0.85))return 'sig';return 'win0';}
 const ENT_POSE=1.3,ENT_SHOW=3.3,ENT_LAMPS=[137,168,196,224,251],ENT_GAP=[150,70,222,182],ENT_SPOT=[205,192];
 function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.drawScale||1;
  ctx.drawImage(ENT,0,0,W,H);
@@ -309,7 +311,7 @@ function drawEntranceShowFx(E,f){const t=E.t,pose=t>=ENT_POSE,dir=1,ds=f.ch.draw
  const x=lerp(194,ENT_SPOT[0],e),y=lerp(170,ENT_SPOT[1]+4,e),sc=lerp(0.95,1.5,e)*ds,inside=k<0.55;
  // he comes through the powder: invisible at first, fading in as the cloud blooms around him
  if(t>0.3){ctx.globalAlpha=clamp((t-0.42)/0.6,0,1);
-  {const hb=hubEnt(f);drawSpr(f.set,pose?(hb?'hubpose':hasArt(f,'sig')?'sig':'win0'):(hb?'hubw':'walk')+(Math.floor(t*9)%4),x,y,dir,sc);}ctx.globalAlpha=1;
+  {const hb=hubEnt(f);drawSpr(f.set,pose?(hb?'hubpose':entPose(f)):(hb?'hubw':'walk')+(Math.floor(t*9)%4),x,y,dir,sc);}ctx.globalAlpha=1;
   // while he's still in the tunnel, the curtains and banners are in front of him
   if(inside){ctx.save();ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(ENT_GAP[0],ENT_GAP[1],ENT_GAP[2]-ENT_GAP[0],ENT_GAP[3]-ENT_GAP[1]);ctx.clip('evenodd');ctx.drawImage(ENT,0,0,W,H);
    R(0,0,W,H,`rgba(6,2,14,${(0.35*lit).toFixed(2)})`);ctx.restore();}}
