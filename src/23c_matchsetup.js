@@ -5,22 +5,33 @@
 const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4]].concat(TEST_MODES?[['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]]:[]);
 const MS_RULES=[['NORMAL',''],['HARDCORE','hc'],['STEEL CAGE','cage']];
 const MS_MAPS=[['BMF RANCH','ranch'],['THE BARN','secret']];
+// ---- the tag team division: real teams. Three-man factions can send any two (the Freebird rule).
+const TEAMS=[{name:'TEAM RAD',m:['razz','razzle']},{name:'BEST LOOKING EVERYTHING',short:'B.L.E.',m:['tripp','jason']},
+ {name:'THE LUCHA CARTEL',m:['necrosis','spektro','jaguar']},{name:'THE DAMNED DEVIL DOGGS',m:['frank','bigmoe']}];
+// one option per pair a team can send; teams with a missing member wait until he's in the game
+const TEAM_OPTS=(()=>{const o=[{name:'PICK ANY 2',ids:null}];for(const t of TEAMS){const ok=t.m.filter(id=>ROSTER.some(c=>c.id===id));
+ if(ok.length<2)continue;for(let i=0;i<ok.length;i++)for(let j=i+1;j<ok.length;j++)o.push({name:t.short||t.name,full:t.name,ids:[ok[i],ok[j]],
+  sub:ok.length>2?[ok[i],ok[j]].map(id=>ROSTER.find(c=>c.id===id).short.toUpperCase().split(' ').filter(w=>!['THE','BLACK','ULTIMO','EL'].includes(w))[0]).join(' + '):''});}return o;})();
 const MS_CTL=['P1','P2','CPU'],MS_CTLCOL=['#ff4a3a','#3a8bff','#8a7a66'];
-G.ms={type:0,rules:0,elim:0,map:0,ctl:[0,2,2,2],row:0};
+G.ms={type:0,rules:0,elim:0,map:0,ctl:[0,2,2,2],row:0,team:[0,0]};
 const msCount=(t=G.ms.type)=>MS_TYPES[t][2];
 const msSlots=(t=G.ms.type)=>Math.min(4,msCount(t));
 function msSlotName(i){const t=MS_TYPES[G.ms.type][1];
  if(t==='tag')return (i<2?'TEAM A':'TEAM B')+' #'+(i%2+1);if(t==='rumble')return 'ENTRANT '+(i+1);return 'WRESTLER '+(i+1);}
 function msRows(){const ms=G.ms,t=MS_TYPES[ms.type][1],rows=[{k:'type'}];
  if(t==='single'&&TEST_MODES)rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});rows.push({k:'diff'});
+ if(t==='tag')rows.push({k:'team',i:0},{k:'team',i:1});
  for(let i=0;i<msSlots();i++)rows.push({k:'slot',i});rows.push({k:'start'});return rows;}
 function msVal(r){const ms=G.ms;
  if(r.k==='type')return['MATCH',MS_TYPES[ms.type][0]];if(r.k==='rules')return['RULES',MS_RULES[ms.rules][0]];
  if(r.k==='elim')return['ELIMINATION',ms.elim?'ON - LAST ONE STANDING':'OFF - FIRST PIN WINS'];
+ if(r.k==='team'){const o=TEAM_OPTS[ms.team[r.i]];return[r.i?'TEAM B':'TEAM A',o.name+(o.sub?' ('+o.sub+')':'')];}
  if(r.k==='map')return['ARENA',MS_MAPS[ms.map][0]];if(r.k==='diff')return['CPU DIFFICULTY',DIFF_NAMES[savedDiff]];if(r.k==='slot')return[msSlotName(r.i),MS_CTL[ms.ctl[r.i]]];return['',''];}
 function msChange(r,d){const ms=G.ms;sfx('punch');
  if(r.k==='type'){ms.type=(ms.type+d+MS_TYPES.length)%MS_TYPES.length;ms.row=Math.min(ms.row,msRows().length-1);}
  else if(r.k==='diff'){savedDiff=(savedDiff+d+3)%3;try{localStorage.setItem('bb_diff',savedDiff);}catch(e){}}
+ else if(r.k==='team'){const n=TEAM_OPTS.length;let v=ms.team[r.i];for(let k=0;k<n;k++){v=(v+d+n)%n;const o=TEAM_OPTS[v],other=TEAM_OPTS[ms.team[1-r.i]];
+  if(!o.ids||!other.ids||!o.ids.some(id=>other.ids.includes(id)))break;}ms.team[r.i]=v;} // can't share a man with the other team
  else if(r.k==='rules')ms.rules=(ms.rules+d+3)%3;else if(r.k==='elim')ms.elim=ms.elim?0:1;else if(r.k==='map')ms.map=(ms.map+d+2)%2;
  else if(r.k==='slot'){const c=(ms.ctl[r.i]+d+3)%3;
   // P1 and P2 are one wrestler each: taking P1 here makes the old P1 slot a CPU
@@ -52,20 +63,23 @@ function drawSetup(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.82)');const ms=G.ms,row
   if(r.k==='slot'){R(vx-TW(val)/2-3,y+2,TW(val)+6,h-4,col);T(val,vx,y+4,1,'#fff','center',null);}
   else T(val,vx,y+4,1,col,'center',null);});
  const onGo=rows[ms.row].k==='start',bl=Math.floor(G.t*3)%2;
- BOX(...MS_GO,onGo?'#8f0f14':'#3a0a0c','#ffd35a');T('PICK WRESTLERS >',192,MS_GO[1]+6,1,onGo&&bl?'#ffd35a':'#fff','center',null);
+ BOX(...MS_GO,onGo?'#8f0f14':'#3a0a0c','#ffd35a');T(MS_TYPES[ms.type][1]==='tag'&&msFixed().every(v=>v!=null)?'START MATCH >':'PICK WRESTLERS >',192,MS_GO[1]+6,1,onGo&&bl?'#ffd35a':'#fff','center',null);
  const t=MS_TYPES[ms.type][1],note=t==='rumble'?'8 WRESTLERS - THE OTHER 4 ENTRANTS ARE RANDOM CPUS':t==='tag'?'TEAM A: WRESTLERS 1+2  -  TEAM B: WRESTLERS 3+4':t==='multi'?'ANYONE CAN BREAK UP A PIN':'';
  if(note)T(note,192,MS_GO[1]-9,1,'#8a7a66','center',null);
  if(!coarse)T('UP/DOWN PICK A ROW  -  LEFT/RIGHT CHANGE IT  -  ESC BACK',192,208,1,'#5a4a40','center',null);}
 
 // ---------- wrestler picks for every slot, one after another ----------
 // online, the same screen is used to pick just your own wrestler (party: true)
-function mselOpen(party){const n=party?1:msSlots();G.msel={slot:0,n,picks:[],c:0,page:0,party:!!party};
- if(!party&&G.mselLast)G.msel.c=G.mselLast[0]||0;G.scene='msel';}
+function msFixed(){const ms=G.ms,f=[null,null,null,null];if(MS_TYPES[ms.type][1]!=='tag')return f;
+ for(const s of [0,1]){const o=TEAM_OPTS[ms.team[s]];if(o.ids)o.ids.forEach((id,k)=>f[s*2+k]=ROSTER.findIndex(c=>c.id===id));}return f;}
+function mselSkip(S){while(S.slot<S.n&&S.fixed[S.slot]!=null){S.picks.push(S.fixed[S.slot]);S.slot++;}if(S.slot>=S.n){G.mselLast=S.picks.slice();startFromSetup();return true;}return false;}
+function mselOpen(party){const n=party?1:msSlots();G.msel={slot:0,n,picks:[],c:0,page:0,party:!!party,fixed:party?[]:msFixed()};
+ if(!party&&G.mselLast)G.msel.c=G.mselLast[0]||0;G.scene='msel';if(!party)mselSkip(G.msel);}
 const MSEL_RND=[296,3,84,11];
 function mselCtl(i){return G.msel.party?0:G.ms.ctl[i];}
 function updMsel(){const S=G.msel,n=ROSTER.length-1; // the last roster entry is the ref
  if(clickQ&&inRect(clickQ,SEL_BACK)){G.scene=S.party?'party':'setup';sfx('punch');return;} // BACK: to the setup screen (or the online lobby)
- if(hit(['Escape'])){if(S.slot>0){S.slot--;S.c=S.picks.pop();}else G.scene=S.party?'party':'setup';sfx('punch');return;}
+ if(hit(['Escape'])){if(S.slot>0&&!(S.fixed&&S.fixed[S.slot-1]!=null)){S.slot--;S.c=S.picks.pop();}else G.scene=S.party?'party':'setup';sfx('punch');return;}
  const o=S.c;if(hit(['KeyA','ArrowLeft']))S.c=(S.c+n-1)%n;if(hit(['KeyD','ArrowRight']))S.c=(S.c+1)%n;
  if(hit(['KeyW','ArrowUp']))S.c=vmove(S.c,-1,n);if(hit(['KeyS','ArrowDown']))S.c=vmove(S.c,1,n);if(S.c!==o)S.page=pageOf(S.c);
  if(hit(['KeyQ','PageUp','KeyE','PageDown'])){const P=Math.ceil(n/PER);S.page=(S.page+(hit(['KeyQ','PageUp'])?-1:1)+P)%P;S.c=Math.min(n-1,S.page*PER+S.c%PER);}
@@ -77,7 +91,7 @@ function updMsel(){const S=G.msel,n=ROSTER.length-1; // the last roster entry is
  if(S.picks.includes(pick)){sfx('whoosh');return;} // already taken in this match
  S.picks.push(pick);S.c=pick;sfx('kick');
  if(S.party){PARTY.pick(pick);G.scene='party';return;}
- if(++S.slot>=S.n){G.mselLast=S.picks.slice();startFromSetup();}}
+ S.slot++;mselSkip(S);}
 function drawMsel(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.8)');const S=G.msel,n=ROSTER.length-1,ctl=mselCtl(S.slot);
  const who=S.party?'PICK YOUR WRESTLER':msSlotName(S.slot)+' ('+MS_CTL[ctl]+')';
  BOX(...SEL_BACK,'#140a0c','#5a4a40');T('< BACK',SEL_BACK[0]+15,SEL_BACK[1]+3,1,'#bfae98','center',null);
@@ -108,5 +122,6 @@ function startFromSetup(){const ms=G.ms,ty=MS_TYPES[ms.type],picks=G.msel.picks.
  if(ty[1]==='single'&&ctl.some(c=>c!=='cpu')){let a=0,b=1;if(ctl[0]==='cpu'||ctl[1]===0){a=1;b=0;}
   G.mode=ctl[b]==='cpu'?0:1;const rl=MS_RULES[ms.rules][1];G.hc=rl==='hc';G.cage=rl==='cage';G.stage=3;
   G.sel={c:[picks[a],picks[b]],stage:2,picks:[picks[a],picks[b]]};startIntro();return;}
- const cfg=msBuildCfg(ms.type,picks,ctl,ms.elim,G.mapPick);cfg.me=Math.max(0,cfg.ctl.findIndex(c=>c===0||c===1));
+ const cfg=msBuildCfg(ms.type,picks,ctl,ms.elim,G.mapPick);
+ if(ty[1]==='tag')cfg.teams=[0,1].map(s=>{const o=TEAM_OPTS[ms.team[s]];return o.ids?o.full:null;});cfg.me=Math.max(0,cfg.ctl.findIndex(c=>c===0||c===1));
  G.mode=0;startGroup(cfg);}

@@ -44,7 +44,8 @@ G.hc=G.cage=false;G.props=[];
  else{// tag: team 0 = wrestlers 0,1 (left corner), team 1 = 2,3 (right corner)
   G.f.forEach((f,i)=>{f.team=i<2?0:1;f.wait=false;f.hidden=false;});mm.legal=[0,2];
   for(const f of G.f){if(f.idx===0||f.idx===2){f.legal=true;f.x=f.team?205:110;f.z=140;f.dir=f.team?-1:1;}else{f.legal=false;toApron(f);}}
-  callout('TAG TEAM MATCH!','#ffd35a',1.6);say('Tag at your corner! Partners can save a pin!');}
+  const tn=(cfg.teams||[]).map((n,s)=>n||G.f.filter(f=>f.team===s).map(f=>f.ch.short).join(' & '));
+  callout('TAG TEAM MATCH!','#ffd35a',1.6);say(cfg.teams&&cfg.teams.some(Boolean)?`${tn[0]} versus ${tn[1]}! Tag at your corner, partners can save a pin!`:'Tag at your corner! Partners can save a pin!');}
  G.scene='fight';sfx('bell');}
 function startRumble(pick){const others=ROSTER.filter(c=>c.id!==ROSTER[pick].id&&c.id!=='kliq').map(c=>c.id);
  let r=(Math.random()*4294967296)>>>0;const R=()=>{r=(Math.imul(r,1664525)+1013904223)>>>0;return r/4294967296;};
