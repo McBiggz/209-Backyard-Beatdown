@@ -13,6 +13,9 @@ const POWDER={img:new Image(),n:48,cols:8,w:224,h:126};POWDER.img.src="__ASSET(m
 const SECRET=new Image();SECRET.src="__ASSET(maps/secret_full.webp)__";
 const SPOSTS={F:{src:"__ASSET(maps/secret_front.png)__",x:30,y:76,w:254,h:112}};
 // the Dragon's Den barn (new Secret Map, test link): built by tools/sprites/build_barn.py, placed in game px
+// stretchy side ropes (built by tools/sprites/build_ropes.py): the ropes cut out, and the art behind them painted in
+const ROPEFX={ranchL:{slope:-0.43,amp:13,rope:"__ASSET(maps/ranch_ropeL.png)__",clean:"__ASSET(maps/ranch_cleanL.png)__",x:48.5,y:80.5,w:33.0,h:54.5,xb:82.5,xf:48.5},ranchR:{slope:0.41,amp:13,rope:"__ASSET(maps/ranch_ropeR.png)__",clean:"__ASSET(maps/ranch_cleanR.png)__",x:225.5,y:80.5,w:37.0,h:54.5,xb:223.5,xf:263.5},barnL:{slope:-0.69,amp:7,rope:"__ASSET(maps/barn_ropeL.png)__",clean:"__ASSET(maps/barn_cleanL.png)__",x:52.7,y:86.5,w:29.0,h:55.0,xb:82.7,xf:52.7},barnR:{slope:0.63,amp:7,rope:"__ASSET(maps/barn_ropeR.png)__",clean:"__ASSET(maps/barn_cleanR.png)__",x:227.2,y:86.5,w:33.5,h:55.0,xb:225.2,xf:262.2}};
+for(const k in ROPEFX){const q=ROPEFX[k];q.ri=new Image();q.ri.src=q.rope;q.ci=new Image();q.ci.src=q.clean;}
 const BARN={full:{src:"__ASSET(maps/barn_full.webp)__",x:-119.8,y:-27.5,w:702,h:234},front:{src:"__ASSET(maps/barn_front.png)__",x:31.7,y:97.5,w:252.5,h:104},
  panel:{src:"__ASSET(maps/barn_panel.png)__",x:160.2,y:60,w:25.5,h:65},diddy:{src:"__ASSET(maps/barn_diddy.png)__",x:185.7,y:65.5,w:25,h:59.5},rope:{src:"__ASSET(maps/barn_doorrope.png)__",x:160.2,y:65.5,w:50.5,h:59.5}};
 for(const k in BARN){BARN[k].img=new Image();BARN[k].img.src=BARN[k].src;}const BPOSTS={F:BARN.front};for(const k in SPOSTS){SPOSTS[k].img=new Image();SPOSTS[k].img.src=SPOSTS[k].src;}const ENT=new Image();ENT.src="__ASSET(maps/bmfranch_entrance.webp)__";

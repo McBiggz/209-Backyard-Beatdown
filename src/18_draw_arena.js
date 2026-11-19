@@ -64,3 +64,16 @@ function barnDoor(t){const c=t%30; // seconds into the cycle
 function drawBarn(){barnImg('full');const d=barnDoor((G.t||0)+22),D=BARN.diddy; // +22: first peek about 8s after you walk in
  if(d.peek>0){ctx.save();ctx.beginPath();ctx.rect(Math.round((D.x-G.cam)*2)/2,D.y,D.w,D.h);ctx.clip();barnImg('diddy',(1-d.peek)*D.w*0.9);ctx.restore();}
  barnImg('panel',(1-d.open)*BARN.panel.w);barnImg('rope');}
+// ---- side ropes stretch when someone bounces off them (wide maps; test link). G.rope = {side:+1 right / -1 left, t: seconds since}.
+// Paint the ropes out, then draw them back bent outward: the bend peaks where he hit (his depth) and is zero at the turnbuckles.
+let ropeZ=140;
+function drawRopeFx(){if(!TEST_MODES||G.stage!==3||!G.rope||G.rope.t>0.75||!G.rope.side)return;
+ const key=(barnOn()?'barn':G.map==='secret'?null:'ranch');if(!key)return;const q=ROPEFX[key+(G.rope.side>0?'R':'L')];
+ if(!q||!q.ri.complete||!q.ri.naturalWidth||!q.ci.complete)return;const t=G.rope.t,amp=(q.amp||13)*Math.exp(-t*5.5)*Math.cos(t*20);
+ if(t<0.02){const h=G.f.filter(f=>f&&f.ch).reduce((b,f)=>{const d=Math.abs(f.x-(G.rope.side>0?XMAX:XMIN));return !b||d<b.d?{f,d}:b;},null);if(h)ropeZ=h.f.z;}
+ const t0=clamp((ropeZ-ZMIN)/(ZMAX-ZMIN),0.15,0.85),out=G.rope.side,sx=x=>Math.round((x-G.cam)*2)/2;
+ ctx.drawImage(q.ci,sx(q.x),q.y,q.w,q.h);
+ const cols=Math.round(q.w*2),k=q.ri.naturalWidth/cols;
+ for(let c=0;c<cols;c++){const gx=q.x+c/2,u=clamp((gx-q.xb)/(q.xf-q.xb),0,1),p=u<t0?u/t0:(1-u)/(1-t0); // 0 at the posts, 1 where he hit
+  // the ropes run diagonally, so pushing them outward = lifting each column (no gaps, no shear)
+  ctx.drawImage(q.ri,c*k,0,k,q.ri.naturalHeight,sx(gx),q.y-Math.abs(q.slope||0.4)*amp*p,0.5,q.h);}}
