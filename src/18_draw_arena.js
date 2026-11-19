@@ -99,6 +99,6 @@ function drawBarn2Front(){const P=BARN2.pads;for(let i=0;i<3;i++)ropeLine(P.FL[i
 function drawBarn2(){const B=BARN2;ctx.drawImage(B.full.img,Math.round((B.full.x-G.cam)*2)/2,B.full.y,B.full.w,B.full.h);
  const d=barnDoor((G.t||0)+22),g=B.gap,S=SETS.cdiddy,ch=ROSTER.find(c=>c.id==='cdiddy');
  if(d.peek>0&&S){ctx.save();ctx.beginPath();ctx.rect(Math.round((g.x-G.cam)*2)/2,g.y,g.w,g.h);ctx.clip();
-  const sc=0.9*((ch&&ch.drawScale)||1);drawSpr(S,'idle0',g.x+g.w*0.66+(1-d.peek)*g.w*0.9-G.cam,g.y+g.h+2,-1,sc);ctx.restore();}
+  const sc=0.9*((ch&&ch.drawScale)||1);drawSpr(S,'idle0',g.x+g.w*0.66+(1-d.peek)*g.w*0.9-G.cam,g.y+g.h+10,-1,sc);ctx.restore();}
  const pn=B.panel;ctx.drawImage(pn.img,Math.round((pn.x+(1-d.open)*pn.w-G.cam)*2)/2,pn.y,pn.w,pn.h);
  drawBarn2Back();}
