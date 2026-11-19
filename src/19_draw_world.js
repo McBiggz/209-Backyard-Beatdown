@@ -65,23 +65,39 @@ function drawCrowd(){if(G.entrance)return;const v=clamp(G.hype,0,1),hot=v>=CTR.c
 
 // ---- one fighter's sprite, with optional body-part layers (cut-out pieces drawn in front of / behind the other wrestler)
 function fArgs(f){const ds=depthS(f.z);
-  let jx=0,jy=0,ky=1;if(TEST_MODES){const lk=(G.t-(f.landAt||-9))/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk); // a body bounces once off the mat
-   if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);                                                                        // squash as it lands
+  let jx=0,jy=0,ky=1,kr=0;if(TEST_MODES){const lt=G.t-(f.landAt||-9);
+   if(f.state==='down'||f.state==='elimdown'){const L=landFx(lt);jy=L[0];ky=L[1];kr=L[2];}  // slammed: squash, bounce, legs whip up and flop back
+   else{const lk=lt/0.28;if(lk>=0&&lk<1)jy=-Math.sin(lk*Math.PI)*5*(1-lk);                 // a body bounces once off the mat
+   if(lk>=0&&lk<0.45)ky=1-0.13*Math.sin(lk/0.45*Math.PI);}                                  // squash as it lands
    if((f.state==='jump'||f.state==='dropkick'||f.state==='dive')&&f.y>2)ky=1+clamp(Math.abs(f.vy)/420,0,1)*0.09;                // stretch while flying fast
    const w=windOf(f.state);if(w&&f.t<w+0.03)jx=-f.dir*Math.min(2,f.t*60);}                                                 // lean back into the wind-up
   const fx_=PX(f.x,f.z)+jx,fy_=PY(f.z)-f.y*ds+jy+(f.state==='dropdown'&&frameOf(f)==='pinning'?CTR.dodge.dropDy*ds:0),ov=moveOv(f),fr=ov&&ov.fr&&f.set&&f.set[ov.fr]?ov.fr:frameOf(f),dsc=ds*(f.ch.drawScale||1);
  const gd0=f.dir*(f.turn||1)*(f.flipX?-1:1)*(FLIP_FR[artId(f)]&&FLIP_FR[artId(f)][fr]?-1:1),pa=pinAlign(f,fr,gd0),gd=gd0*(pa[2]||1);
- const rot0=pa[4]!=null?pa[4]:null,orot=ov&&ov.r?ov.r:0;
+ const rot0=pa[4]!=null?pa[4]:null,orot=(ov&&ov.r?ov.r:0)+kr;
  return {fr,fx_,fy_,ds,dsc,ky:ky*(pa[3]||1),gx:fx_+((f.dox||0)+pa[0]+(ov?ov.x:0))*ds,gy:fy_-((f.doy||0)+pa[1]+(ov?ov.y:0))*ds,gd:gd*(ov&&ov.fl?-1:1),rot:orot?(rot0!=null?rot0:(f.rot||0))+orot:rot0};}
+// a body hitting the mat, t seconds after impact: [y offset, height squash, tilt]. The Genesis games sell a slam with the follow-through:
+// flattened on impact, a bounce, the legs whipping up off the mat and flopping back down, a smaller second bounce, then still.
+const LAND={sq:0.22,b1:6,b2:2,kick:11};
+function landFx(t){if(t<0||t>0.62)return [0,1,0];const L=LAND;
+ const ky=t<0.1?1-L.sq*Math.sin(t/0.1*Math.PI):1;
+ const jy=t<0.05?0:t<0.3?-L.b1*Math.sin((t-0.05)/0.25*Math.PI):t<0.44?-L.b2*Math.sin((t-0.3)/0.14*Math.PI):0;
+ const kr=t<0.04?0:-L.kick*Math.sin(Math.min(1,(t-0.04)/0.2)*Math.PI*0.5)*Math.max(0,1-(t-0.04)/0.58)*Math.cos(Math.max(0,t-0.24)/0.34*Math.PI*0.5);
+ return [jy,ky,kr];}
 // ---- Move Checker edits for every move but the suplex: an overlay of keys (move, rotate, flip, swap frame, who's in front) on top of
 // how the game poses the move. Saved per device; pins use them in real matches too. Looks only: the sim never reads them.
-const MOVE_KF={};   // baked-in versions (paste SEND results here)
-const MOVE_OV={};{for(const n of ['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP','LEAPFROG','ENTRANCE POSE'])try{const j=localStorage.getItem('bb_kf_'+n);if(j){const k=JSON.parse(j);if(Array.isArray(k)&&k.length)MOVE_OV[n]=k;}}catch(e){}}
+const MOVE_KF={   // baked-in versions (paste SEND results here)
+ // slam finisher: scooped up at a tilt, the attacker dips and drives up, a little overshoot at the top, the hold, a hitch, then he follows him down
+ 'SLAM':[{t:0,dx:8,dy:-2,r:50,ax:0,ay:0},{t:0.16,dx:8,dy:-3,r:44,ax:-1,ay:-5,ar:-4},{t:0.36,dx:3,dy:6,r:14,ax:0,ay:2,ar:3},{t:0.52,dx:0,dy:9,r:-5,ax:0,ay:1},
+  {t:0.66,dx:0,dy:0,r:0,ax:0,ay:0},{t:0.78,dx:0,dy:4,r:3,ax:0,ay:1},{t:0.86,dx:5,dy:0,r:-10,ax:1,ay:-3,ar:5},{t:0.92,dx:6,dy:0,r:0,ax:2,ay:-7,ar:8},
+  {t:1.08,dx:0,dy:0,r:0,ax:1,ay:-3,ar:3},{t:1.45,dx:0,dy:0,r:0,ax:0,ay:0,ar:0}]};
+const MOVE_OV={};{for(const n of ['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP','LEAPFROG','ENTRANCE POSE','SLAM'])try{const j=localStorage.getItem('bb_kf_'+n);if(j){const k=JSON.parse(j);if(Array.isArray(k)&&k.length)MOVE_OV[n]=k;}}catch(e){}}
 function ovTrack(n){return MOVE_OV[n]||MOVE_KF[n]||[{t:0,dx:0,dy:0,r:0},{t:1.6,dx:0,dy:0,r:0}];}
 const PIN_OVN={cover:'COVER',backslide:'BACKSLIDE',crucifix:'CRUCIFIX',rollup:'ROLL-UP'};
 function moveOv(f){let n,t,att;const inV=G.scene==='viewer'&&typeof V!=='undefined'&&V;
  if(inV){n=VMOVES[V.m][0];t=V.t;att=G.f[0];if(n==='SUPLEX'||VMOVES[V.m][1]===0)return null;}
- else if(G.pin&&(f===G.pin.a||f===G.pin.d)){n=PIN_OVN[G.pin.type];t=G.pin.t;att=G.pin.a;}else return null;
+ else if(G.pin&&(f===G.pin.a||f===G.pin.d)){n=PIN_OVN[G.pin.type];t=G.pin.t;att=G.pin.a;}
+ else if(TEST_MODES&&((f.state==='finisher'&&f.ch.finType==='slam')||(f.state==='finished'&&f.finBy==='slam'))){n='SLAM';att=f.state==='finisher'?f:G.f.find(g=>g.state==='finisher'&&g.ch.finType==='slam'&&!g.finHit);if(!att)return null;t=att.t;}
+ else return null;
  const K=inV&&V.edit&&V.track===n?V.kf:(MOVE_OV[n]||MOVE_KF[n]);if(!K||!K.length)return null;
  const k=kfAt(K,t),you=f===att,s=att.ch.size||1;
  return {x:((you?k.ax:k.dx)||0)*s*att.dir,y:((you?k.ay:k.dy)||0)*s,r:(you?k.ar:k.r)||0,fl:!!(you?k.fa:k.fh),fr:you?k.af:k.vf,front:k.lay?(k.lay==='you')===you:null};}

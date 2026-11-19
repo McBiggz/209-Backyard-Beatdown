@@ -44,7 +44,7 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'win':if(G.over&&G.over.w===f&&G.over.t<0.45&&/OVER THE TOP/.test(G.over.how||'')&&cageArt(f,'cdrop'))return 'cdrop'; // just dropped off the cage
   return 'win'+blink;
  case 'finished':return f.finBy==='slam'?'held':'dazed';
- case 'finisher':{const ty=f.ch.finType;
+ case 'finisher':{const ty=f.vFin||f.ch.finType;
   if(ty==='kick')return t<0.6?'fk0':(t<0.85?'fk1':'idle0');
   if(ty==='slam')return t<0.8?'fs0':'fs1';
   if(ty==='scream')return t<0.55?'fv0':'fv1';

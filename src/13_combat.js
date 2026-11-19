@@ -68,7 +68,7 @@ function updGrapple(f,o){
  if(t<0.3){o.x=f.x+d*18*s;o.y=0;o.spin=0;}
  else if(art&&t<tl){const k=kfAt(K,t);o.x=f.x+d*k.dx*s;o.y=k.dy*s;o.spin=1;o.supF=k.vf;f.supAF=k.af;o.rot=k.r||0;o.flipX=!!k.fh;o.layer=k.lay==='you'?-1:0;f.rot=k.ar||0;f.flipX=!!k.fa;f.dox=(k.ax||0)*s*d;f.doy=(k.ay||0)*s;}
  else if(!art&&t<0.65){const p=(t-0.3)/0.35,a=Math.PI*p;o.x=f.x+d*18*s*Math.cos(a);o.y=42*s*Math.sin(a);o.spin=a;}
- else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;f.supAF='situp';f.rot=0;f.flipX=false;f.dox=f.doy=0;}else{o.x=cx(o,f.x-d*20);o.dir=d;}setState(o,'down');o.supLand=art;o.downDur=1.6;
+ else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;f.supAF='situp';f.rot=0;f.flipX=false;f.dox=f.doy=0;}else{o.x=cx(o,f.x-d*20);o.dir=d;}setState(o,'down');o.supLand=art;o.downDur=1.6;o.landAt=G.t;
   damage(o,13*powOf(f),f);sfx('slam');shake(6);dust(PX(o.x-o.dir*24,o.z),PY(o.z),true);G.hitStop=0.09;line('grab',f,o);crowdReact(f,false);}
 }
 function tryFin(f,o){if(o.ghost)return;
@@ -90,7 +90,7 @@ function updFinisher(f,o,dt){
   if(t<0.55){const p=t/0.55,e=p*p*(3-2*p);o.x=lerp(o.x,f.x+o.dir*24*os,0.25);o.y=lerp(0,66*fs,e);}
   else if(t<0.8){o.x=f.x+o.dir*24*os;o.y=66*fs+(Math.sin(G.t*20)>0?1:0);}
   else if(t<0.92){const p=(t-0.8)/0.12;o.y=lerp(66*fs,0,p*p);}
-  else if(!f.finHit){f.finHit=true;o.y=0;o.dir=-f.dir;o.x=cx(o,f.x+f.dir*14);setState(o,'down');o.downDur=3.2;
+  else if(!f.finHit){f.finHit=true;o.y=0;o.dir=-f.dir;o.x=cx(o,f.x+f.dir*14);setState(o,'down');o.downDur=3.2;o.landAt=G.t;
    finContact(f,o);dust(PX(bodyX(o),o.z),PY(o.z),true);}
   if(t>=1.45)setState(f,'idle');
  }else if(ty==='scream'){

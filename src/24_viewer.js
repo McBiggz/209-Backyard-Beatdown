@@ -1,7 +1,7 @@
 // ---- MOVE CHECKER (test link only): step through the new move art one frame at a time.
 // Uses the real fight drawing, but nothing is simulated: every frame the two wrestlers are posed from the viewer clock.
 const VPINS=['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP'];
-const VMOVES=[['SUPLEX',-1],['COVER',1.6],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['ALL FRAMES',0]];
+const VMOVES=[['SUPLEX',-1],['COVER',1.6],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['SLAM',1.75],['ALL FRAMES',0]];
 const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','pin_bsk','pin_bsu','cclimb0','cclimb1','ctop','cdrop','ccrawl0','ccrawl1','frog0','frog1','frog_v0','frog_v1'];
 const VSPD=[0.1,0.25,0.5,1];
 let V=null;
@@ -18,7 +18,7 @@ function vSetup(){const ia=V.ids[V.a],ib=V.ids[V.b];
  if(G.ref)G.ref.x=-9999;
  V.x0=G.f[0].x;V.z0=G.f[0].z;G.f[1].z=V.z0;V.t=0;V.pinMade=false;G.scene='viewer';vPose();}
 function vPose(){const[f,o]=G.f,mv=VMOVES[V.m][0],t=V.t,x=V.x0;
- f.x=x;f.z=o.z=V.z0;f.y=o.y=0;f.spin=o.spin=0;f.dir=1;o.dir=-1;f.leap=false;f.dodge=null;o.r5t=null;f.hidden=o.hidden=false;
+ f.x=x;f.z=o.z=V.z0;f.y=o.y=0;f.spin=o.spin=0;f.dir=1;o.dir=-1;f.leap=false;f.vFin=null;f.dodge=null;o.r5t=null;f.hidden=o.hidden=false;
  if(!VPINS.includes(mv))G.pin=null;
  if(mv==='SUPLEX'){
   const art=supArt(o),tl=art?supKF()[supKF().length-1].t:0.65;
@@ -32,6 +32,11 @@ function vPose(){const[f,o]=G.f,mv=VMOVES[V.m][0],t=V.t,x=V.x0;
   if(t>=0.25&&t<0.75){setState(f,'jump');f.leap=true;f.t=t-0.25;f.y=Math.sin(Math.PI*(t-0.25)/0.5)*40;if(o.x<x)f.dodge={by:o.idx,side:-1};}
   else setState(f,'idle');
   const tp=0.5;if(t>=tp)o.r5t=G.t-(t-tp);
+ }else if(mv==='SLAM'){ // the slam finisher, posed exactly as updFinisher does it
+  const fs=f.ch.size,os=o.ch.size;setState(f,'finisher');f.t=Math.min(t,1.44);f.vFin='slam';
+  if(t<0.92){setState(o,'finished');o.finBy='slam';o.x=f.x+o.dir*24*os;
+   o.y=t<0.55?66*fs*(p=>p*p*(3-2*p))(t/0.55):t<0.8?66*fs:66*fs*(1-((t-0.8)/0.12)**2);}
+  else{setState(o,'down');o.downDur=99;o.dir=-f.dir;o.x=f.x+f.dir*14;o.finBy='slam';o.landAt=G.t-(t-0.92);}
  }else if(mv==='ENTRANCE POSE'){setState(f,'entpose');setState(o,'entpose');o.x=x+60;}
  if(wide())G.cam=clamp((f.x+o.x)/2-192,0,MAPW-W);}
 function vLen(){const mv=VMOVES[V.m];return mv[1]<0?supKF()[supKF().length-1].t+0.3:mv[1];}
