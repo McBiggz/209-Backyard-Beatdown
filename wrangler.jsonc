@@ -1,9 +1,12 @@
-// Cloudflare Worker settings: serve the built game (dist/) as a static site.
+// Cloudflare Worker settings: serve the built game (dist/) as a static site, plus /turn (worker/index.js) for the online relay.
 // Cloudflare runs `node build.mjs` first, then `npx wrangler deploy`.
+// Relay secrets (set once in the Cloudflare dashboard, as Secrets): TURN_KEY_ID, TURN_KEY_API_TOKEN
 {
   "name": "209-backyard-beatdown",
   "compatibility_date": "2026-11-01",
+  "main": "worker/index.js",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS"
   }
 }

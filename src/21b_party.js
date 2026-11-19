@@ -33,7 +33,7 @@ const PARTY={
   return p;},
  mkCode(){return Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');},
  host(){this.reset();this.role='host';this.seat=0;this.code=this.mkCode();this.st='lobby';
-  this.L={cfg:{type:2,elim:1,map:0},seats:[{pick:null},null,null,null]};this.openHost();partyUI.show(false);G.scene='party';},
+  this.L={cfg:{type:2,elim:1,map:0},seats:[{pick:null},null,null,null]};NET_TURN.then(()=>{if(this.role==='host'&&!this.peer)this.openHost();});partyUI.show(false);G.scene='party';},
  openHost(){this.peer=this.newPeer(PARTY_PREFIX+this.code);if(!this.peer)return;
   this.peer.on('open',()=>{this.err='';});
   this.peer.on('connection',c=>{
@@ -44,8 +44,8 @@ const PARTY={
    c.on('data',d=>{this.lastRecv[seat]=performance.now();plDelay(()=>this.recvHost(seat,d));});
    const gone=()=>{if(this.conns[seat]===c)this.seatLeft(seat);};c.on('close',gone);c.on('error',gone);});},
  join(code){code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==4){this.err='Codes are 4 letters';partyUI.update();return;}
-  this.reset();this.role='guest';this.code=code;this.st='joining';this.tries=0;
-  this.peer=this.newPeer();if(!this.peer)return;this.peer.on('open',()=>this.tryJoin());partyUI.update();},
+  this.reset();this.role='guest';this.code=code;this.st='joining';this.tries=0;partyUI.update();
+  NET_TURN.then(()=>{if(this.st!=='joining'||this.code!==code)return;this.peer=this.newPeer();if(!this.peer)return;this.peer.on('open',()=>this.tryJoin());netWatch(this,()=>partyUI.update());partyUI.update();});},
  tryJoin(){if(this.st!=='joining'||!this.peer||this.peer.destroyed)return;
   const c=this.peer.connect(PARTY_PREFIX+this.code,{reliable:true});this.conn=c;
   c.on('open',()=>{c._was=true;this.lastRecv[0]=performance.now();c.send({t:'hi',v:NET_VER});});

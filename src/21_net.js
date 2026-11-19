@@ -1,5 +1,5 @@
 // online version: both players must be running the same build or the matches drift apart (bump when match rules change)
-const NET_VER='34r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
+const NET_VER='35r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
 // ================= ONLINE PLAY =================
 // Lockstep over a WebRTC data channel (PeerJS). Both games run the same deterministic simulation.
 // Each player sends their packed buttons for step (now + DELAY); a step only runs once both are in.
@@ -7,6 +7,16 @@ const NET_VER='34r'+ROSTER.length,NET_OLD='Your friend has a different version o
 // the guest jumps to the host's snapshot and re-plays the inputs since then.
 const QS=new URLSearchParams(location.search);
 const NET_CFG=(()=>{const c={debug:0};if(QS.get('peerhost')){c.host=QS.get('peerhost');c.port=+QS.get('peerport')||9000;c.secure=QS.get('peersecure')==='1';c.path='/';}return c;})();
+// relay (TURN): fetched from our own Worker at /turn when the page loads. With it, two players who can't connect directly
+// (cell data, strict Wi-Fi) go through Cloudflare's relay instead. Without it, the game still tries the direct connection.
+const NET_STUN=[{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}];
+let NET_RELAY=false;
+const NET_TURN=(async()=>{if(QS.get('peerhost'))return;try{const ac=new AbortController();setTimeout(()=>ac.abort(),4000);const r=await fetch('/turn',{signal:ac.signal,cache:'no-store'});
+ if(!r.ok)return;const j=await r.json(),ice=(j.iceServers&&!Array.isArray(j.iceServers))?[j.iceServers]:(j.iceServers||[]);
+ if(ice.length){NET_CFG.config={iceServers:[...NET_STUN,...ice]};NET_RELAY=true;}}catch(e){}})();
+// if a join hangs on "Connecting...", say what's likely wrong instead of spinning forever
+function netWatch(o,ui){const t0=performance.now();const iv=setInterval(()=>{if(o.st!=='joining'){clearInterval(iv);return;}
+ if(performance.now()-t0>15000){o.err=NET_RELAY?'Still connecting... have your friend host a new room and try again':'Can\'t reach your friend. Get both devices on Wi-Fi (not cell data) and try a new room';ui();clearInterval(iv);}},1000);}
 const NET_PREFIX='dd209-';
 const CODE_CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const NET={
@@ -27,7 +37,7 @@ const NET={
    this.fail(e.type==='peer-unavailable'?'No match with that code':e.type==='network'||e.type==='server-error'||e.type==='socket-error'?"Can't reach the online server":'Connection error ('+e.type+')');});
   return p;},
  host(){this.reset();this.role='host';this.me=0;this.code=Array.from({length:4},()=>CODE_CH[Math.floor(Math.random()*CODE_CH.length)]).join('');
-  this.st='hosting';this.tries=0;this.openHost();return this.code;},
+  this.st='hosting';this.tries=0;NET_TURN.then(()=>{if(this.st==='hosting'&&!this.peer)this.openHost();});return this.code;},
  openHost(){this.peer=this.newPeer(NET_PREFIX+this.code);if(!this.peer)return;
   this.peer.on('open',()=>{if(this.st==='hosting'){this.err='';this.tries=0;netUI.update();}});
   this.peer.on('connection',c=>{if(this.conn&&this.conn.open){c.close();return;}this.bind(c);});},
@@ -38,8 +48,9 @@ const NET={
   clearTimeout(this.recT);this.recT=setTimeout(()=>{try{if(this.peer===p&&p.disconnected&&!p.destroyed)p.reconnect();}catch(e){}},300);},
  tries:0,recT:0,
  join(code){code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==4){this.err='Codes are 4 letters';return;}
-  this.reset();this.role='guest';this.me=1;this.code=code;this.st='joining';this.tries=0;this.peer=this.newPeer();if(!this.peer)return;
-  this.peer.on('open',()=>{if(!this.conn)this.tryJoin();});},
+  this.reset();this.role='guest';this.me=1;this.code=code;this.st='joining';this.tries=0;
+  NET_TURN.then(()=>{if(this.st!=='joining'||this.code!==code)return;this.peer=this.newPeer();if(!this.peer)return;
+  this.peer.on('open',()=>{if(!this.conn)this.tryJoin();});netWatch(this,()=>netUI.update());});},
  tryJoin(){if(this.st!=='joining'||!this.peer||this.peer.destroyed)return;if(this.peer.disconnected){this.reconnect();setTimeout(()=>this.tryJoin(),1500);return;}
   const c=this.peer.connect(NET_PREFIX+this.code,{reliable:true});this.bind(c);},
  bind(c){this.conn=c;c.on('open',()=>{this.lastRecv=performance.now();this.st='connected';this.err='';this.send({t:'hi',v:NET_VER});this.ping();netUI.update();onNetConnected();});
