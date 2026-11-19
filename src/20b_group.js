@@ -74,7 +74,7 @@ function updGroupFight(dt){const mm=G.mm;
  else if(mm.p1Out&&!mm.ff&&!G.net&&(confirmP()||clickQ)){mm.ff=true;callout('FAST FORWARD','#fff',0.8);}
  // camera: follow you; if you're out, follow the action
  {const me=G.f[G.me||0],act=G.f.filter(isActive);let fx=157;if(isActive(me))fx=me.x;else if(act.length)fx=act.reduce((s,f)=>s+f.x,0)/act.length;
-  const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;if(!G.mapWalk)G.cam=lerp(G.cam,clamp(fx-192,...camLim()),1-Math.exp(-dt*4));}
+  const en=G.f.find(f=>f.entering);if(en&&!isActive(me))fx=en.x;if(!G.mapWalk)G.cam=lerp(G.cam,clamp(fx-192,mm.type==='tag'?Math.max(0,camLim()[0]):camLim()[0],camLim()[1]),1-Math.exp(-dt*4));}
  if(G.hitStop>0){G.hitStop-=dt;return;}
  if(G.slowT>0){G.slowT-=dt;if(G.slowT<=0)G.slow=1;}
  const sdt=dt*G.slow;G.rope.t+=sdt;
@@ -134,7 +134,7 @@ function updElim(f,dt){if(f.state==='elim'){const p=clamp(f.t/0.7,0,1);f.x=f.ex0
 
 // ---------- Tag team pieces ----------
 // the partner waits on the floor at his corner, by the front post (the art has no side apron to stand on in this view)
-const apronSpot=t=>({x:t?ringX(158)[1]+6:ringX(158)[0]-6,z:186});
+const apronSpot=t=>({x:t?306:10,z:186}); // just outside the front posts (posts are drawn at x 29-45 and 255-285)
 // the team's corner, just inside the ropes where a fighter can actually stand
 const cornerSpot=t=>{const r=ringX(146);return{x:t?r[1]-2:r[0]+2,z:146};};
 function toApron(f){const a=apronSpot(f.team);f.x=a.x;f.z=a.z;f.out=true;f.dir=f.team?-1:1;f.legal=false;setState(f,'apron');}
