@@ -204,19 +204,19 @@ Bottom row:
 
 ## Sheet S: Taking the move (8 frames, 2 rows of 4). The other wrestler is NOT drawn.
 
-Same size rules as always: his body is no longer and no bigger than in his standing reference. When he is horizontal, his head is on the LEFT.
+Same size rules as always: his body is no longer and no bigger than in his standing reference. When he is horizontal, his head is on the LEFT. Space the 8 figures well apart so none of them touch or overlap. In every frame where he is held, leave EMPTY space where the invisible opponent's body would be, so the pose reads like a body wrapped around someone who isn't drawn.
 
 Top row:
 1. LOCK-UP: tie-up, leaning forward and pushing back, one hand on an invisible neck, the other on an invisible elbow, grimacing.
 2. DOUBLED OVER: bent forward at the waist, both arms clutching his stomach, knees buckled, mouth open in pain.
 3. HALF LIFTED: in the air, body tilted at about 45° with his head higher than his feet, legs dangling, arms flailing, shocked.
-4. FOLDED UPSIDE DOWN (the piledriver hold): completely upside down in mid-air, seen from BEHIND: only the back of his head and his bare back show, face NOT visible. His head is the LOWEST point, his hips at the TOP. Both legs are UP, bent at the knees and hooked forward over the top, spread apart. Leave a big EMPTY gap between his back and his legs, wide enough for an invisible opponent's head and upper body to fit in it (his legs rest over that opponent's shoulders). Nothing touches the ground. Arms hang limp past his head.
+4. FOLDED UPSIDE DOWN (the piledriver hold): completely upside down in mid-air, seen from BEHIND: only the back of his head and his bare back show, his face is NOT visible. His head is the LOWEST point, his hips at the TOP. Both legs are UP, bent at the knees and hooked forward over the top, spread apart, boots up high. Leave a big EMPTY gap between his back and his legs, wide enough for an invisible opponent's head and upper body to fit inside it (his legs rest over that opponent's shoulders). Nothing touches the ground. Arms hang limp past his head.
 
 Bottom row:
-5. ACROSS THE SHOULDERS: horizontal, stomach down, bent over an invisible pair of shoulders, head and arms hanging down on the LEFT, legs hanging on the right.
+5. ACROSS THE SHOULDERS: horizontal, stomach down, bent over an invisible pair of shoulders, head and arms hanging down on the LEFT, legs hanging on the right. Leave an EMPTY space under the bend of his stomach where the opponent's head and shoulders would be.
 6. FALLING: in mid-air at a steep diagonal, head lower than his feet, back toward the mat, arms flung out wide, yelling.
 7. IMPACT: just landed flat on his back, head on the LEFT, back of the head and shoulders on the mat, both legs kicked up off the mat with the knees bent, arms flung out, mouth wide open screaming.
-8. BEING PICKED UP: limp, half way up off the mat, sitting up at an angle, knees bent, arms hanging, head drooping forward, eyes half shut.
+8. BEING PICKED UP: limp, halfway up off the mat, sitting up at an angle, knees bent, arms hanging, head drooping forward, eyes half shut.
 
 ## Sheet T: On the mat and in the ropes (6 frames, 2 rows of 3). The other wrestler is NOT drawn.
 
