@@ -2,7 +2,7 @@
 // Uses the real fight drawing, but nothing is simulated: every frame the two wrestlers are posed from the viewer clock.
 const VPINS=['COVER','BACKSLIDE','CRUCIFIX','ROLL-UP'];
 const VMOVES=[['SUPLEX',-1],['COVER',1.6],['BACKSLIDE',1.6],['CRUCIFIX',1.6],['ROLL-UP',1.6],['LEAPFROG',1.2],['ENTRANCE POSE',1.0],['SLAM',1.75],['ALL FRAMES',0]];
-const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','pin_bsk','pin_bsu','cclimb0','cclimb1','ctop','cdrop','ccrawl0','ccrawl1','frog0','frog1','frog_v0','frog_v1'];
+const VNEW=['sig','sup0','sup1','situp','sup_v0','sup_v1','pinned_up','pin_bs0','pin_bs1','pin_cx','pin_ru','pin_bsv0','pin_bsv1','pin_cxv','pin_bsk','pin_bsu','cclimb0','cclimb1','ctop','cdrop','ccrawl0','ccrawl1','frog0','frog1','frog_v0','frog_v1','rlock','rwaist','rlift','rpress','rcarry','rslam','rsit','rpick','slock','sdbl','shalf','sfold','sshoul','sfall','simp','spick','telb0','telb1','tknee','tmount','twhip','tstag'];
 const VSPD=[0.1,0.25,0.5,1];
 let V=null;
 // tap targets: [x,y,w,h]

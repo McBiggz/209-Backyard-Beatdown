@@ -11,6 +11,7 @@ and their frame lists (in `src/03_assets.js`).
 |---|---|
 | `build_viral.py` | Viral's new frames on top of his original sheet |
 | `build_roster_batch1.py [ids]` | New move art for the original roster (suplex, pins, leapfrog, signature) |
+| `add_rst.py [ids]` | Sheets R, S, T (lifts/slams, taking them, mat attacks) from `art_src/sheets_new/<R|S|T>/<id>.png`. Run after add_entpose.py |
 | `build_roster_batch2.py ids` | Full sheets for Tripp, Jason, Frank, Flaco, Jaguar, Kruze, Razzle |
 | `audit_sizes.py out.json` | Size audit: every frame vs the wrestler's own stance (Viral is the ruler) |
 | `prompts_*.py / .js` | Generates the Full Frame Prompts doc |
