@@ -43,7 +43,10 @@ for sh_ in 'RST':
         cells = [sh.crop(((i % 8) * 320, (i // 8) * 224, (i % 8) * 320 + 320, (i // 8) * 224 + 224)) for i in range(len(names))]
         b = cells[names.index('idle0')].getbbox(); stance = b[3] - b[1]; s = K * stance / figs[ref].size[1]
         for fr, im in zip(NAMES, figs):
-            c = cell(prep(im, s), 'mid' if fr in mid else 'stand', 0)
+            pim = prep(im, s)
+            if pim.size[1] > AYd - 2:   # arms straight up on a big man: shrink just enough to keep the hands inside the cell
+                k_ = (AYd - 2) / pim.size[1]; pim = pim.resize((max(1, round(pim.size[0] * k_)), AYd - 2), Image.LANCZOS)
+            c = cell(pim, 'mid' if fr in mid else 'stand', 0)
             if fr in names: cells[names.index(fr)] = c
             else: names.append(fr); cells.append(c)
         rows = (len(names) + 7) // 8; out = Image.new('RGBA', (2560, 224 * rows), (0, 0, 0, 0))
