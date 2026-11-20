@@ -210,7 +210,7 @@ Top row:
 1. LOCK-UP: tie-up, leaning forward and pushing back, one hand on an invisible neck, the other on an invisible elbow, grimacing.
 2. DOUBLED OVER: bent forward at the waist, both arms clutching his stomach, knees buckled, mouth open in pain.
 3. HALF LIFTED: in the air, body tilted at about 45° with his head higher than his feet, legs dangling, arms flailing, shocked.
-4. FOLDED UPSIDE DOWN: upside down, head pointing at the mat, body folded at the waist so his legs hang back over the top, arms hanging (the piledriver hold).
+4. FOLDED UPSIDE DOWN (the piledriver hold): completely upside down in mid-air, seen from BEHIND: only the back of his head and his bare back show, face NOT visible. His head is the LOWEST point, his hips at the TOP. Both legs are UP, bent at the knees and hooked forward over the top, spread apart. Leave a big EMPTY gap between his back and his legs, wide enough for an invisible opponent's head and upper body to fit in it (his legs rest over that opponent's shoulders). Nothing touches the ground. Arms hang limp past his head.
 
 Bottom row:
 5. ACROSS THE SHOULDERS: horizontal, stomach down, bent over an invisible pair of shoulders, head and arms hanging down on the LEFT, legs hanging on the right.
