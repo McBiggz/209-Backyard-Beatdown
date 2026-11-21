@@ -286,3 +286,21 @@ Now redraw this exact sheet with the CARRIED MAN completely ERASED from all 8 fr
 Follow-up 2 (carried man only):
 
 Now go back to the sheet with both men and redraw it with the CARRIER completely ERASED from all 8 frames. Keep the CARRIED MAN exactly the same in every frame: same pose, same place, floating where he was. Fill in any part of the CARRIED MAN that was hidden behind the CARRIER, such as his other arm or leg. Plain magenta where the CARRIER was. Each frame shows exactly 2 arms and 2 legs.
+
+## GOLDEN MOVES (both men drawn together, The Viral Voice doing the move to C.Diddy)
+
+One golden sheet per move. ChatGPT draws only the held poses; the game does the throws, falls and landings with the S frames. Each golden sheet becomes the grey outline guide for every other wrestler.
+
+| # | Move | Golden key poses (both men) |
+|---|------|------|
+| 1 | Fireman's carry slam | duck under, tip over, loaded, rising, carry (DONE: art_src/pose/golden_fireman_carry.png, frames 1-5) |
+| 2 | Body slam | scoop, lifted to chest, held flat at shoulder height |
+| 3 | Suplex | front facelock hook, lifted halfway, straight upside down at the top |
+| 4 | Piledriver | head between legs, lifted upside down, seated impact |
+| 5 | Powerbomb | head between legs, lifted onto shoulders, held up high |
+| 6 | Gorilla press | lift at chest, pressed overhead |
+| 7 | Backbreaker | lifted across chest, dropped across knee |
+| 8 | Lock-up | collar-and-elbow tie-up |
+| 9 | Irish whip | wrist grip, sling |
+| 10 | Pick-up off the mat | grab by the head, half up |
+| 11 | Mounted punches | straddling, fist raised |
