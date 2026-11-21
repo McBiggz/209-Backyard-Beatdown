@@ -3,7 +3,7 @@
 // near the outline), cut onto their own layer, and bent row by row: roots still, tips swing. A spring per fighter
 // makes it trail when he moves, lift and whip on landings, and sway a little when he stands still.
 const HAIR_CFG={
- viral:[{h:[15,50],s:0.25,v:[0.15,1],y:[0.04,0.26],bh:0.02,e:9}],
+ viral:[{h:[15,45],s:0.3,v:[0.15,0.86],y:[0.04,0.24],bh:0.04,e:7}],   // his hair is skin-coloured: darker shades only, behind the head, above the shoulder
  cjdirt:[{h:[265,325],s:0.45,v:[0.18,1],y:[0.18,0.72],bh:0.04,e:7},{h:[0,25],s:0.4,v:[0.12,0.45],y:[0.06,0.32],bh:0.03,e:7}],
 };
 const HAIR_SKIP=/^(down|pin|sfold|sshoul|sfall|simp|spick|telb|held|carried|ccrawl|cdrop|ctop|getup|situp|sit|tmount|rsit|frog|sup|ko|elim|dazed_f|flat|lie|roll)/;
