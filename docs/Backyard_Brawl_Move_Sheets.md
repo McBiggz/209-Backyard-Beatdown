@@ -250,3 +250,33 @@ Example, The Viral Voice's finisher, GOING VIRAL (hammerlock DDT):
 4. JUST BEFORE IMPACT: Viral almost flat on his back in mid-air, the opponent's head inches from the mat, legs in the air behind him.
 5. IMPACT: the opponent's head driven into the mat, his legs sticking straight up, Viral on his back underneath.
 6. AFTER: the opponent lying flat on his back, head on the LEFT, out cold; Viral sitting up, one fist raised, yelling.
+
+## Sheet V: Fireman's Carry Slam, both men together (7 frames, 2 rows: 4 on top, 3 below)
+
+Drawn with BOTH men in every frame, then erased twice (carrier only, carried man only). Attach fireman_carry_ref.png, fireman_carry_ref2.png and both sprites. Timing studied from the SmackDown "Fireman Carry To Slam" clip: the carried man's head starts on the right and swings over to the left as he folds over the carrier's back (frame 2).
+
+Prompt:
+
+CARRIER = [NAME]  (the FIRST attached sprite)
+CARRIED MAN = [NAME]  (the SECOND attached sprite)
+
+Draw a 7-frame sprite sheet of the CARRIER doing a FIREMAN'S CARRY SLAM on the CARRIED MAN: 2 rows, 4 frames on top and 3 below, read left to right. Same detailed 16-bit pixel style and same size as their attached sprites, plain magenta background, frames spaced well apart so they never touch. Draw BOTH wrestlers in every frame. The CARRIER faces RIGHT in every frame. Each frame is only a small step from the one before, so the move flows. Copy the carry pose in frame 5 from the two attached photos. Keep both men's size, gear and skin colors exactly the same in all 7 frames (no purple or dark tint on any skin).
+
+TOP ROW
+1. DUCK UNDER: the CARRIER bent forward at the waist, knees bent, ducking his head under the CARRIED MAN's arm, his back arm reaching between the CARRIED MAN's legs to hook his far thigh, his front hand gripping the CARRIED MAN's wrist. The CARRIED MAN standing on both feet on the RIGHT, upright but leaning forward over the CARRIER's back, dazed, his head still on the RIGHT.
+2. TIP OVER: the CARRIER still bent, starting to straighten up, his head and shoulders pushed up under the CARRIED MAN's stomach. The CARRIED MAN's feet still touch the mat, but his body is folding forward over the CARRIER's back and his head and arms are swinging DOWN toward the LEFT, halfway between frame 1 and frame 3.
+3. LOADED: the CARRIER in a deep crouch, back straight, face straining hard. The CARRIED MAN now lies FLAT across the backs of both his shoulders, stomach down, head and one arm hanging on the LEFT, legs on the right, boots just leaving the mat.
+4. RISING: the CARRIER halfway up, knees still bent, pushing up through his legs. The CARRIED MAN flat across his shoulders exactly as in frame 3, boots well off the mat.
+
+BOTTOM ROW
+5. THE CARRY: the CARRIER standing tall and square, legs apart, gritting his teeth. The CARRIED MAN flat and level across the backs of both shoulders behind his neck, head and arm hanging on the LEFT, legs and boots dangling on the right, exactly like the photos. The CARRIER's back arm wraps around the thighs; his front hand holds the wrist.
+6. THE THROW: the CARRIER dropping down onto one knee, pulling the CARRIED MAN's arm down and shoving his legs up, so the CARRIED MAN flips forward off his shoulders head first, upside down in mid-air out in FRONT of him (to the RIGHT).
+7. THE SLAM: the CARRIER down on one knee. The CARRIED MAN lands flat on his back on the mat in front of him (to the RIGHT), head on the LEFT near the CARRIER's knee, legs bouncing up off the mat, arms flung out, screaming.
+
+Follow-up 1 (carrier only):
+
+Now redraw this exact sheet with the CARRIED MAN completely ERASED from all 7 frames. Keep the CARRIER exactly the same in every frame: same pose, same place, hands gripping empty air. Fill in any part of the CARRIER that was hidden behind the CARRIED MAN. Plain magenta where the CARRIED MAN was.
+
+Follow-up 2 (carried man only):
+
+Now go back to the sheet with both men and redraw it with the CARRIER completely ERASED from all 7 frames. Keep the CARRIED MAN exactly the same in every frame: same pose, same place, floating where he was. Fill in any part of the CARRIED MAN that was hidden behind the CARRIER, such as his other arm or leg. Plain magenta where the CARRIER was.
