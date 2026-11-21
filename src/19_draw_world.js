@@ -129,13 +129,14 @@ function lpPath(L,pick){for(const q of L)if(pick(q)&&q.pts.length>2){ctx.moveTo(
 function fDraw(f,A,L,mode){const M=sprM(f,A),prev=ctx.getTransform();
  const raw=()=>{const rr=A.rot!=null?A.rot:f.rot;if(rr){ctx.save();ctx.translate(Math.round(A.gx),Math.round(A.gy-28*A.dsc));ctx.rotate(rr*Math.PI/180*f.dir);drawSpr(f.set,A.fr,0,28*A.dsc,A.gd,A.dsc,A.ky);ctx.restore();}
   else drawSpr(f.set,A.fr,A.gx,A.gy,A.gd,A.dsc,A.ky);};
+ const raw0=raw;const rawH=()=>{if(mode==='main'&&hairOn(f)&&!(Math.abs(A.rot!=null?A.rot:f.rot||0)>20)){hairStep(f);HAIRF=f;try{raw0();}finally{HAIRF=null;}}else raw0();};
  if(mode==='main'){f._M=M;f._fr=A.fr;f._A=A;}
  const back=L&&L.some(q=>!q.front);
- if(mode==='main'&&!back){raw();return;}
+ if(mode==='main'&&!back){rawH();return;}
  ctx.save();ctx.setTransform(M);ctx.beginPath();
  if(mode==='main'){ctx.rect(-4000,-4000,9000,9000);lpPath(L,q=>!q.front);ctx.setTransform(prev);ctx.clip('evenodd');}
  else{lpPath(L,mode==='front'?q=>q.front:q=>!q.front);ctx.setTransform(prev);ctx.clip();}
- raw();ctx.restore();}
+ rawH();ctx.restore();}
 // layer data: baked into the game (LAYERS_DEF), plus edits saved on this device (test link only)
 const LAYERS_DEF={};
 let LAYERS_LOCAL=null;try{if(TEST_MODES)LAYERS_LOCAL=JSON.parse(localStorage.getItem('bb_layers')||'null');}catch(e){}
