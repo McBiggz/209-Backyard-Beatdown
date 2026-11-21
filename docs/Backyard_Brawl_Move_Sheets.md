@@ -197,7 +197,7 @@ Top row:
 4. PRESS OVERHEAD: standing tall, legs wide, both arms locked straight up overhead, palms up as if holding a body flat above his head.
 
 Bottom row:
-5. FIREMAN'S CARRY (attach fireman_carry_ref.png): standing tall and square, legs apart, as if a body lies flat across the backs of both shoulders behind his neck. One arm wraps up and around the invisible man's thigh, hand gripping it at his shoulder; the other hand reaches up across his chest holding the invisible man's wrist. Leave empty space across his shoulders and behind his head where the body lies.
+5. FIREMAN'S CARRY (attach fireman_carry_ref.png and fireman_carry_ref2.png): standing tall and square, legs apart, as if a body lies flat across the backs of both shoulders behind his neck. One arm wraps up and around the invisible man's thigh, hand gripping it at his shoulder; the other hand reaches up across his chest holding the invisible man's wrist. Leave empty space across his shoulders and behind his head where the body lies.
 6. SLAMMING DOWN: deep crouch, one knee nearly on the mat, both arms driven down hard in front of him at knee height, yelling.
 7. SIT-OUT: sitting on the mat, legs straight out in front of him and spread, both hands down between his knees as if holding an invisible head there.
 8. PICK-UP: bent forward at the waist, knees bent, both hands reaching down low in front of him as if grabbing a downed man by the head to pull him up.
@@ -213,7 +213,7 @@ Top row:
 4. FOLDED UPSIDE DOWN (the piledriver hold): completely upside down in mid-air, seen from BEHIND: only the back of his head and his bare back show, his face is NOT visible. His head is the LOWEST point, his hips at the TOP. Both legs are UP, bent at the knees and hooked forward over the top, spread apart, boots up high. Leave a big EMPTY gap between his back and his legs, wide enough for an invisible opponent's head and upper body to fit inside it (his legs rest over that opponent's shoulders). Nothing touches the ground. Arms hang limp past his head.
 
 Bottom row:
-5. FIREMAN'S CARRY (attach fireman_carry_ref.png): lying FLAT and HORIZONTAL in mid-air, stomach down, as if draped across someone's shoulders: his body is a straight level line, NOT bent into an upside-down V. Head and one arm hang down a little on the LEFT, his legs stick out level on the right with the knees slightly bent and boots dangling. Leave an EMPTY dip in the middle of his stomach where the opponent's neck and shoulders would be.
+5. FIREMAN'S CARRY (attach fireman_carry_ref.png and fireman_carry_ref2.png): lying FLAT and HORIZONTAL in mid-air, stomach down, as if draped across someone's shoulders: his body is a straight level line, NOT bent into an upside-down V. Head and one arm hang down a little on the LEFT, his legs stick out level on the right with the knees slightly bent and boots dangling. Leave an EMPTY dip in the middle of his stomach where the opponent's neck and shoulders would be.
 6. FALLING: in mid-air at a steep diagonal, head lower than his feet, back toward the mat, arms flung out wide, yelling.
 7. IMPACT: just landed flat on his back, head on the LEFT, back of the head and shoulders on the mat, both legs kicked up off the mat with the knees bent, arms flung out, mouth wide open screaming.
 8. BEING PICKED UP: limp, halfway up off the mat, sitting up at an angle, knees bent, arms hanging, head drooping forward, eyes half shut.

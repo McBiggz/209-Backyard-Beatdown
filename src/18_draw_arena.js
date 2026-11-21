@@ -80,7 +80,8 @@ function drawRopeFx(){if(!TEST_MODES||G.stage!==3||!G.rope||G.rope.t>0.75||!G.ro
 // ================= THE BARN, APRON VERSION (test link) =================
 // Ropes are drawn by the game: 3 per side, strung pad to pad. Back + side ropes go behind the wrestlers, front ropes in front of them
 // (under the front posts). When someone bounces off a side rope, that side's ropes stretch out where he hit and spring back.
-const barn2=()=>TEST_MODES&&barnOn()&&BARN2.full.img.complete&&BARN2.full.img.naturalWidth>0;
+const barn2On=()=>barnOn();   // the rope-less barn with the game's own ropes (live). The sim only asks barn2On(), never whether the art has loaded, so online stays in step
+const barn2=()=>barn2On()&&BARN2.full.img.complete&&BARN2.full.img.naturalWidth>0;
 // rope looks per map: [outline, body, shine, width scale, top-rope colours or null]
 const RP_STYLE={barn:{c:['#141416','#5c5c64','#a9a9b3'],w:1,top:null},
  ranch:{c:['#4a1a04','#e07a1e','#ffc27a'],w:1.75,top:['#2a2a30','#b9b9c3','#f4f4fa']}};
@@ -103,7 +104,8 @@ function ringRopesFront(R,st){const P=R.pads;for(let i=0;i<3;i++)ropeLine(P.FL[i
  const F=R.front;if(F.img.complete)ctx.drawImage(F.img,Math.round((F.x-G.cam)*2)/2,F.y,F.w,F.h);}
 function drawBarn2Back(){ringRopesBack(BARN2,RP_STYLE.barn);}
 function drawBarn2Front(){ringRopesFront(BARN2,RP_STYLE.barn);}
-const ranch2=()=>TEST_MODES&&G.stage===3&&!barnOn()&&G.map!=='secret'&&RANCH2.full.img.complete&&RANCH2.full.img.naturalWidth>0;
+const ranch2On=()=>G.stage===3&&!barnOn()&&G.map!=='secret';
+const ranch2=()=>ranch2On()&&RANCH2.full.img.complete&&RANCH2.full.img.naturalWidth>0;
 function drawRanch2(){ctx.drawImage(RANCH2.full.img,-Math.round(G.cam*2)/2,0,MAPW,H);
  if(G.entrance){const p=0.25+0.15*Math.sin(G.t*8);ELL(PX(513,158),158,34,7,`rgba(190,80,255,${p.toFixed(2)})`);}ringRopesBack(RANCH2,RP_STYLE.ranch);}
 // C.Diddy in the doorway: his own game sprite (idle frame), clipped to the doorway, sliding in from the side
