@@ -5,7 +5,12 @@
 const HAIR_CFG={
  viral:[{h:[15,45],s:0.3,v:[0.15,0.86],y:[0.04,0.24],bh:0.04,e:7}],   // his hair is skin-coloured: darker shades only, behind the head, above the shoulder
  cjdirt:[{h:[265,325],s:0.45,v:[0.18,1],y:[0.18,0.72],bh:0.04,e:7},{h:[0,25],s:0.4,v:[0.12,0.45],y:[0.06,0.32],bh:0.03,e:7}],
-};
+ razzle:[{h:[10,40],s:0.3,v:[0.12,0.75],y:[0.03,0.27],bh:0.03,e:7},{h:[0,360],s:0.25,v:[0.2,1],y:[0.36,0.62],bh:0.06,e:5}],   // Dazzle: hair, then the jacket fringe behind him
+ spektro:[{h:[0,40],s:0.25,v:[0.08,0.65],y:[0.03,0.36],bh:0.02,e:8}],
+ necrosis:[{h:[345,15],s:0.5,v:[0.3,1],y:[0.45,0.8],bh:0.06,e:6},{h:[10,40],s:0.3,v:[0.12,0.6],y:[0.08,0.32],bh:0.04,e:6}], // the back flap of his sash, and his braids
+ zeke:[{h:[0,360],s:0,v:[0,0.32],y:[0.02,0.22],bh:0.03,e:7}],
+ asesino:[{h:[0,360],s:0,v:[0,0.32],y:[0.02,0.2],bh:0.03,e:7}],
+};   // h: hue range in degrees (wraps when the first is bigger), s: min saturation, v: brightness range, y: rows as a share of his height, bh: how far behind the head centre, e: max px from the outline
 const HAIR_SKIP=/^(down|pin|sfold|sshoul|sfall|simp|spick|telb|held|carried|ccrawl|cdrop|ctop|getup|situp|sit|tmount|rsit|frog|sup|ko|elim|dazed_f|flat|lie|roll)/;
 let HAIRF=null;const HAIR_C=new Map();
 function hairOn(f){return TEST_MODES&&f&&f.ch&&HAIR_CFG[artId(f)];}
@@ -24,14 +29,17 @@ function hairBuild(c,id){
  const M=new Uint8Array(w*h);let y0=h,y1=0,cnt=0;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(!A[i])continue;const r=P[i*4]/255,gg=P[i*4+1]/255,b=P[i*4+2]/255,mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),d=mx-mn+1e-9;
   let hu=mx===r?((gg-b)/d)%6:mx===gg?(b-r)/d+2:(r-gg)/d+4;hu*=60;if(hu<0)hu+=360;const s=d/(mx+1e-9),v=mx;
-  for(const z of cfg){if(hu<z.h[0]||hu>z.h[1]||s<z.s||v<z.v[0]||v>z.v[1])continue;if(y<top+z.y[0]*H||y>top+z.y[1]*H||x>=hx-z.bh*H||dist[i]>z.e)continue;M[i]=1;break;}
+  for(let zi=0;zi<cfg.length;zi++){const z=cfg[zi];if(!(z.h[0]<=z.h[1]?hu>=z.h[0]&&hu<=z.h[1]:hu>=z.h[0]||hu<=z.h[1])||s<z.s||v<z.v[0]||v>z.v[1])continue;if(y<top+z.y[0]*H||y>top+z.y[1]*H||x>=hx-z.bh*H||dist[i]>z.e)continue;M[i]=zi+1;break;}
   if(M[i]){cnt++;if(y<y0)y0=y;if(y>y1)y1=y;}}
  if(cnt<12||y1-y0<6)return null;
+ // each zone swings from its own root: weight per row, 0 at the top of that zone's pixels, 1 at its bottom
+ const zt=cfg.map(()=>[h,0]);for(let i=0;i<w*h;i++)if(M[i]){const y=(i/w)|0,q=zt[M[i]-1];if(y<q[0])q[0]=y;if(y>q[1])q[1]=y;}
+ const WY=new Float32Array(h);for(const q of zt)if(q[1]>q[0])for(let y=q[0];y<=q[1];y++)WY[y]=Math.max(WY[y],Math.pow((y-q[0])/(q[1]-q[0]),1.4));
  // the hair layer, and the body with the hair's outer edge cut away (inner hair stays as the layer under the swinging copy)
  const hc=document.createElement('canvas');hc.width=w;hc.height=h;const HD=g.createImageData(w,h);
  for(let i=0;i<w*h;i++)if(M[i]){for(let k=0;k<4;k++)HD.data[i*4+k]=P[i*4+k];if(dist[i]<=4)P[i*4+3]=0;}
  hc.getContext('2d').putImageData(HD,0,0);g.putImageData(D,0,0);
- return {body:cv,hair:hc,y0,y1,w,h};}
+ return {body:cv,hair:hc,y0,y1,w,h,WY};}
 function hairGet(c,id,name){const k=id+'|'+name;if(!HAIR_C.has(k)){let r=null;try{r=c.a&&(c.a.complete!==false)?hairBuild(c,id):null;}catch(e){r=null;}if(!r&&c.a&&c.a.complete===false)return null;HAIR_C.set(k,r);}return HAIR_C.get(k);}
 // spring per fighter, run once per drawn frame (wall clock; looks only)
 function hairStep(f){const now=performance.now()/1000,H=f._hair||(f._hair={x:0,v:0,t:now,y:f.y||0,ph:Math.random()*6});
@@ -46,7 +54,7 @@ function hairDraw(c,name,sx,sy,dir,sw,sh){const f=HAIRF;if(!f||HAIR_SKIP.test(na
  const fx=sw*SW/320,fy=sh*SH/224,X=-AX*sw+c.ox*fx,Y=sy-AY*sh+c.oy*fy;
  ctx.save();if(dir>=0)ctx.translate(sx,0);else{ctx.translate(sx,0);ctx.scale(-1,1);}
  ctx.drawImage(r.body,X,Y,r.w*fx,r.h*fy);
- const span=Math.max(1,r.y1-r.y0),B=2;
- for(let y=r.y0;y<=r.y1;y+=B){const t=clamp((y-r.y0)/span,0,1),dx=off*Math.pow(t,1.4);
+ const B=2;
+ for(let y=r.y0;y<=r.y1;y+=B){const dx=off*r.WY[y];
   ctx.drawImage(r.hair,0,y,r.w,B,X+dx*fx,Y+y*fy,r.w*fx,B*fy);}
  ctx.restore();return true;}
