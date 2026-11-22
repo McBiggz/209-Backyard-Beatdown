@@ -203,9 +203,14 @@ const TossT=(s,x,y,sc,c)=>T(s,x,y,sc,c,'center','#000');
 // ---------- drawing ----------
 function drawGroupHUD(){const mm=G.mm;
  const slot=(f,x,y,right)=>{const w=94,on=isActive(f)||f.entering,col=f.elim||f.state==='elim'||f.state==='elimdown'?'#7a3030':f.wait?'#5a4a40':'#f1e6d0';
-  const label=f.wait?'#'+(mm.order?mm.order.indexOf(f.idx)+1:'?')+' ???':(f.ch.short||f.ch.name).slice(0,13)+(f.idx===0?' (YOU)':'')+(mm.type==='tag'&&!f.legal&&!f.elim?' •':'');
-  T(label,right?x+w:x,y,1,f.idx===0?'#ffd35a':col,right?'right':'left','#000');
-  if(!f.wait){R(x,y+6,w,3,'#000');if(!(f.elim||f.state==='elim'||f.state==='elimdown'))R(right?x+w-Math.round(w*clamp(f.hp,0,100)/100):x,y+6,Math.round(w*clamp(f.hp,0,100)/100),3,f.hp>50?'#5fe07a':f.hp>25?'#ffd35a':'#ff4a3a');else R(x,y+7,w,1,'#ff4a3a');}};
+  const me=f.idx===(G.me||0);
+  const label=f.wait?'#'+(mm.order?mm.order.indexOf(f.idx)+1:'?')+' ???':(f.ch.short||f.ch.name).slice(0,13)+(me?' (YOU)':'')+(mm.type==='tag'&&!f.legal&&!f.elim?' •':'');
+  T(label,right?x+w:x,y,1,me?'#ffd35a':col,right?'right':'left','#000');
+  if(!f.wait){R(x,y+6,w,3,'#000');if(!(f.elim||f.state==='elim'||f.state==='elimdown'))R(right?x+w-Math.round(w*clamp(f.hp,0,100)/100):x,y+6,Math.round(w*clamp(f.hp,0,100)/100),3,f.hp>50?'#5fe07a':f.hp>25?'#ffd35a':'#ff4a3a');else R(x,y+7,w,1,'#ff4a3a');
+   // special meter under the health bar: fills gold, flashes when the special is ready
+   if(!(f.elim||f.state==='elim'||f.state==='elimdown')){const m=clamp(f.meter||0,0,100),mw=Math.round(w*m/100),full=m>=100;
+    R(x,y+9,w,1,'#2a1a10');if(mw)R(right?x+w-mw:x,y+9,mw,1,full?((G.t*6|0)%2?'#fff3b0':'#ffb400'):'#c98a2a');
+    if(full)T('SPECIAL!',right?x-3:x+w+3,y+5,1,(G.t*6|0)%2?'#ffd35a':'#fff',right?'right':'left','#000');}}};
  const L=mm.type==='tag'?[0,1]:G.f.map((f,i)=>i).filter(i=>i%2===0),Rr=mm.type==='tag'?[2,3]:G.f.map((f,i)=>i).filter(i=>i%2===1);
  const ord=mm.type==='rumble'?mm.order:null;const lst=ord?ord.slice(0,4):L,rst=ord?ord.slice(4):Rr;
  lst.forEach((i,k)=>slot(G.f[i],3,3+k*11,false));rst.forEach((i,k)=>slot(G.f[i],W-97,3+k*11,true));
