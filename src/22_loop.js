@@ -41,7 +41,8 @@ acc+=Math.min(0.25,(now-last)/1000);last=now;
   if(G.scene==='loading')drawLoading();else if(G.scene==='title'||G.scene==='lobby')drawTitle();else if(G.scene==='select')drawSelect();else if(G.scene==='setup')drawSetup();else if(G.scene==='msel')drawMsel();else if(G.scene==='party')drawParty();else if(G.scene==='uni')drawUni();else if(G.scene==='train')drawTrain();else if(G.scene==='promo')drawPromo();else if(G.scene==='intro')drawIntro();else if(G.scene==='viewer')drawViewer();else drawFight();
   ctx.restore();drawOverlays();if(G.scene!=='fight')drawPops();drawIRP();drawTut();drawNetHUD();drawTitleBanner();musFrame();
  }catch(e){console.error(e);}
- {const me=G.net?G.net.me:0,f=G.scene==='fight'&&G.f&&G.f[me];FINBTN.classList.toggle('hide',!(f&&f.meter>=100));}
+ {const me=(G.net&&G.net.me!=null)?G.net.me:(G.mm?(G.me||0):0),f=   // online 1v1 knows its side; party and offline group matches use G.me (the seat you play)
+ G.scene==='fight'&&G.f&&G.f[me];FINBTN.classList.toggle('hide',!(f&&f.meter>=100));}
  fsUI();tc.classList.toggle('on',coarse&&(G.scene==='fight'||G.scene==='train')&&!G.paused&&!(G.over&&G.over.t>1.8));
  requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
