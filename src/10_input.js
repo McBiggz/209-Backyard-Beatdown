@@ -56,7 +56,7 @@ const PAD_BTN={0:'jump',2:'punch',3:'kick',1:'grab',4:'fin',5:'fin',6:'fin',7:'f
 const padPrev=[{},{}];let padOn=false;
 function padSet(p,code,down){const was=!!padPrev[p][code];if(down===was)return;padPrev[p][code]=down;
  if(down){if(!keys[code])pressed[code]=true;keys[code]=true;}else keys[code]=false;}
-function padPoll(){if(!navigator.getGamepads||!TEST_MODES)return; // test link only for now
+function padPoll(){if(!navigator.getGamepads)return; // live everywhere
  let list;try{list=[...navigator.getGamepads()].filter(g=>g&&g.connected);}catch(e){return;}
  if(list.length&&!padOn){padOn=true;document.body.classList.add('pad');}
  list.slice(0,2).forEach((g,p)=>{const m=MAP[p],b=i=>!!(g.buttons[i]&&(g.buttons[i].pressed||g.buttons[i].value>0.5)),ax=i=>g.axes[i]||0,DZ=0.45;
