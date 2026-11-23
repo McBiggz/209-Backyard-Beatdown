@@ -124,10 +124,20 @@ function bodySpan(f,frame){const e=(f.set&&f.set[frame+'_ext'])||(frame==='pinni
 function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out);if(!live.length)return;const z=live[0][0].z,[a0,b0]=ringX(z),a=a0-6,b=b0+6;
  let lo=1e9,hi=-1e9;for(const[f,fr]of live){const[s0,s1]=bodySpan(f,fr);lo=Math.min(lo,s0);hi=Math.max(hi,s1);}
  let sh=0;if(hi-lo>b-a)sh=(a+b)/2-(lo+hi)/2;else if(lo<a)sh=a-lo;else if(hi>b)sh=b-hi;if(sh)for(const[f]of live)f.x+=sh;}
+// ---- reversals from the mat ----
+// someone about to stomp me: close, facing me, stomp started but not landed yet
+function revThreat(f){if(!G.windOn)return null;const bx=bodyX(f);   // test link for now (same switch as the other test-link moves, so online stays in step)
+ for(const g of G.f){if(g===f||g.state!=='stomp'||g.hitDone||g.ghost)continue;if(G.mm&&(sameTeam(f,g)||!isActive(g)))continue;
+  if(wide()&&g.out!==f.out)continue;if(Math.abs(bx-g.x)<44&&Math.abs(g.z-f.z)<14)return g;}return null;}
+function upKick(f,g){const d=g.x>bodyX(f)?1:-1;damage(g,CTR.rev.dmg*powOf(f),f);knock(g,d*170,210);setState(f,'getup');f.t=0.2;f.revLock=0;
+ callout('REVERSAL!','#5fe07a',1.0);popOn(f,'FROM UNDERNEATH!','#5fe07a');hitFx(PX(g.x,g.z),PY(g.z)-30,10);sfx('kick');shake(5);G.hitStop=0.08;heat(CTR.crowd.nearFall);crowdReact(f,true);
+ say(`${f.ch.short} kicks ${g.ch.short} off from the mat!`);}
 function startPin(f,o){if(o.ghost||(G.mm&&!G.mm.pins)||G.pin){setState(f,'whiff');return;}link(f,o);tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6,type:'cover'};
  {const ty=pinTypes(f,o);if(ty.length>1){const P=G.pin;P.type=ty[Math.floor(srnd()*ty.length)];if(P.type!=='cover')P.nextAt+=PIN_SETUP;}}G.ref.mode='pin';sfx('grab');line('pin',f,o);}
+function pinReverse(){const{a,d}=G.pin;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;d.t=0.15;a.x=cx(a,d.x+d.dir*20);knock(a,d.dir*150,190);damage(a,CTR.rev.dmg*0.6*powOf(d),d);
+ callout('REVERSAL!','#5fe07a',1.0);popOn(d,'SHOVED OFF!','#5fe07a');sfx('kick');shake(4);heat(CTR.crowd.nearFall);crowdReact(d,true);say(`${d.ch.short} shoves ${a.ch.short} off before the count even starts!`);}
 function kickout(){const P=G.pin,{a,d}=P,near=P.count>=2&&P.nextAt-P.t<0.3;G.pin=null;G.ref.mode='idle';setState(d,'getup');d.y=0;setState(a,'getup');a.x=cx(a,d.x-d.dir*36);
  if(near){callout('NEAR FALL!','#ffd35a',1.4);say(`${d.ch.short} kicked out at 2.9! This place is going crazy!`);heat(CTR.crowd.nearFall);crowdReact(d,false);sfx('roar');sfx('roar');shake(5);irpMark('big');}
  else{callout('KICK OUT!','#fff',1.1);line('kickout',a,d);heat(CTR.crowd.kickout);sfx('roar');shake(3);}}
@@ -138,7 +148,11 @@ function secondWind(){const{a,d}=G.pin;d.meter=0;d.readyAnn=false;d.usedSW=true;
  fireFx(PX(d.x,d.z),PY(d.z)-20,30);if(!d.cpu)popOn(d,'METER USED','#ff8a1f');}
 function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
- if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.out){secondWind();return;}   // a full meter always buys a kickout (it costs the whole meter)
+ if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.out){secondWind();return;}
+ // reversal: kick right as he covers (first moment of the pin) and you shove him off. Mashed early presses don't count.
+ if(G.windOn&&P.t<CTR.rev.pinWin&&!P.d.out&&P.d.hp>0){
+  if(!P.d.cpu&&di.kickP&&!P.d.revLock){pinReverse();return;}
+  if(P.d.cpu&&!P.revRolled){P.revRolled=true;if(schance(CTR.rev.cpuPin*(G.diff!=null?AI_DIFF[G.diff].rev:1))){pinReverse();return;}}}   // a full meter always buys a kickout (it costs the whole meter)
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}
  // wiggling the stick counts too: every swing to a new direction is one press (made for the phone stick; arrows and pads work the same)
  if(!P.d.cpu&&!P.ropes){const dk=(di.left?'L':'')+(di.right?'R':'')+(di.up?'U':'')+(di.down?'D':'');if(dk&&dk!==P.d.pinDir){P.presses++;P.d.wiggle=0.15;}P.d.pinDir=dk;}

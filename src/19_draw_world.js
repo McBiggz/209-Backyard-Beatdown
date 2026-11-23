@@ -37,8 +37,13 @@ function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}
  if(p.type==='fire'&&a<0.3)continue;R(p.x,p.y,p.size,p.size,p.col);}}
 function drawPops(){for(const p of G.pops){ctx.globalAlpha=clamp(p.life/p.max*2,0,1);T(p.text,p.x,p.y,1,p.col,'center','#000');}ctx.globalAlpha=1;}
+// fighting from underneath: a flashing prompt over a downed player when a reversal is open
+function drawRevPrompts(){if(!G.f)return;for(const f of G.f){if(f.cpu||f.hidden)continue;let on=false;
+  if(f.state==='down'&&!(f.revLock>0)&&revThreat(f))on=true;
+  if(G.windOn&&G.pin&&G.pin.d===f&&G.pin.t<CTR.rev.pinWin)on=true;
+  if(on)T(coarse?'KICK!':'KICK! ('+((G.net||!f.idx||(G.mm&&f.ctl!==1))?'G':'K')+')',clamp(PX(bodyX(f),f.z),46,W-46),PY(f.z)-34,2,(G.t*10|0)%2?'#5fe07a':'#fff','center','#000');}}
 function drawCallout(){const c=G.callout;if(!c)return;const p=c.t/c.dur;ctx.globalAlpha=p>0.8?(1-p)/0.2:1;T(c.text,192,44,c.t<0.1?4:3,c.col,'center','#1a0304');ctx.globalAlpha=1;}
-function drawHUD(){if(G.mm){drawGroupHUD();return;}const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
+function drawHUD(){drawRevPrompts();if(G.mm){drawGroupHUD();return;}const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
  R(0,207,W,9,'#0a0506');R(0,207,20,9,'#8f0f14');T('LIVE',10,209,1,'#fff','center',null);
  const vis=Math.min(G.ticker.length,Math.floor(G.tickerT*60));T(G.ticker.slice(0,vis),24,209,1,'#f1e6d0','left',null);
  T(muted?'M:SOUND OFF':'M:SOUND',W-3,209,1,'#7a6a5a','right',null);

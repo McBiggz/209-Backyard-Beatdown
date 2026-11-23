@@ -112,6 +112,13 @@
     "back": 44,
     "front": 53
    }
+  },
+  "rev": {
+   "_note": "fighting from underneath: kick as a stomp comes down, or as a cover starts",
+   "dmg": 6,
+   "pinWin": 0.3,
+   "cpu": 0.25,
+   "cpuPin": 0.12
   }
  },
  "group": {

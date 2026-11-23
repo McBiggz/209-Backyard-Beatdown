@@ -65,7 +65,13 @@ function updFighter(f,o,inp,dt){
  case 'runline':f.walkPh+=dt*22;if(!f.hitDone)tryHit(f,o,ATK.runline);else f.vx*=Math.pow(0.05,dt);
   if(f.t>0.55){f.vx=0;setState(f,'idle');}break;
  case 'fall':f.vy-=GRAV*dt;f.y+=f.vy*dt;if(!f.out){const[r0,r1]=wbounds(f),nx=f.x+f.vx*dt;if((nx>r1&&f.vx>0)||(nx<r0&&f.vx<0)){f.vx=-f.vx*0.35;G.rope={side:nx>r1?1:-1,t:0};ropeSfx();shake(2);}}if(f.y<=0&&f.vy<0){f.y=0;f.vx=f.vz=0;setState(f,'down');sfx('slam');shake(4);dust(PX(bodyX(f),f.z),PY(f.z),true);f.landAt=G.t;if(TEST_MODES){shake(6);impactRing(PX(bodyX(f),f.z),PY(f.z));}}break;
- case 'down':f.vx=f.vz=0;f.y=0;if(f.t>=f.downDur)setState(f,'getup');break;
+ case 'down':{f.vx=f.vz=0;f.y=0;if(f.revLock>0)f.revLock-=dt;
+  // fighting from underneath: kick (or punch) just as someone comes down with a stomp and you kick him off and spring up.
+  // Mashing doesn't work: a press with nothing to reverse locks you out for a moment.
+  const th=revThreat(f);
+  if(!f.cpu&&(inp.kickP||inp.punchP)){if(th&&!(f.revLock>0)){upKick(f,th);break;}f.revLock=0.45;}
+  else if(f.cpu&&th&&th.t<dt*1.5&&schance(CTR.rev.cpu*(G.diff!=null?AI_DIFF[G.diff].rev:1))){upKick(f,th);break;}
+  if(f.t>=f.downDur)setState(f,'getup');break;}
  case 'getup':f.vx=f.vz=0;if(f.t>=0.5){setState(f,'idle');if(G.over&&G.over.w===f)setState(f,'win');}break;
  case 'grapple':updGrapple(f,o);break;
  case 'perch':f.vx=f.vz=0;f.y=f.perchY||26; // standing on the top turnbuckle
