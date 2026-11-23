@@ -1,5 +1,5 @@
 // online version: both players must be running the same build or the matches drift apart (bump when match rules change)
-const NET_VER='38r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
+const NET_VER='39r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
 // ================= ONLINE PLAY =================
 // Lockstep over a WebRTC data channel (PeerJS). Both games run the same deterministic simulation.
 // Each player sends their packed buttons for step (now + DELAY); a step only runs once both are in.
@@ -60,7 +60,7 @@ const NET={
  send(o){if(this.conn&&this.conn.open)this.conn.send(o);},
  fail(msg){this.err=msg;if(this.st!=='connected'&&this.st!=='playing'){this.st='error';}netUI.update();},
  drop(){if(this.st==='off')return;this.lost=true;this.err='Opponent disconnected';this.st='lost';netUI.update();},
- leave(){this.send({t:'bye'});this.close();},
+ leave(){this.send({t:'bye'});this.close();G.hc=G.cage=false;G.netRules=0;},
  close(){try{if(this.conn)this.conn.close();}catch(e){}try{if(this.peer)this.peer.destroy();}catch(e){}this.peer=this.conn=null;this.st='off';G.net=null;G.netMenu=false;},
  reset(){this.close();this.err='';this.lost=false;this.myPick=this.theirPick=null;this.wantRematch=this.theyRematch=false;this.desyncs=this.repairs=0;},
  ping(){this.send({t:'p',ts:performance.now()});},
@@ -75,6 +75,7 @@ const NET={
    // my input delay follows the connection: enough steps to cover one-way travel plus a little jitter
    this.myD=clamp(Math.ceil(this.rtt/2/16.7)+2,2,12);break;}
   case 'pick':this.theirPick=d.i;this.tryStart();break;
+  case 'rules':G.netRules=d.r|0;break;
   case 'start':this.begin(d);break;
   case 'i':if(d.m===this.m)for(let k=0;k<d.v.length;k++)this.remote.set(d.s+k,d.v[k]);break;
   case 'h':if(d.m===this.m){this.rhashes.set(d.s,d.h);this.check(d.s);}break;
@@ -88,12 +89,14 @@ const NET={
  pick(i){this.myPick=i;this.send({t:'pick',i});this.tryStart();},
  tryStart(){if(this.role!=='host'||this.myPick==null||this.theirPick==null)return;
   const D=clamp(Math.ceil((this.rtt||60)/2/16.7)+2,3,12);
-  const msg={t:'start',m:this.m+1,seed:(Math.random()*4294967296)>>>0,picks:[this.myPick,this.theirPick],stage:G.stage,D};
+  const msg={t:'start',m:this.m+1,seed:(Math.random()*4294967296)>>>0,picks:[this.myPick,this.theirPick],stage:G.stage,rules:G.netRules|0,D};
   this.send(msg);this.begin(msg);},
- tryRematch(){if(this.role==='host'&&this.wantRematch&&this.theyRematch){const msg={t:'start',m:this.m+1,seed:(Math.random()*4294967296)>>>0,picks:this.lastPicks,stage:G.stage,D:this.D,rematch:true};this.send(msg);this.begin(msg);}},
+ tryRematch(){if(this.role==='host'&&this.wantRematch&&this.theyRematch){const msg={t:'start',m:this.m+1,seed:(Math.random()*4294967296)>>>0,picks:this.lastPicks,stage:G.stage,rules:G.netRules|0,D:this.D,rematch:true};this.send(msg);this.begin(msg);}},
  begin(d){this.m=d.m;this.seed=d.seed;this.D=d.D;this.lastPicks=d.picks;this.wantRematch=this.theyRematch=false;
   this.local.clear();this.remote.clear();this.hist.clear();this.hashes.clear();this.rhashes.clear();this.snaps.clear();this.stallT=0;
   this.st='playing';G.net=this;G.netMenu=false;G.stage=d.stage;G.mode=2;
+  // match rules come from the host: hardcore and the cage need the full ranch ring
+  G.netRules=d.rules|0;G.hc=G.netRules===1;G.cage=G.netRules===2;if(G.netRules)G.stage=3;
   if(d.rematch){beginFight();G.scene='fight';}
   else{G.sel={c:[d.picks[0],d.picks[1]],stage:2,picks:d.picks.slice()};startIntro();G.f[0].cpu=G.f[1].cpu=false;}
   netUI.update();},
@@ -136,7 +139,7 @@ const NET={
 };
 // heartbeat: ping every second; if we hear nothing for 6 s the other player is gone
 setInterval(()=>{if(!NET.conn||!['connected','playing'].includes(NET.st))return;NET.ping();if(NET.lastRecv&&performance.now()-NET.lastRecv>6000)NET.drop();},1000);
-function onNetConnected(){G.mode=2;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};netUI.show(false);sfx('bell');}
+function onNetConnected(){G.mode=2;G.netRules=0;G.hc=G.cage=false;G.scene='select';G.sel={c:[0,ROSTER.findIndex(c=>c.id==='papi')],stage:0,picks:[null,null]};netUI.show(false);sfx('bell');}
 function netToSelect(){if(!NET.conn)return;NET.myPick=NET.theirPick=null;NET.st='connected';G.net=null;G.netMenu=false;G.mode=2;G.scene='select';
  G.sel={c:[NET.lastPicks?NET.lastPicks[NET.me]:0,0],stage:0,picks:[null,null]};}
 

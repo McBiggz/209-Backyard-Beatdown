@@ -56,7 +56,7 @@ const PARTY={
  sendLobby(){if(this.role==='host')this.send({t:'lobby',L:this.L});},
  fail(msg){this.err=msg;if(this.st==='joining'||this.st==='hosting')this.st='error';partyUI.update();},
  lost(why){if(this.st==='off')return;this.err=why;this.st='lost';G.net=null;partyUI.update();},
- leave(){this.send({t:'bye'});this.close();},
+ leave(){this.send({t:'bye'});this.close();G.hc=G.cage=false;},
  close(){for(const c of this.conns)try{if(c)c.close();}catch(e){}try{if(this.conn)this.conn.close();}catch(e){}try{if(this.peer)this.peer.destroy();}catch(e){}
   this.conns=[null,null,null,null];this.conn=this.peer=null;this.st='off';if(G.net===this)G.net=null;G.netMenu=false;},
  reset(){this.close();this.away=new Set();this.err='';this.L=null;this.m=0;this.wantRematch=false;this.gone=new Set();this.rtt=0;},
@@ -109,14 +109,21 @@ if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
   for(let i=free.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[free[i],free[j]]=[free[j],free[i]];}
   for(let s=0;s<n;s++)if(picks[s]==null)picks[s]=free.pop();
   const cfg=msBuildCfg(c.type,picks,ctl,c.elim,MS_MAPS[c.map][1]);
+  if(t==='single'&&c.rules&&ctl.every(x=>x==='net'))cfg.rules=c.rules|0;   // hardcore / cage: both seats must be people
   const maxR=Math.max(60,...h.map(k=>(L.seats[k]&&L.seats[k].rtt)||0));
   const msg={t:'start',m:this.m+1,seed:(Math.random()*4294967296)>>>0,D:clamp(Math.ceil(maxR/16.7)+3,4,14),cfg,seatSlot};
   this.send(msg);this.begin(msg);},
  // everybody: build the same match from the host's message
  begin(d){this.m=d.m;this.D=d.D;this.seatSlot=d.seatSlot;this.wantRematch=false;this.gone=new Set();this.dropQ=[];
   this.frames.clear();this.hist.clear();this.hashes.clear();this.rhashes.clear();this.snaps.clear();this.inb.forEach(b=>b.clear());this.stallT=0;
-  const me=this.seatSlot[this.seat];G.forceSeed=d.seed;G.mode=0;
-  startGroup(Object.assign({},d.cfg,{me:me!=null?me:0}));G.forceSeed=null;
+  const me=this.seatSlot[this.seat];this.me=me!=null?me:0;this.seed=d.seed;
+  if(d.cfg.rules){   // 1 on 1 hardcore / steel cage: the classic engine (it has the weapons and the cage), driven by the party's lockstep
+   G.mm=null;G.mode=1;G.me=this.me;G.hc=d.cfg.rules===1;G.cage=d.cfg.rules===2;G.stage=3;G.mapPick='ranch';G.fromSetup=true;
+   const picks=d.cfg.ids.map(id=>ROSTER.findIndex(c=>c.id===id));G.sel={c:picks.slice(),stage:2,picks};
+   this.st='playing';G.net=this;G.netMenu=false;startIntro();G.f[0].cpu=G.f[1].cpu=false;
+   for(let s=0;s<this.D;s++)this.frames.set(s,{v:[0,0]});this.lastSent=this.D-1;this.next=this.D;this.maxF=this.D-1;return;}
+  G.forceSeed=d.seed;G.mode=0;
+  startGroup(Object.assign({},d.cfg,{me:this.me}));G.forceSeed=null;
   this.st='playing';G.net=this;G.netMenu=false;
   // the first D steps have no buttons yet: everyone starts them blank
   const n=G.f.length;for(let s=0;s<this.D;s++)this.frames.set(s,{v:new Array(n).fill(0)});this.lastSent=this.D-1;this.next=this.D;this.maxF=this.D-1;},
@@ -155,7 +162,7 @@ if(h.length>n)return'TOO MANY PLAYERS FOR '+MS_TYPES[this.L.cfg.type][0];
   G.replay={inp:tape};G.resim=true;for(let k=0;G.fstep<end&&k<2000;k++)simStep();G.resim=false;G.replay=null;},
 
  // ---------- during / after the match ----------
- toLobby(){this.st='lobby';G.net=null;G.netMenu=false;G.mm=null;G.scene='party';if(this.role==='host')this.send({t:'tolobby'});},
+ toLobby(){this.st='lobby';G.net=null;G.netMenu=false;G.mm=null;G.hc=G.cage=false;G.scene='party';if(this.role==='host')this.send({t:'tolobby'});},
  updFightMeta(){
   if(G.over&&G.over.t>1.8){
    if(this.role==='host'){if(confirmP()||(clickQ&&inRect(clickQ,OVER_BTNS[0]))){this.start();return;}
@@ -182,12 +189,12 @@ setInterval(()=>{if(PARTY.st==='off'||PARTY.st==='lost')return;const now=perform
 
 // ---------- the lobby screen (drawn on the game canvas) ----------
 const PL_BACK=[4,4,40,13],PL_PICK=[24,186,110,19],PL_GO=[250,186,110,19],PL_ROWS=[[150,30,220,14],[150,46,220,14],[150,62,220,14]];
-function plRows(){const t=MS_TYPES[PARTY.L.cfg.type][1],r=t==='multi'?['type','elim']:['type'];r.push('map');return r;} // arena pick: live
+function plRows(){const c=PARTY.L.cfg,t=MS_TYPES[c.type][1],r=t==='multi'?['type','elim']:t==='single'?['type','rules']:['type'];if(!(t==='single'&&c.rules))r.push('map');return r;} // arena pick: live; hardcore and cage use the ranch ring
 function updParty(){const P=PARTY;if(!P.L){if(hit(['Escape'])||(clickQ&&inRect(clickQ,PL_BACK))){P.leave();G.scene='title';}return;}
  const c=P.L.cfg,host=P.role==='host',rows=plRows();G.plRow=Math.min(G.plRow||0,rows.length-1);
  if(hit(['Escape'])||(clickQ&&inRect(clickQ,PL_BACK))){P.leave();G.scene='title';sfx('punch');return;}
  if(hit(['KeyJ','KeyR'])||(clickQ&&inRect(clickQ,PL_PICK))){mselOpen(true);return;}
- if(host){const chg=(k,d)=>{if(k==='type')c.type=(c.type+d+MS_TYPES.length)%MS_TYPES.length;else if(k==='elim')c.elim=c.elim?0:1;else c.map=(c.map+d+2)%2;sfx('punch');P.sendLobby();};
+ if(host){const chg=(k,d)=>{if(k==='type')c.type=(c.type+d+MS_TYPES.length)%MS_TYPES.length;else if(k==='rules')c.rules=((c.rules|0)+d+3)%3;else if(k==='elim')c.elim=c.elim?0:1;else c.map=(c.map+d+2)%2;sfx('punch');P.sendLobby();};
   if(hit(['KeyW','ArrowUp']))G.plRow=(G.plRow+rows.length-1)%rows.length;if(hit(['KeyS','ArrowDown']))G.plRow=(G.plRow+1)%rows.length;
   if(hit(['KeyA','ArrowLeft']))chg(rows[G.plRow],-1);if(hit(['KeyD','ArrowRight']))chg(rows[G.plRow],1);
   if(clickQ)rows.forEach((k,i)=>{const b=PL_ROWS[i];if(inRect(clickQ,b)){G.plRow=i;chg(k,clickQ.x<b[0]+b[2]*0.4?-1:1);}});
@@ -203,7 +210,7 @@ function drawParty(){drawArena();R(0,0,W,H,'rgba(6,2,3,0.84)');const P=PARTY,L=P
  if(P.err)T(P.err,76,74,1,'#ff8a7a','center',null);
  // match settings (only the host can change them)
  const c=L.cfg,host=P.role==='host';plRows().forEach((k,i)=>{const[x,y,w,h]=PL_ROWS[i],on=host&&G.plRow===i;
-  const lab=k==='type'?'MATCH':k==='elim'?'ELIMINATION':'ARENA',val=k==='type'?MS_TYPES[c.type][0]:k==='elim'?(c.elim?'ON':'OFF'):MS_MAPS[c.map][0];
+  const lab=k==='type'?'MATCH':k==='rules'?'RULES':k==='elim'?'ELIMINATION':'ARENA',val=k==='type'?MS_TYPES[c.type][0]:k==='rules'?MS_RULES[c.rules|0][0]:k==='elim'?(c.elim?'ON':'OFF'):MS_MAPS[c.map][0];
   BOX(x,y,w,h,on?'#8f0f14':'#140a0c',on?'#ffd35a':'#5a4a40');T(lab,x+4,y+4,1,'#8a7a66','left',null);T(val,x+150,y+4,1,'#fff','center',null);
   if(host){msArrow(x+82,y+3,-1,on?'#ffd35a':'#5a4a40');msArrow(x+w-9,y+3,1,on?'#ffd35a':'#5a4a40');}});
  if(!host)T('THE HOST PICKS THE MATCH',260,80,1,'#8a7a66','center',null);
