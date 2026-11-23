@@ -13,6 +13,9 @@ export default {
         const j = await r.json(); return new Response(JSON.stringify({ iceServers: j.iceServers || [] }), { headers: h });
       } catch (e) { return new Response(JSON.stringify({ iceServers: [], note: 'relay unreachable' }), { headers: h }); }
     }
-    return env.ASSETS.fetch(req);
+    // the page itself is never cached, so a refresh always gets the newest game (online needs everyone on the same version)
+    const res = await env.ASSETS.fetch(req);
+    if ((res.headers.get('content-type') || '').includes('text/html')) { const r2 = new Response(res.body, res); r2.headers.set('cache-control', 'no-cache, must-revalidate'); return r2; }
+    return res;
   }
 };

@@ -1,5 +1,10 @@
 // online version: both players must be running the same build or the matches drift apart (bump when match rules change)
 const NET_VER='41r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
+// version mismatch: the out-of-date device updates itself (fresh copy, past any cache); the up-to-date one just waits for them
+const verNum=v=>{const m=/^(\d+)r(\d+)/.exec(String(v||''));return m?(+m[1])*1000+(+m[2]):0;};
+const netNewer=v=>verNum(v)>verNum(NET_VER);
+function netUpdateNow(){const q=new URLSearchParams(location.search);q.set('u',Date.now().toString(36));setTimeout(()=>location.replace(location.pathname+'?'+q.toString()),1200);}
+const NET_UPD='Your game was out of date - updating now. Join again after it reloads.',NET_WAIT='Your friend\'s game is out of date. It updates itself when they join again (or have them refresh).';
 // ================= ONLINE PLAY =================
 // Lockstep over a WebRTC data channel (PeerJS). Both games run the same deterministic simulation.
 // Each player sends their packed buttons for step (now + DELAY); a step only runs once both are in.
@@ -69,7 +74,7 @@ const NET={
  // ---- messages
  recv(d){if(!d||!d.t)return;
   switch(d.t){
-  case 'hi':if(d.v!==NET_VER){this.fail(NET_OLD);try{this.conn.close();}catch(e){}}break;
+  case 'hi':if(d.v!==NET_VER){const up=netNewer(d.v);this.fail(up?NET_UPD:NET_WAIT);try{this.conn.close();}catch(e){}if(up)netUpdateNow();}break;
   case 'p':this.send({t:'q',ts:d.ts});break;
   case 'q':{const r=performance.now()-d.ts;this.rtt=this.rtt?this.rtt*0.7+r*0.3:r;
    // my input delay follows the connection: enough steps to cover one-way travel plus a little jitter

@@ -68,7 +68,7 @@ const PARTY={
 
  // ---------- messages ----------
  recvHost(seat,d){if(!d||!d.t)return;
-  if(d.t==='hi'){if(d.v!==NET_VER){this.sendTo(seat,{t:'old'});setTimeout(()=>{const c=this.conns[seat];this.conns[seat]=null;try{c&&c.close();}catch(e){}},400);return;}
+  if(d.t==='hi'){if(d.v!==NET_VER){this.sendTo(seat,{t:'old',v:NET_VER});if(netNewer(d.v)){this.err=NET_UPD;this.st='error';partyUI.show(true);G.scene='lobby';netUpdateNow();}setTimeout(()=>{const c=this.conns[seat];this.conns[seat]=null;try{c&&c.close();}catch(e){}},400);return;}
    this.L.seats[seat]={pick:null};this.sendTo(seat,{t:'welcome',seat,code:this.code});this.sendLobby();sfx('bell');return;}
   if(!this.L.seats[seat])return; // not introduced yet
   switch(d.t){
@@ -82,7 +82,7 @@ const PARTY={
  recvGuest(d){if(!d||!d.t)return;
   switch(d.t){
   case 'welcome':this.seat=d.seat;this.st='lobby';partyUI.show(false);G.scene='party';sfx('bell');this.ping();break;
-  case 'old':this.reset();this.err=NET_OLD;this.st='error';partyUI.show(true);G.scene='lobby';break;
+  case 'old':{const up=netNewer(d.v);this.reset();this.err=up?NET_UPD:'The host\'s game is out of date. Ask them to refresh the page, then join again.';this.st='error';partyUI.show(true);G.scene='lobby';if(up)netUpdateNow();break;}
   case 'full':this.reset();this.err=d.playing?'That match has already started':'That room is full (4 players)';this.st='error';partyUI.show(true);G.scene='lobby';break;
   case 'q':{const r=performance.now()-d.ts;this.rtt=this.rtt?this.rtt*0.7+r*0.3:r;this.send({t:'rtt',r:Math.round(this.rtt)});break;}
   case 'lobby':this.L=d.L;break;
