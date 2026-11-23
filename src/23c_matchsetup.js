@@ -1,7 +1,7 @@
 // ================= MATCH SETUP (test link) =================
 // One screen to set up any match: type, rules, elimination, arena and who controls each wrestler.
 // Works with keys (arrows/WASD to move and change, Enter to start) and with taps (big rows, < > arrows, START).
-// live game: 1 on 1, Triple Threat, Fatal 4-Way. Tag, Rumble, Hardcore/Cage rules and The Barn are test-link only for now.
+// live game: 1 on 1 (Normal, Hardcore or Steel Cage), Triple Threat, Fatal 4-Way. Tag, Rumble and the arena pick are test-link only for now.
 const MS_TYPES=[['1 ON 1','single',2],['TRIPLE THREAT','multi',3],['FATAL 4-WAY','multi',4]].concat(TEST_MODES?[['TAG TEAM','tag',4],['ROYAL RUMBLE','rumble',8]]:[]);
 const MS_RULES=[['NORMAL',''],['HARDCORE','hc'],['STEEL CAGE','cage']];
 const MS_MAPS=[['BMF RANCH','ranch'],['THE BARN','secret']];
@@ -19,7 +19,7 @@ const msSlots=(t=G.ms.type)=>Math.min(4,msCount(t));
 function msSlotName(i){const t=MS_TYPES[G.ms.type][1];
  if(t==='tag')return (i<2?'TEAM A':'TEAM B')+' #'+(i%2+1);if(t==='rumble')return 'ENTRANT '+(i+1);return 'WRESTLER '+(i+1);}
 function msRows(){const ms=G.ms,t=MS_TYPES[ms.type][1],rows=[{k:'type'}];
- if(t==='single'&&TEST_MODES)rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});rows.push({k:'diff'});
+ if(t==='single')rows.push({k:'rules'});if(t==='multi')rows.push({k:'elim'});if(TEST_MODES)rows.push({k:'map'});rows.push({k:'diff'});
  if(t==='tag')rows.push({k:'team',i:0},{k:'team',i:1});
  for(let i=0;i<msSlots();i++)rows.push({k:'slot',i});rows.push({k:'start'});return rows;}
 function msVal(r){const ms=G.ms;
