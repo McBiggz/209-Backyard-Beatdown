@@ -138,7 +138,7 @@ function secondWind(){const{a,d}=G.pin;d.meter=0;d.readyAnn=false;d.usedSW=true;
  fireFx(PX(d.x,d.z),PY(d.z)-20,30);if(!d.cpu)popOn(d,'METER USED','#ff8a1f');}
 function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
- if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.usedSW&&!P.d.out){secondWind();return;}
+ if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.out){secondWind();return;}   // a full meter always buys a kickout (it costs the whole meter)
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}
  // wiggling the stick counts too: every swing to a new direction is one press (made for the phone stick; arrows and pads work the same)
  if(!P.d.cpu&&!P.ropes){const dk=(di.left?'L':'')+(di.right?'R':'')+(di.up?'U':'')+(di.down?'D':'');if(dk&&dk!==P.d.pinDir){P.presses++;P.d.wiggle=0.15;}P.d.pinDir=dk;}
@@ -147,7 +147,7 @@ function updPin(dt,inp){
  if(!P.d.cpu&&P.presses>=P.need){kickout();return;}
  if(P.t>=P.nextAt){
   if(P.ropes&&P.d.cpu&&P.count>=1&&schance(cpuPinEsc('rope'))){ropeBreak();return;}
-  if(P.d.cpu&&P.count===2&&P.d.meter>=100&&!P.d.usedSW&&schance(cpuPinEsc('sw'))){secondWind();return;}
+  if(P.d.cpu&&P.count===2&&P.d.meter>=100&&schance(cpuPinEsc('sw'))){secondWind();return;}
   if(P.d.cpu&&P.count>=1){const p=clamp((P.d.hp-5)/55,0,0.97);if(schance(P.count===1?p*0.4:p)){kickout();return;}}
   P.count++;P.nextAt+=0.8;sfx('count');G.ref.slap=0.25;callout(P.count===3?'3!!!':P.count+'!',P.count===3?'#ff4a3a':'#fff',0.75);shake(2);heat(CTR.crowd.pinCount);
   if(P.count===3)endMatch(P.a,P.d);}
