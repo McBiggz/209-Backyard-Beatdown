@@ -17,6 +17,11 @@ function retarget(f){let cur=tgtOf(f);if(cur&&!FREE.has(f.state))return;
  if(!best){f.tgt=-1;return;}
  if(cur&&cur!==best){const sc=Math.abs(cur.x-f.x)+2*Math.abs(cur.z-f.z)+(cur.out!==f.out?120:0)-(cur.tgt===f.idx?20:0);if(sc<=bs+25)return;}
  f.tgt=best.idx;}
+// attack + left/right: turn and go after the nearest opponent on that side (someone behind you, not just whoever you were facing)
+function aimAt(f){const I=f.inp;if(!I||!(I.punchP||I.kickP||I.grabP||I.finP)||!(f.state==='idle'||f.state==='walk'))return null;const mx=(I.right?1:0)-(I.left?1:0);if(!mx)return null;
+ let best=null,bs=1e9;for(const o of G.f){if(o===f||!isActive(o)||sameTeam(f,o))continue;if(G.mm.type==='tag'&&!o.legal)continue;if((o.x-f.x)*mx<-4)continue;
+  const s=Math.abs(o.x-f.x)+2*Math.abs(o.z-f.z)+(o.out!==f.out?120:0);if(s<bs){bs=s;best=o;}}
+ if(best){f.tgt=best.idx;if(Math.abs(best.x-f.x)>2)f.dir=best.x>f.x?1:-1;}return best;}
 function ghostFor(f){const g=G.ghost;g.x=f.x<157?262:52;g.z=140;return g;}
 
 // ---------- starting a group match ----------
@@ -95,7 +100,7 @@ function updGroupFight(dt){const mm=G.mm;
  if(G.scene!=='fight'||G.mm!==mm)return;
  for(const f of G.f){if(!isActive(f))continue;const o=tgtOf(f)||ghostFor(f);
   if(mm.type==='tag'&&f.legal&&f.inp.grabP&&FREE.has(f.state)&&tryTag(f))continue;
-  updFighter(f,o,f.inp,sdt);}
+  const o2=aimAt(f);updFighter(f,o2||o,f.inp,sdt);}
  const act=G.f.filter(isActive);for(let i=0;i<act.length;i++)for(let j=i+1;j<act.length;j++)if(act[i].out===act[j].out)separate(act[i],act[j]);
  for(const f of G.f)if(f.toss)updToss(f,sdt);
  if(G.secretOn&&!G.pin)secretCheck(sdt);
