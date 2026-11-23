@@ -126,7 +126,7 @@ function keepInRing(list){if(!wide())return;const live=list.filter(([f])=>!f.out
  let sh=0;if(hi-lo>b-a)sh=(a+b)/2-(lo+hi)/2;else if(lo<a)sh=a-lo;else if(hi>b)sh=b-hi;if(sh)for(const[f]of live)f.x+=sh;}
 // ---- reversals from the mat ----
 // someone about to stomp me: close, facing me, stomp started but not landed yet
-function revThreat(f){if(!G.windOn)return null;const bx=bodyX(f);   // test link for now (same switch as the other test-link moves, so online stays in step)
+function revThreat(f){const bx=bodyX(f);   // live everywhere
  for(const g of G.f){if(g===f||g.state!=='stomp'||g.hitDone||g.ghost)continue;if(G.mm&&(sameTeam(f,g)||!isActive(g)))continue;
   if(wide()&&g.out!==f.out)continue;if(Math.abs(bx-g.x)<44&&Math.abs(g.z-f.z)<14)return g;}return null;}
 function upKick(f,g){const d=g.x>bodyX(f)?1:-1;damage(g,CTR.rev.dmg*powOf(f),f);knock(g,d*170,210);setState(f,'getup');f.t=0.2;f.revLock=0;
@@ -150,7 +150,7 @@ function updPin(dt,inp){
  const P=G.pin;P.t+=dt;P.a.x=P.d.x;P.a.z=P.d.z;const di=inp[P.d.idx];
  if(!P.d.cpu&&di.finP&&P.d.meter>=100&&!P.d.out){secondWind();return;}
  // reversal: kick right as he covers (first moment of the pin) and you shove him off. Mashed early presses don't count.
- if(G.windOn&&P.t<CTR.rev.pinWin&&!P.d.out&&P.d.hp>0){
+ if(P.t<CTR.rev.pinWin&&!P.d.out&&P.d.hp>0){
   if(!P.d.cpu&&di.kickP&&!P.d.revLock){pinReverse();return;}
   if(P.d.cpu&&!P.revRolled){P.revRolled=true;if(schance(CTR.rev.cpuPin*(G.diff!=null?AI_DIFF[G.diff].rev:1))){pinReverse();return;}}}   // a full meter always buys a kickout (it costs the whole meter)
  if(!P.d.cpu&&(di.punchP||di.kickP||di.grabP||di.jumpP||di.finP)){P.presses++;P.d.wiggle=0.15;}

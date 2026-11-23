@@ -40,7 +40,7 @@ function drawPops(){for(const p of G.pops){ctx.globalAlpha=clamp(p.life/p.max*2,
 // fighting from underneath: a flashing prompt over a downed player when a reversal is open
 function drawRevPrompts(){if(!G.f)return;for(const f of G.f){if(f.cpu||f.hidden)continue;let on=false;
   if(f.state==='down'&&!(f.revLock>0)&&revThreat(f))on=true;
-  if(G.windOn&&G.pin&&G.pin.d===f&&G.pin.t<CTR.rev.pinWin)on=true;
+  if(G.pin&&G.pin.d===f&&G.pin.t<CTR.rev.pinWin)on=true;
   if(on)T(coarse?'KICK!':'KICK! ('+((G.net||!f.idx||(G.mm&&f.ctl!==1))?'G':'K')+')',clamp(PX(bodyX(f),f.z),46,W-46),PY(f.z)-34,2,(G.t*10|0)%2?'#5fe07a':'#fff','center','#000');}}
 function drawCallout(){const c=G.callout;if(!c)return;const p=c.t/c.dur;ctx.globalAlpha=p>0.8?(1-p)/0.2:1;T(c.text,192,44,c.t<0.1?4:3,c.col,'center','#1a0304');ctx.globalAlpha=1;}
 function drawHUD(){drawRevPrompts();if(G.mm){drawGroupHUD();return;}const[a,b]=G.f;hpBar(a,3,3,1);hpBar(b,W-3,3,-1);drawCrowd();
