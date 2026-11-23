@@ -4,7 +4,10 @@ const TEST_MODES=(q=>q.has('test')||q.has('tag')||q.has('rumble'))(new URLSearch
 // title menu: label -> what it opens. Tag Team is built but hidden until it's ready (open the game with ?tag=1 to test it).
 // the test link gets the new menu: every match type is set up on one screen, and online takes up to 4 players
 // (Universe is still test-link only)
-const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6],['FREE ROAM',7],['MOVE CHECKER','viewer']]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online']]);
+const TITLE_ITEMS=[['PLAY','setup'],['PLAY ONLINE (UP TO 4)','party']].concat(TEST_MODES?[['UNIVERSE MODE',6],['FREE ROAM',7],['MOVE CHECKER','viewer']]:[]).concat([['TUTORIAL & PRACTICE',3],['CLASSIC ONLINE 1 VS 1','online'],['BATTERY SAVER: OFF','batt']]);
+// battery saver: draws the screen 30 times a second instead of 60 (the match itself still runs at 60, so online stays in step)
+let BATT=false;try{BATT=localStorage.getItem('bb_batt')==='1';}catch(e){}
+const battLabel=()=>{const it=TITLE_ITEMS.find(t=>t[1]==='batt');if(it)it[0]='BATTERY SAVER: '+(BATT?'ON':'OFF');};battLabel();
 // one column; when there are more than 5 options (the test link) the list scrolls: swipe, mouse wheel, arrows or keys
 const MENU_VIS=5,MENU_Y=157,MENU_ROW=11.4,MENU_BOX=[122,156,140,MENU_VIS*MENU_ROW+1];
 const menuMax=()=>Math.max(0,TITLE_ITEMS.length-MENU_VIS);
@@ -30,6 +33,7 @@ function updTitle(){G.tut=null;if(hit(['KeyW','ArrowUp']))G.menu=Math.max(0,G.me
  if(!menuDrag)menuS+=(menuSTarget-menuS)*0.35;if(Math.abs(menuS-menuSTarget)<0.01)menuS=menuSTarget;
  const it=TITLE_ITEMS[G.menu];
  G.fromSetup=false;G.mapPick=null;G.titleBout=null;
+ if(go&&it[1]==='batt'){BATT=!BATT;try{localStorage.setItem('bb_batt',BATT?'1':'0');}catch(e){}battLabel();sfx('punch');return;}
  if(go&&it[1]==='online'){G.scene='lobby';netUI.show(true);sfx('punch');return;}
  if(go&&it[1]==='viewer'){viewerOpen();sfx('punch');return;}
  if(go&&it[1]==='setup'){msOpen(false);sfx('punch');return;}
