@@ -304,3 +304,19 @@ One golden sheet per move. ChatGPT draws only the held poses; the game does the 
 | 9 | Irish whip | wrist grip, sling |
 | 10 | Pick-up off the mat | grab by the head, half up |
 | 11 | Mounted punches | straddling, fist raised |
+
+## Sheet X: Ring movement (8 frames, 2 rows of 4). No ropes, posts, apron or other wrestler are drawn.
+
+Draw Sheet X for [WRESTLER] from his attached sprite. 8 frames, 2 rows of 4, same detailed 16-bit pixel style, facing RIGHT, plain magenta background, figures spaced well apart so none of them touch. His body is the same size as his standing sprite: he only bends, he never shrinks or grows. Do NOT draw any ropes, turnbuckles, ring posts, apron, mat or other wrestler: the game draws those. Leave empty space where they would be, so his hands and feet rest on things that aren't drawn. When he is lying down, his head is on the LEFT. Every frame shows his WHOLE body including both boots: nothing cut off at the bottom.
+
+Top row:
+1. ROLL UNDER THE ROPE (start): lying on his right side, low and flat to the ground, body stretched out, head on the LEFT, arms tucked in to his chest, knees slightly bent, as if sliding under a rope just above him.
+2. ROLL UNDER THE ROPE (middle): rolled onto his back, low to the ground, knees tucked up to his chest, arms hugging his shins, head on the LEFT, mid-roll.
+3. CROUCH ON THE APRON: down on one knee (the back knee on the ground), the front foot planted, one hand flat on the ground beside him, looking ahead, about to stand up or drop down.
+4. CLIMBING THE TURNBUCKLE: stepping up, his front boot raised high and resting on an invisible rope at knee height, his back leg straight below him, one hand gripping an invisible post at shoulder height in front of him, the other arm reaching up above his head.
+
+Bottom row:
+5. BALANCING ON THE TOP ROPE: standing upright on an invisible rope, both boots close together on the same level line, knees slightly bent, both arms spread out wide to the sides for balance, looking out ahead.
+6. LANDING CROUCH: just landed from a jump, knees bent deep, feet planted wide apart and flat on the ground, both hands down by his knees, body leaning forward absorbing the impact.
+7. GETTING UP (stage 1): on his hands and knees, back flat, head hanging down, hurting.
+8. GETTING UP (stage 2): one knee down and the other foot planted, one hand pressing on the raised knee to push himself up, the other arm hanging, head coming up, grimacing.
