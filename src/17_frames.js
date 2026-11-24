@@ -1,7 +1,12 @@
 // cage escape art (Sheet M): live for everyone
 const cageArt=(f,n)=>!!(f&&f.set&&f.set[n]);
 // ================= FRAME SELECTION =================
-function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
+// squat frames whose feet were cut off flat in the original art: swap in a frame of the same moment with whole feet
+const CUT_FEET={"bigmf":["win0","win1","grap1","fs0","fp0","fp2"],"cdiddy":["win0","win1","grap1","fs0","fp0","fp2"],"cjdirt":["win0","win1","grap1","fs0","fp0","fp2"],"razzle":["fp0","fp2","fs0","grap1","win0","win1"],"firebelly":["fp0","fp2","fs0","grap1","win0","win1"],"jojo":["win0","win1","grap1","fs0","fp0","fp2"],"dragon":["win0","win1","grap1","fs0","fp0","fp2"],"necrosis":["grap1","fp0","fp2"],"mainevent":["win0","win1","grap1","fs0","fp0","fp2"],"matsunaga":["fp0","fp2","fs0","grap1","win0","win1"],"zeke":["win0","win1","grap1","fs0","fp0","fp2"],"asesino":["win0","win1","grap1","fs0","fp0","fp2"],"spektro":["win0","win1","grap1","fs0","fp0","fp2"],"ghoulie":["fp0","fp2"],"maverick":["win0","win1","grap1","fs0","fp0","fp2"]};
+const FEET_SUB={win0:['entp','sig'],win1:['entp','sig'],fs0:['rpress','rlift'],grap1:['rlift'],fp0:['rslam','getup'],fp2:['getup']};
+function feetFix(f,n){const id=f&&f.ch&&(typeof artId==='function'?artId(f):f.ch.id),L=CUT_FEET[id];if(!L||!L.includes(n)||!f.set)return n;for(const r of FEET_SUB[n]||[])if(f.set[r])return r;return n;}
+function frameOf(f){return feetFix(f,frameOf0(f));}
+function frameOf0(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  if(G.entrance){const h=hubFrame(f);if(h)return h;}
  switch(s){
  case 'idle':return 'idle'+(Math.floor(G.t*1.6+f.idx)%2);
@@ -16,10 +21,10 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'entpose':return hasArt(f,'sig')?'sig':'win0';
  case 'pinning':return pinFrame(f)||'pinning';
  case 'pinned':{const pf=pinFrame(f);if(pf)return pf;if(f.set&&f.set.pinnedk&&G.pin&&G.pin.d===f)return 'pinnedk';} // knees-up pinned frame when he has one // fall through to the normal lying frames
- case 'down':if(f.supLand&&hasArt(f,'pin_cxv'))return 'pin_cxv'; // landed on his back from a suplex
+ case 'down':if(f.supLand&&f.set&&f.set.pin_cxv){if(f.set.simp&&G.t-(f.landAt||-9)<0.3)return 'simp';return 'pin_cxv';} // landed on his back (suplex, slam): the impact frame, then flat on his back
   return f.wiggle>0&&Math.floor(G.t*20)%2?'downW':'down';
  case 'grapple':if(hasArt(f,'sup0')&&TEST_MODES){if(f.supAF)return t<0.3?'grap0':f.supAF;return t<0.3?'grap0':t<0.45?'sup0':t<0.65?'sup1':'situp';} // suplex art (keyframed when the other man has art too)
-  return t<0.3?'grap0':'grap1';
+  return t<0.3?'grap0':(f.supDone?'getup':'grap1');
  case 'whip':return 'grap0';
  case 'block':return 'grap0';
  case 'apron':return 'idle'+(Math.floor(G.t*2+f.idx)%2);
@@ -43,7 +48,8 @@ function frameOf(f){const t=f.t,s=f.state,blink=Math.floor(G.t*2.5)%2;
  case 'perch':return 'perch'+blink;
  case 'win':if(G.over&&G.over.w===f&&G.over.t<0.45&&/OVER THE TOP/.test(G.over.how||'')&&cageArt(f,'cdrop'))return 'cdrop'; // just dropped off the cage
   return 'win'+blink;
- case 'finished':return f.finBy==='slam'?'held':'dazed';
+ case 'finished':if(f.finBy==='slam')return f.finDrop?(f.set&&f.set.sfall?'sfall':'fall'):'held';
+  return f.finFlinch?'hit':'dazed';
  case 'finisher':{const ty=f.vFin||f.ch.finType;
   if(ty==='kick')return t<0.6?'fk0':(t<0.85?'fk1':'idle0');
   if(ty==='slam')return t<0.8?'fs0':'fs1';

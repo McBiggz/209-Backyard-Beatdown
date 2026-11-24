@@ -1,6 +1,6 @@
 // ================= LOOP =================
 function updFx(dt){
- for(const p of G.parts){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.type==='dust'){p.vy+=120*dt;p.vx*=0.95;}else if(p.type==='fire')p.vy-=30*dt;else if(p.type!=='ring')p.vy+=260*dt;}
+ for(const p of G.parts){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.type==='dust'){p.vx*=0.9;p.vy*=0.9;}else if(p.type==='fire')p.vy-=30*dt;else if(p.type!=='ring')p.vy+=260*dt;}
  G.parts=G.parts.filter(p=>p.life>0);if(G.parts.length>500)G.parts.splice(0,G.parts.length-500);
  for(const p of G.pops){p.life-=dt;p.y-=18*dt;}G.pops=G.pops.filter(p=>p.life>0);
  if(G.callout){G.callout.t+=dt;if(G.callout.t>=G.callout.dur)G.callout=null;}

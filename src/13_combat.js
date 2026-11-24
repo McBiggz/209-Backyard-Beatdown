@@ -6,7 +6,7 @@ const heat=v=>{G.hype=Math.min(1,G.hype+v);};
 function damage(o,dmg,f){if(o.uniDef)dmg*=o.uniDef;if(f&&f.cpu&&G.diff!=null)dmg*=AI_DIFF[G.diff].dmg;if(G.mm&&f&&f.idx>=0)o.tgt=f.idx;o.hp=Math.max(0,o.hp-dmg/(G.styleOn?balOf(o):1));/* balance changes health only, never how fast the finisher meter fills */f.meter=Math.min(100,f.meter+dmg*1.6*crowdMul());o.meter=Math.min(100,o.meter+dmg*0.7*crowdMul());G.hype=Math.min(1,G.hype+dmg*CTR.crowd.perDamage);
  if(f.meter>=100&&!f.readyAnn){f.readyAnn=true;popOn(f,'FINISHER READY!','#ffd35a');}}
 function knock(o,vx,vy,long){if(G.mm&&G.mm.elim&&GM().randomElims&&rumbleOverTop(o,Math.sign(vx)||1,false))return;irpMark('big');heat(CTR.crowd.knockdown);setState(o,'fall');o.vx=vx;o.vz=0;o.vy=vy;o.y=Math.max(o.y,0.5);o.combo=0;o.downDur=long?3.2:1.25+(100-o.hp)/100*0.9;}
-function setState(f,s){f.state=s;f.t=0;f.rot=0;f.flipX=false;f.layer=0;f.dox=f.doy=0;f.supLand=false;f.supF=null;f.supAF=null;f.supEnd=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
+function setState(f,s){f.state=s;f.t=0;f.stompTo=null;f.supDone=false;f.finDrop=false;f.finFlinch=false;f.landT=0;f.flipX=false;f.layer=0;f.dox=f.doy=0;f.supLand=false;f.supF=null;f.supAF=null;f.supEnd=0;f.hitDone=false;f.sid=(f.sid||0)+1;}
 // BLOCK: no button. Standing (or walking) while holding AWAY from the attacker blocks strikes. Grabs still beat a block.
 // an attack is coming at f from o, up close
 const incoming=(f,o)=>['punch','kick','runline','dropkick'].includes(o.state)&&Math.abs(o.x-f.x)<64*o.ch.size&&Math.abs(o.z-f.z)<14&&(!wide()||f.out===o.out);
@@ -27,7 +27,7 @@ function tryHit(f,o,A){if(o.ghost)return;
  hitFx((sx_(f)+PX(tx,o.z))/2,PY((f.z+o.z)/2)-Math.max(o.y,f.y)-(A.ground?8:36),A.ground?5:9);sfx(A.sfx);G.hitStop=A.hs+(whipped?0.06:0);shake(A.knock||whipped?5:2);
  if(A.ground){o.t=Math.max(0,o.t-0.35);if(Math.random()<0.4)line('stomp',f,o);return;}
  o.combo++;o.comboT=1.1;
- if(whipped){knock(o,f.dir*140,260);callout(A.sfx==='kick'?'BIG BOOT!':'CLOTHESLINE!','#fff',1.0);line('clothes',f,o);crowdReact(f,true);return;}
+ if(whipped){o.x=cx(o,f.x+f.dir*Math.max(24,(o.x-f.x)*f.dir));knock(o,f.dir*140,260);callout(A.sfx==='kick'?'BIG BOOT!':'CLOTHESLINE!','#fff',1.0);line('clothes',f,o);crowdReact(f,true);return;}
  if(o.state==='perch'){knock(o,f.dir*70,150);popOn(o,'KNOCKED OFF!','#fff');say(`${f.ch.short} knocks ${o.ch.short} off the top!`);return;}
  if(A.knock||o.combo>=4||o.y>5){knock(o,f.dir*A.kb*1.3,240);if(A.knock){line('drop',f,o);crowdReact(f,false);}}
  else{setState(o,'hit');o.stun=A.stun;o.vx=f.dir*A.kb;o.vz=0;if(Math.random()<0.3)line(A.sfx==='kick'?'kick':'punch',f,o);}
@@ -68,7 +68,7 @@ function updGrapple(f,o){
  if(t<0.3){o.x=f.x+d*18*s;o.y=0;o.spin=0;}
  else if(art&&t<tl){const k=kfAt(K,t);o.x=f.x+d*k.dx*s;o.y=k.dy*s;o.spin=1;o.supF=k.vf;f.supAF=k.af;o.rot=k.r||0;o.flipX=!!k.fh;o.layer=k.lay==='you'?-1:0;f.rot=k.ar||0;f.flipX=!!k.fa;f.dox=(k.ax||0)*s*d;f.doy=(k.ay||0)*s;}
  else if(!art&&t<0.65){const p=(t-0.3)/0.35,a=Math.PI*p;o.x=f.x+d*18*s*Math.cos(a);o.y=42*s*Math.sin(a);o.spin=a;}
- else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;f.supAF='situp';f.rot=0;f.flipX=false;f.dox=f.doy=0;}else{o.x=cx(o,f.x-d*20);o.dir=d;}setState(o,'down');o.supLand=art;o.downDur=1.6;o.landAt=G.t;
+ else{o.spin=0;o.y=0;if(art){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;f.supAF='situp';f.rot=0;f.flipX=false;f.dox=f.doy=0;}else if(o.set&&o.set.pin_cxv){o.x=cx(o,f.x-d*(12+SUP_LAND*o.ch.size));o.dir=-d;}else{o.x=cx(o,f.x-d*20);o.dir=d;}f.supDone=true;setState(o,'down');o.supLand=art||!!(o.set&&o.set.pin_cxv);o.downDur=1.6;o.landAt=G.t;
   damage(o,13*powOf(f),f);sfx('slam');shake(6);dust(PX(o.x-o.dir*24,o.z),PY(o.z),true);G.hitStop=0.09;line('grab',f,o);crowdReact(f,false);}
 }
 function tryFin(f,o){if(o.ghost)return;
@@ -88,9 +88,9 @@ function updFinisher(f,o,dt){
  }else if(ty==='slam'){
   const fs=f.ch.size,os=o.ch.size;
   if(t<0.55){const p=t/0.55,e=p*p*(3-2*p);o.x=lerp(o.x,f.x+o.dir*24*os,0.25);o.y=lerp(0,66*fs,e);}
-  else if(t<0.8){o.x=f.x+o.dir*24*os;o.y=66*fs+(Math.sin(G.t*20)>0?1:0);}
-  else if(t<0.92){const p=(t-0.8)/0.12;o.y=lerp(66*fs,0,p*p);}
-  else if(!f.finHit){f.finHit=true;o.y=0;o.dir=-f.dir;o.x=cx(o,f.x+f.dir*14);setState(o,'down');o.downDur=3.2;o.landAt=G.t;
+  else if(t<0.8){o.x=f.x+o.dir*24*os;o.y=66*fs+Math.sin(t*26)*2;o.dox=Math.sin(t*19)*1.5;}   // he kicks and struggles up top
+  else if(t<0.92){const p=(t-0.8)/0.12;o.y=lerp(66*fs,0,p*p);o.dox=0;o.finDrop=true;}
+  else if(!f.finHit){f.finHit=true;o.y=0;o.dir=-f.dir;o.x=cx(o,f.x+f.dir*14);setState(o,'down');o.downDur=3.2;o.landAt=G.t;o.supLand=true;
    finContact(f,o);dust(PX(bodyX(o),o.z),PY(o.z),true);}
   if(t>=1.45)setState(f,'idle');
  }else if(ty==='scream'){
@@ -99,11 +99,14 @@ function updFinisher(f,o,dt){
   if(f.finHit&&t<1.0&&Math.random()<0.55)part(sx_(f)+f.dir*8*f.ch.size,sy_(f)-52*f.ch.size,f.dir*220,0,0.6,pick(['#1fb5b0','#ffffff','#ffd35a']),3,'ring');
   if(t>=1.25)setState(f,'idle');
  }else{
+  if(o.state==='finished'){o.dox=Math.sin(t*8)*2;o.finFlinch=f.launched&&Math.abs(f.x-o.x)<40;}   // he staggers, then flinches as the attacker comes down on him
   if(t<0.3){if(Math.random()<0.5)glitterFx(sx_(f),sy_(f)-24,1);}
-  else if(!f.launched){f.launched=true;const T0=0.8;f.vy=0.5*GRAV*T0;f.vx=(o.x-f.dir*6-f.x)/T0;f.vz=(o.z-f.z)/T0;f.y=0.5;}
+  else if(!f.launched){f.launched=true;const T0=0.8;f.vy=0.5*GRAV*T0;f.vx=(o.x-f.dir*22*o.ch.size-f.x)/T0;f.vz=(o.z-f.z)/T0;f.y=0.5;}
   else if(!f.finHit){f.vy-=GRAV*dt;f.y+=f.vy*dt;f.turn=Math.cos((t-0.3)*Math.PI*6)>=0?1:-1;glitterFx(sx_(f),sy_(f)-30,1);
-   if(f.y<=0){f.y=0;f.vx=f.vz=0;f.turn=1;f.finHit=true;f.landT=t;setState(o,'down');o.downDur=3.2;finContact(f,o);glitterFx(PX(bodyX(o),o.z),PY(o.z)-10,40);sfx('glitter');dust(sx_(o),PY(o.z),true);}}
-  else if(t-f.landT>0.45)setState(f,'idle');
+   if(f.vy<0&&f.y<=30*o.ch.size&&Math.abs(f.x-o.x)<46){f.finHit=true;f.turn=1;o.dox=0;finContact(f,o);knock(o,f.dir*190,210,true);glitterFx(sx_(o),sy_(o)-30,40);sfx('glitter');}   // the hit: he's driven back off his feet
+   else if(f.y<=0){f.finHit=true;f.turn=1;o.dox=0;finContact(f,o);knock(o,f.dir*190,210,true);}}
+  else if(!f.landT){f.vy-=GRAV*dt;f.y+=f.vy*dt;f.vx*=0.9;if(f.y<=0){f.y=0;f.vx=f.vz=0;f.landT=t;dust(sx_(f),PY(f.z),false);}}   // he drops back to his feet
+  else if(t-f.landT>0.35)setState(f,'idle');
  }
 }
 function startDive(f,o,label,T,peak){link(f,o);irpMark('big');heat(CTR.crowd.dive);tutEv('dive',f);setState(f,'dive');const T0=T||0.65;f.vx=clamp((o.x-f.x)/T0,-420,420);f.vz=((wide()?o.z:clamp(o.z,ZMIN,ZMAX))-f.z)/T0;
@@ -132,6 +135,9 @@ function revThreat(f){const bx=bodyX(f);   // live everywhere
 function upKick(f,g){const d=g.x>bodyX(f)?1:-1;damage(g,CTR.rev.dmg*powOf(f),f);knock(g,d*170,210);setState(f,'getup');f.t=0.2;f.revLock=0;
  callout('REVERSAL!','#5fe07a',1.0);popOn(f,'FROM UNDERNEATH!','#5fe07a');hitFx(PX(g.x,g.z),PY(g.z)-30,10);sfx('kick');shake(5);G.hitStop=0.08;heat(CTR.crowd.nearFall);crowdReact(f,true);
  say(`${f.ch.short} kicks ${g.ch.short} off from the mat!`);}
+// a downed man's body runs from his feet (o.x) to his head; near any part of it counts
+function bodyNear(f,o){if(Math.abs(o.z-f.z)>=12)return false;const a=o.x,b=bodyX(o)*2-o.x;return f.x>Math.min(a,b)-30&&f.x<Math.max(a,b)+30;}
+function startStomp(f,o){setState(f,'stomp');const bx=bodyX(o);f.dir=bx>=f.x?1:-1;f.stompTo=cx(f,bx-f.dir*12);}   // step over so the boot comes down on his chest
 function startPin(f,o){if(o.ghost||(G.mm&&!G.mm.pins)||G.pin){setState(f,'whiff');return;}link(f,o);tutEv('pin',f);setState(f,'pinning');setState(o,'pinned');f.dir=-o.dir;f.x=o.x;f.z=o.z;f.vx=f.vz=0;
  keepInRing([[o,'down'],[f,'pinning']]);f.x=o.x;
  G.pin={ropes:nearRopes(o),a:f,d:o,t:0,count:0,need:o.hp<=0?999:Math.round(4+(100-o.hp)/5),presses:0,nextAt:0.6,type:'cover'};

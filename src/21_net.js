@@ -1,5 +1,5 @@
 // online version: both players must be running the same build or the matches drift apart (bump when match rules change)
-const NET_VER='43r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
+const NET_VER='44r'+ROSTER.length,NET_OLD='Your friend has a different version of the game. Both of you refresh the page and try again.';
 // version mismatch: the out-of-date device updates itself (fresh copy, past any cache); the up-to-date one just waits for them
 const verNum=v=>{const m=/^(\d+)r(\d+)/.exec(String(v||''));return m?(+m[1])*1000+(+m[2]):0;};
 const netNewer=v=>verNum(v)>verNum(NET_VER);

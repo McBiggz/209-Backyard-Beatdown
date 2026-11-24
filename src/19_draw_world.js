@@ -35,6 +35,7 @@ function drawFighters(pass){
 }
 function drawParts(){for(const p of G.parts){const a=p.life/p.max;
  if(p.type==='ring'){const r=Math.round(3+(1-a)*14),cx=Math.round(p.x),cy=Math.round(p.y);ctx.fillStyle=p.col;for(let k=-3;k<=3;k++){const an=(p.vx>=0?0:Math.PI)+k*0.25;ctx.fillRect(Math.round(cx+Math.cos(an)*r),Math.round(cy+Math.sin(an)*r),1,1);}continue;}
+ if(p.type==='dust'){const r=Math.round(p.size+(1-a)*5);ctx.globalAlpha=0.45*a;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(Math.round(p.x),Math.round(p.y),r,Math.max(1,Math.round(r*0.45)),0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;continue;}
  if(p.type==='fire'&&a<0.3)continue;R(p.x,p.y,p.size,p.size,p.col);}}
 function drawPops(){for(const p of G.pops){ctx.globalAlpha=clamp(p.life/p.max*2,0,1);T(p.text,p.x,p.y,1,p.col,'center','#000');}ctx.globalAlpha=1;}
 // fighting from underneath: a flashing prompt over a downed player when a reversal is open

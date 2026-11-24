@@ -15,7 +15,7 @@ function updFighter(f,o,inp,dt){
   // RUN: double-tap left or right
   if(mx&&f.pmx!==mx&&f.y<1){if(f.tapDir===mx&&G.t-f.tapT<CTR.run.doubleTap){f.tapDir=0;f.pmx=mx;setState(f,'run');f.runDir=mx;f.dir=mx;f.vx=mx*CTR.run.speed*f.ch.spd;f.vz=0;f.autoRun=0;sfx('whoosh');break;}f.tapDir=mx;f.tapT=G.t;}
   f.vx=mx*90*f.ch.spd;f.vz=mz*52*f.ch.spd;f.state=(mx||mz)?'walk':'idle';if(mx||mz)f.walkPh+=dt*11;
-  const nearBody=Math.abs(bodyX(o)-f.x)<36&&Math.abs(o.z-f.z)<12;
+  const nearBody=bodyNear(f,o);
   if(inp.jumpP&&runnerComing(f,o)){startDodge(f,o,inp.down);break;}
   if(inp.jumpP){
    if(atCorner(f,mx)){setState(f,'perch');if(wide()){const bk=f.z<140;f.x=mx<0?(bk?84:44):(bk?225:269);f.z=bk?121:157;const PH=(barnOn()&&CTR.perch.barn)||(G.map==='secret'&&CTR.perch.secret)||CTR.perch;f.y=f.perchY=bk?PH.back:PH.front;}else{f.x=mx<0?-(RX-2):(RX-2);f.z=f.z<32?RZB+1:RZF-1;f.y=f.perchY=26;}f.vx=f.vz=0;f.dir=mx<0?1:-1;sfx('whoosh');line('perch',f,o);G.hype=Math.min(1,G.hype+0.15);}
@@ -24,10 +24,10 @@ function updFighter(f,o,inp,dt){
   else if(inp.finP)tryFin(f,o);
   else if(inp.grabP&&rollInDir(f,o)&&(inp.up?-1:inp.left?1:0)===rollInDir(f,o)){rollIn(f,o);}
   else if(inp.grabP){if(o.state==='down'&&nearBody&&!G.over&&!(wide()&&(f.out||o.out)))startPin(f,o);else tryGrab(f,o,mx);}
-  else if(inp.punchP)setState(f,(o.state==='down'&&nearBody)?'stomp':'punch');
-  else if(inp.kickP)setState(f,(o.state==='down'&&nearBody)?'stomp':'kick');
+  else if(inp.punchP){if(o.state==='down'&&nearBody)startStomp(f,o);else setState(f,'punch');}
+  else if(inp.kickP){if(o.state==='down'&&nearBody)startStomp(f,o);else setState(f,'kick');}
   break;}
- case 'punch':case 'kick':case 'stomp':{const A=ATK[S];f.vx=(S==='kick'&&f.t>=windOf(S)&&f.t<0.15+windOf(S))?f.dir*30:0;f.vz=0;
+ case 'punch':case 'kick':case 'stomp':{const A=ATK[S];if(S==='stomp'&&f.stompTo!=null&&f.t<0.16){f.x+=(f.stompTo-f.x)*Math.min(1,dt*18);}f.vx=(S==='kick'&&f.t>=windOf(S)&&f.t<0.15+windOf(S))?f.dir*30:0;f.vz=0;
   const w=windOf(S);if(!f.hitDone&&f.t>=A.act[0]+w&&f.t<=A.act[1]+w)tryHit(f,o,A);if(f.t>=A.dur+w)setState(f,'idle');break;}
  case 'jump':case 'dropkick':{f.vy-=GRAV*dt;f.y+=f.vy*dt;
   if(S==='jump'&&(inp.kickP||inp.punchP)){f.state='dropkick';f.hitDone=false;}

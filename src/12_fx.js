@@ -7,7 +7,8 @@ function callout(text,col='#ffd35a',dur=1.4){G.callout={text,col,t:0,dur};}
 function part(x,y,vx,vy,life,col,size=1,type='spark'){G.parts.push({x,y,vx,vy,life,max:life,col,size,type});}
 const sx_=f=>PX(f.x,f.z),sy_=f=>PY(f.z)-f.y;
 function hitFx(x,y,n=8,cols=['#fff','#ffe680','#ffb347']){for(let i=0;i<n;i++){const a=rnd(Math.PI*2),s=rnd(40,150);part(x,y,Math.cos(a)*s,Math.sin(a)*s,rnd(0.12,0.3),pick(cols),pick([1,1,2]));}}
-function dust(x,y,big){for(let i=0;i<(big?14:6);i++)part(x+rnd(-14,14),y+rnd(-2,1),rnd(-70,70),rnd(-50,-10),rnd(0.25,0.55),pick(['#d8cfbf','#bdb3a2']),2,'dust');}
+// dust: soft see-through puffs that roll out along the mat and fade (they used to be hard 2px squares that rained back onto the body)
+function dust(x,y,big){const n=big?7:4;for(let i=0;i<n;i++){const sd=i%2?1:-1;part(x+sd*rnd(4,18),y+rnd(-2,2),sd*rnd(25,70),rnd(-14,-3),rnd(0.35,0.6),pick(['#d8cfbf','#c4b9a6']),rnd(3,5),'dust');}}
 function fireFx(x,y,n=10){for(let i=0;i<n;i++)part(x+rnd(-8,8),y+rnd(-12,12),rnd(-40,40),rnd(-110,-20),rnd(0.25,0.6),pick(['#ff3b1f','#ff8a1f','#ffd35a']),2,'fire');}
 function glitterFx(x,y,n=10){for(let i=0;i<n;i++){const a=rnd(Math.PI*2),s=rnd(20,120);part(x,y,Math.cos(a)*s,Math.sin(a)*s-30,rnd(0.35,0.8),pick(['#ff5ad8','#22d3c5','#fff36b','#ffffff','#a77bff']),1,'glitter');}}
 function crowdReact(f,big){G.hype=Math.min(1,G.hype+(big?CTR.crowd.reactBig:CTR.crowd.react));
